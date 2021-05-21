@@ -11,17 +11,30 @@ console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 //Reading all Command Files
-const commandFiles = fs.readdirSync('./command').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-    // if (file.length <= 0){
-    //   return console.log(chalk.bgRed('There is no files in ./command/'));
-    // };
-    log(`Loading a total of ${file.length} commands.`);
-    const command = require(`./command/${file}`);
-    client.commands.set(command.name, command);
-    // file.log(file => {
-    //   log(`Loading Command: ${file}`);
-    // });
+// const commandFiles = fs.readdirSync('./command').filter(file => file.endsWith('.js'));
+// for (const file of commandFiles) {
+//     // if (file.length <= 0){
+//     //   return console.log(chalk.bgRed('There is no files in ./command/'));
+//     // };
+//     // log(`Loading a total of ${file.length} commands.`);
+//     const command = require(`./command/${file}`);
+//     client.commands.set(command.name, command);
+//     commandFiles.forEach(file => {
+//       log(`Loading Command: ${file}`);
+//     });
+// };
+
+fs.readdirSync('./command').filter(file => file.endsWith('.js')), (err, file) => {
+  if (err) log(err);
+  // let jsfile = file.filter(file => file.split('.').pop() === 'js');
+  if (file.lenght <= 0) {
+    log(chalk.bgRed('There is no files in ./command/'));
+    return;
+  };
+  log(`Loading a total of ${file.lenght} commands.`);
+  file.forEach(file => {
+    log(`Loading file: ${file}`);
+  });
 };
 
 // Debug command
@@ -31,15 +44,19 @@ client.on('message', msg => {
   }
 });
 
+// Setup Bot => Command system
 client.on('message', message => {
   if(message.author.bot) return;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
+  const commandName = args.shift().toLowerCase();
   let targetMember = message.mentions.users.first();
 
-  if (!client.commands.has(command)) return;
+  // if (!client.commands.has(command)) return;
+  const command = client.commands.get(commandName);
+
   try {
-    client.commands.get(command).execute(client, message, args);
+    client.execute(client, message, args);
+    client.commands.get(commandName).execute(client, message, args);
   } catch (error) {
     console.error(error);
     log(chalk.bgRed("Command not working !"));
