@@ -10,73 +10,43 @@ require('./tools/EventLoader.js')(client);
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-//Reading all Command Files
-const commandFiles = fs.readdirSync('./command').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-    // if (file.length <= 0){
-    //   return console.log(chalk.bgRed('There is no files in ./command/'));
-    // };
-    // log(`Loading a total of ${file.length} commands.`);
-    const command = require(`./command/${file}`);
-    client.commands.set(command.name, command);
-    commandFiles.forEach(file => {
-      log(`Loading Command: ${file}`);
-    });
-};
-
-// fs.readdirSync('./command').filter(file => file.endsWith('.js')), (err, file) => {
-//   if (err) log(err);
-//   // let jsfile = file.filter(file => file.split('.').pop() === 'js');
-//   if (file.lenght <= 0) {
-//     log(chalk.bgRed('There is no files in ./command/'));
-//     return;
-//   };
-//   log(`Loading a total of ${file.lenght} commands.`);
-//   file.forEach(file => {
-//     log(`Loading file: ${file}`);
-//   });
-// };
-
 // Debug command
-client.on('message', msg => {
-  if (msg.content === 'hey') {
-    msg.reply("I do work for now!");
-  }
+client.on('message', message => {
+  if (message.content === 'hey') {
+    message.reply("I do work for now!");
+  };
+});
+
+//Reading all Command Files
+fs.readdir('./command/', (err, file) => {
+  if (err) return log(err);
+  if (file.lenght <= 0) {return log(chalk.bgRed('There is no files in ./command/'))};
+  log(`Loading a total of ${file.lenght} commands.`);
+  file.forEach((file) => {
+    if (!file.endsWith('.js')) return;
+    let props = require(`./command/${file}`);
+    let commandName = file.split(".")[0];
+    log(`Loading Command: ${commandName}`);
+    client.commands.set(commandName, props);
+  });
 });
 
 // Setup Bot => Command system
-client.on('message', message => {
+client.on('message', async message => {
   if(message.author.bot) return;
+  if(!message.content.startsWith(prefix)) return;
+
   const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const commandName = args.shift().toLowerCase();
-  let targetMember = message.mentions.users.first();
+  const cmd = args.shift().toLowerCase();
 
-  // if (!client.commands.has(command)) return;
-  const command = client.commands.get(commandName);
+  let command = client.commands.get(cmd);
+  if (!command) command = client.commands.get(cmd.aliases);
 
-  try {
-    // client.execute(client, message, args);
-    client.commands.get(commandName).execute(client, message, args);
-  } catch (error) {
-    console.error(error);
-    log(chalk.bgRed("Command not working !"));
-    message.channel.send("Command not working !");
-  };
+  if (command) command.execute(client, message, args);
 
-  if(command === 'test') {
-    message.reply("ça à l'air de marcher m'sieur");
-    log(`Command send: ${cmd}\nArgs: ${args}`);
-    if (args[0] === 'lucie') {
-      return message.reply("Zi bélouved");
-    };
-  } else if(command === 'hostinfo'){
-    message.reply("ça à l'air de marcher m'sieur");
-  } else if(command === 'ban') {
-    let targetMember = message.mentions.users.first();
-    message.reply(`T'es sûr de ban le fréro ${targetMember.username} ?`)
-  }
-
-  log(`${message.author.tag}` + " said: \"" + `${message.content}` +"\" on: " + (message.channel.name));
+  // const command = 
+  //   client.commands.get(cmd) ||
+  //   client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(cmd));
 });
 
 client.login(token);
