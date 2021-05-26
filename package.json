@@ -1,0 +1,19 @@
+{
+    "name": "project-1b",
+    "version": "0.1",
+    "description": "Learning JavaScript trough Discord.js",
+    "main": "index.js",
+    "author": "Eylexander",
+    "private": true,
+    "homepage": "https://github.com/Eylexander/Project-1B",
+    "repository": "github:Eylexander/Project-1B",
+    "bugs": "https://github.com/Eylexander/Project-1B/issues",
+    "engines": {
+      "node": ">=14.0.0"
+    },
+    "dependencies": {
+    },
+    "scripts": {
+      "start": "node index.js"
+    }
+  }
