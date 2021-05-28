@@ -1,8 +1,9 @@
 {
     "name": "project-1b",
-    "version": "0.1",
+    "version": "0.10.0",
     "description": "Learning JavaScript trough Discord.js",
     "main": "index.js",
+    "license": "MIT",
     "author": "Eylexander",
     "private": true,
     "homepage": "https://github.com/Eylexander/Project-1B",
