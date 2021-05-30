@@ -4,7 +4,6 @@ module.exports = {
     name : "clear",
     description : "To clear chat",
     aliases : ['clean','delete'],
-    log : ``,
     async execute(client, message, args) {
         if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("You need `manage_messages` permission to execute this command.");
         if(!args[0]) return message.channel.send("You need to enter an amount.");

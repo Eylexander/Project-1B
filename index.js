@@ -41,4 +41,11 @@ fs.readdir('./command/', (err, file) => {
   });
 });
 
+// var logboot = require(fs.readdir('./command/'));
+// client.on('message', message => {
+//   if(message.content.startsWith === prefix) {
+//     log(`${message.author.tag} used ${logboot.name} command in ${message.channel.name} on ${message.guild.name} !`)
+//   }
+// })
+
 client.login(token);

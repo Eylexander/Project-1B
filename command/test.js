@@ -4,7 +4,7 @@ module.exports = {
     name : "test",
     description: 'Pong command',
     aliases : ['tst','try'],
-    async run(client, message, args) {
+    async execute(client, message, args) {
         message.channel.send("Ping!");
     },
 };
