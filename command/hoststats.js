@@ -23,7 +23,7 @@ module.exports = {
             .addFields(
               { name: 'Hostname', value: `${os.hostname}`, inline: true},
               { name: 'Uptime (s)', value: `${os.uptime}`, inline: true},
-              { name: 'CPU', value: `Percentage of CPU Usage: ${os.cpus()}%`, inline: true },
+            //   { name: 'CPU', value: `Percentage of CPU Usage: ${os.cpus()}%`, inline: true },
               { name: 'Memory (RAM)', value: `Total Memory: ${totalram}MB\nUsed Memory: ${usedram}MB\nFree Memory: ${freeram}MB\nPercentage of Free Memory: ${prctfreeram}%`, inline: false},
               { name: 'Language', value: 'Discord.js', inline: true},
             )
