@@ -8,6 +8,7 @@ module.exports = {
     name : "stop",
     description: 'Stop command',
     aliases : ['end','ends','off'],
+    tuto : '',
     async execute(client, message, args) {
         if (message.author.id !== settings.admin) return message.channel.send ("You are not authorised.");
         log(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgRed(`OFF`) + (`.`));

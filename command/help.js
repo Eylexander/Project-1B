@@ -6,18 +6,19 @@ const moment = require('moment');
 module.exports = {
     name: "help",
     description: "Help command",
-    tuto: `${settings.prefix}help [command]`,
     aliases: ['h', 'halp'],
+    tuto: '[command]',
     async execute(client, message, args) {
-        if (!args[0]) {
-            return message.channel.send("cheh");
-        } else {
-            let cmd = args[0];
-            if (client.commands.has(cmd)) {
-                cmd = client.commands.get(cmd) || 
-                client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(cmd));
-            message.channel.send(`Description: ${cmd.description}\nTuto: ${settings.prefix}${cmd.name} [command]`)
-            }
+
+        let cmd = args[0];
+        if (client.commands.has(cmd)) {
+            cmd = client.commands.get(cmd) || 
+            client.commands.find((cmmd) => cmmd.aliases && cmmd.aliases.includes(cmd));
+        }
+
+        if (!args[0]) {return message.channel.send(cmd.tuto)} 
+        else {
+            message.channel.send(`Description: ${cmd.description}\nTuto: ${settings.prefix}${cmd.name} ${cmd.tuto}`)
         }
     }
 }

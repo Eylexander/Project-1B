@@ -8,6 +8,7 @@ module.exports = {
     name: "hoststats",
     description : "Show host specs",
     aliases : ["stats","hs","hostinfo"],
+    tuto : '',
     async execute(client, message, args) {
         const totalram = ((os.totalmem() / 10**6 + " ").split('.')[0]);
         const freeram = ((os.freemem() / 10**6 + " ").split('.')[0]);
