@@ -16,10 +16,10 @@ module.exports = (client, message) => {
   
     const command = 
       client.commands.get(cmd) ||
-      client.commands.find((cmmd) => cmmd.aliases && cmmd.aliases.includes(cmd));
+      client.commands.find(cmmd => cmmd.aliases && cmmd.aliases.includes(cmd));
     
     try {
-      command.execute(client, message, args);
+      command.run(client, message, args);
     } catch (error) {
       console.error(error);
     }

@@ -5,6 +5,8 @@ const chalk = require('chalk');
 const moment = require('moment');
 const fs = require('fs');
 client.commands = new Discord.Collection();
+// const RegExp = require ('RegExp');
+const badwords = require ('./tools/word_libraries.json');
 
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
@@ -14,6 +16,9 @@ client.on('message', message => {
   if (message.author.bot) return;
   if (message.content === 'hey') {
     message.reply("I do work for now!");
+  };
+  if (message.content.toLowerCase() === "oui") {
+    message.reply("non")
   };
 });
 
@@ -47,5 +52,26 @@ fs.readdir('./command/', (err, file) => {
 //     log(`${message.author.tag} used ${logboot.name} command in ${message.channel.name} on ${message.guild.name} !`)
 //   }
 // })
+
+client.on('message', message => {
+  // const regex = new RegExp(`(\\b|\\d)(${badwords.join('|')})(\\b\\d)`, 'i');
+  // if (regex.test(message.content)) {
+  //   message.reply('Please do not say bad words.').then(message => {setTimeout(() => {message.delete()}, 2500)});
+  //   message.delete();
+  // }
+  // if (message.content.toLowerCase().includes(badwords[i].toLowerCase())) foundInText = true;
+  // if (foundInText) {
+  //   try {
+  //     message.delete();
+  //     message.reply("cé pa bi1 les insultes").then(message => {setTimeout(() => {message.delete()}, 2500)});
+  //   } catch (error) {
+  //     console.log(error)
+  //   } 
+  // }
+  // if (badwords.some(word => message.toString().toLowerCase().includes(word))) {
+  //   message.delete().catch(e => console.error("Couldn't delete message.")); 
+  //   message.reply(`Please do not swear.`);
+  // };
+});
 
 client.login(token);

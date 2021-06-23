@@ -7,7 +7,7 @@ const moment = require('moment');
 module.exports = {
     name: "hoststats",
     description : "Show host specs",
-    aliases : ["stats","hs","hostinfo"],
+    aliases : ["stats","hs","hostinfo", "oststat"],
     tuto : '',
     async execute(client, message, args) {
         const totalram = ((os.totalmem() / 10**6 + " ").split('.')[0]);
