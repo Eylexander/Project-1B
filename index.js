@@ -5,8 +5,6 @@ const chalk = require('chalk');
 const moment = require('moment');
 const fs = require('fs');
 client.commands = new Discord.Collection();
-// const RegExp = require ('RegExp');
-const badwords = require ('./tools/word_libraries.json');
 
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
@@ -14,12 +12,13 @@ const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] 
 // Debug command
 client.on('message', message => {
   if (message.author.bot) return;
-  if (message.content === 'hey') {
+  if (message.content.toLowerCase() === 'hey') {
     message.reply("I do work for now!");
   };
   if (message.content.toLowerCase() === "oui") {
     message.reply("non")
   };
+  log(message)
 });
 
 // Reading all Event Files

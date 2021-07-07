@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const {prefix} = require('../settings.json');
+const prefix = require('../settings.json');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
