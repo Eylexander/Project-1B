@@ -1,11 +1,13 @@
 const Discord = require('discord.js');
 
-module.exports = {
+module.exports.help = {
     name : "ping",
     description: 'Ping command',
     aliases : ['pong'],
-    tuto : '',
-    async execute(client, message, args) {
-        message.reply(`Pong! Latency is ${Date.now() - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms.`);
-    }
+    usage : ''
+};
+
+module.exports.execute = async (client, message, args) => {
+    const msg = await message.channel.send('Pinging Bot ...')
+    msg.edit(`Pong! Latency is ${Math.floor(msg.createdTimestap - message.createdTimestap)}ms. API Latency is ${Math.round(client.ping)}ms.`);
 };

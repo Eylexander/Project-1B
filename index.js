@@ -46,6 +46,27 @@ fs.readdir('./command/', (err, file) => {
   });
 });
 
+// client.on('message', message => {
+//   if(message.author.bot) return;
+//   if(!message.content.startsWith(prefix)) return;
+
+//   const args = message.content.slice(prefix.length).trim().split(/ +/);
+//   const cmd = args.shift().toLowerCase();
+
+//   // if (!client.commands.has(cmd)) return;
+
+//   const command = 
+//     client.commands.get(cmd) ||
+//     client.commands.find(commandName => commandName.aliases && commandName.aliases.includes(cmd));
+  
+//   try {
+//     command.execute(client, message, args);
+//   } catch (error) {
+//     console.error(error);
+//     message.reply('Once again , a stupid error!')
+//   }
+// })
+
 // var logboot = require(fs.readdir('./command/'));
 // client.on('message', message => {
 //   if(message.content.startsWith === prefix) {
