@@ -10,10 +10,11 @@ module.exports = (client, message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const cmd = args.shift().toLowerCase();
 
-    // if (!client.commands.has(cmd)) return;
-  
     const command = client.commands.get(cmd)
-      || client.commands.find(commandName => commandName.aliases && commandName.aliases.includes(cmd));
+      || client.commands.find(cmdObj => cmdObj.help.aliases && cmdObj.help.aliases.includes(cmd));
+
+    // If the command has not been found, return.
+    if (command == null) return;
     
     try {
       command.execute(client, message, args);
