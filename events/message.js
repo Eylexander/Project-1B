@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const prefix = require('../settings.json');
+const {prefix} = require('../settings.json');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
@@ -9,7 +9,8 @@ module.exports = (client, message) => {
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const cmd = args.shift().toLowerCase();
-
+    
+    
     const command = client.commands.get(cmd)
       || client.commands.find(cmdObj => cmdObj.help.aliases && cmdObj.help.aliases.includes(cmd));
 

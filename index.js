@@ -94,4 +94,21 @@ client.on('message', message => {
   // };
 });
 
+
+//Log system
+var stream = fs.createWriteStream('./tools/logs.txt', {'flags': 'a'});
+stream.write(
+`/* ==========================
+==== Log file started at ====
+== ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')} ==
+========================== */\r\n`
+);
+
+client.on('message', message => {
+  // stream.once('open', function(fd) {
+    if (message.author.bot) return;
+    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name} (${message.channel.id}) : ${message.guild.name} (${message.guild.id})] \r\n`);
+  // });
+});
+
 client.login(token);

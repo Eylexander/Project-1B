@@ -1,7 +1,4 @@
 const Discord = require('discord.js');
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
-const moment = require('moment');
-const fetch = require("node-fetch");
 
 module.exports.help = {
   name : "rickroll",

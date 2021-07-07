@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const { stringify } = require('querystring');
+const {prefix} = require('../settings.json');
+const moment = require('moment');
+const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 module.exports.help = {
     name : "suggestion",
@@ -11,10 +13,11 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     if (!args[0]) {
-        message.channel.send(`Please specify your idea using this format : ${help.usage}`)
+        message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
     } else {
-        fs.writeFile("../tools/Suggestions.json", (err) => {
+        fs.writeFile('../tools/Suggestions.json', console.log(), 'utf8', (err) => {
             if (err) console.log(err)
+            log("No fail!")
         })
     }
 };
