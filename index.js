@@ -18,7 +18,7 @@ client.on('message', message => {
   if (message.content.toLowerCase() === "oui") {
     message.reply("non")
   };
-  log(message)
+  log(`${message.author.tag} : "${message.content}" on [${message.channel.name} : ${message.guild.name}]`);
 });
 
 // Reading all Event Files
@@ -44,34 +44,6 @@ fs.readdir('./command/', (err, file) => {
     client.commands.set(commandName, props);
   });
 });
-
-// client.on('message', message => {
-//   if(message.author.bot) return;
-//   if(!message.content.startsWith(prefix)) return;
-
-//   const args = message.content.slice(prefix.length).trim().split(/ +/);
-//   const cmd = args.shift().toLowerCase();
-
-//   // if (!client.commands.has(cmd)) return;
-
-//   const command = 
-//     client.commands.get(cmd) ||
-//     client.commands.find(commandName => commandName.aliases && commandName.aliases.includes(cmd));
-  
-//   try {
-//     command.execute(client, message, args);
-//   } catch (error) {
-//     console.error(error);
-//     message.reply('Once again , a stupid error!')
-//   }
-// })
-
-// var logboot = require(fs.readdir('./command/'));
-// client.on('message', message => {
-//   if(message.content.startsWith === prefix) {
-//     log(`${message.author.tag} used ${logboot.name} command in ${message.channel.name} on ${message.guild.name} !`)
-//   }
-// })
 
 client.on('message', message => {
   // const regex = new RegExp(`(\\b|\\d)(${badwords.join('|')})(\\b\\d)`, 'i');
@@ -103,6 +75,7 @@ stream.write(
 == ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')} ==
 ========================== */\r\n`
 );
+stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Bot is ON | ${client.guilds.cache.size} Servers | ${client.users.cache.size} Users \r\n`);
 
 client.on('message', message => {
   // stream.once('open', function(fd) {

@@ -1,0 +1,25 @@
+/* ==========================
+==== Log file started at ====
+== 2021-07-09 00:34:27.041 ==
+========================== */
+[2021-07-09 00:34:27.043] Bot is ON | 0 Servers | 0 Users 
+[2021-07-09 00:35:12.416] Eylexander (344526513577918477) : "+hs" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:35:26.884] Eylexander (344526513577918477) : "+help" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:35:39.864] Eylexander (344526513577918477) : "+sugg" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:35:51.851] Eylexander (344526513577918477) : "+try" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:35:53.883] Eylexander (344526513577918477) : "+ping" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:36:33.387] poulom (666717794997501982) : "bien joué et en même temps t'es adopter" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:36:42.066] Eylexander (344526513577918477) : "" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:36:57.661] Eylexander (344526513577918477) : "Je sais je sais" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:37:32.761] Eylexander (344526513577918477) : "D'ailleurs je pense que je vais m'acheter un raspberry pi pour héberg des trucs randoms" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:38:04.491] Eylexander (344526513577918477) : "Et genre je pense le louer quand je l'utiliserai pas" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:38:37.870] Eylexander (344526513577918477) : "Parce que genre la dernière version est plus performante que le pc du lycée" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:38:50.948] Eylexander (344526513577918477) : "Plus ça consomme que dalle en électricité" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:38:58.957] Eylexander (344526513577918477) : "Tout ce qu'il faut c'est une co stable" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:39:40.285] Eylexander (344526513577918477) : "Tu peux même héberger un serveur minecraft" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:39:50.460] Eylexander (344526513577918477) : "Je te conseille de regarder" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:39:56.213] Eylexander (344526513577918477) : "Parce que ton serveur bof" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:40:00.495] Eylexander (344526513577918477) : "Il se fait vieux" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:40:03.298] Eylexander (344526513577918477) : "Comme toi" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:47:04.090] poulom (666717794997501982) : "nice mon pote" on [général (671436179664797697) : Project 1B (671436178372689921)] 
+[2021-07-09 00:53:20.863] Eylexander (344526513577918477) : "D'ailleurs j'hésite a créer une commande qui spam quelqu'un avec un message donnée et un nombre de fois donnée" on [général (671436179664797697) : Project 1B (671436178372689921)] 
