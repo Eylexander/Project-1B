@@ -7,7 +7,7 @@ const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] 
 module.exports.help = {
     name : "stop",
     description: 'Stop command',
-    aliases : ['end','ends','off'],
+    aliases : ['end','ends','off','kill'],
     usage : ''
 };
 

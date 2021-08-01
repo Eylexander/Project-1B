@@ -45,6 +45,14 @@ fs.readdir('./command/', (err, file) => {
   });
 });
 
+// Reading Tools
+fs.readdir('./tools/', (err, file) => {
+  if (err) return log(err);
+  file.forEach((file) => {
+
+  })
+});
+
 client.on('message', message => {
   // const regex = new RegExp(`(\\b|\\d)(${badwords.join('|')})(\\b\\d)`, 'i');
   // if (regex.test(message.content)) {
@@ -68,20 +76,27 @@ client.on('message', message => {
 
 
 //Log system
-var stream = fs.createWriteStream('./tools/logs.txt', {'flags': 'a'});
-stream.write(
-`/* ==========================
-==== Log file started at ====
-== ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')} ==
-========================== */\r\n`
-);
-stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Bot is ON | ${client.guilds.cache.size} Servers | ${client.users.cache.size} Users \r\n`);
 
-client.on('message', message => {
-  // stream.once('open', function(fd) {
-    if (message.author.bot) return;
-    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name} (${message.channel.id}) : ${message.guild.name} (${message.guild.id})] \r\n`);
-  // });
+client.once('ready', ready => {
+  fs.readFile('./tools/log_boot.js', (err) => {
+    if (err) throw err;
+  })
 });
+
+// var stream = fs.createWriteStream('./tools/logs.txt', {'flags': 'a'});
+// stream.write(
+// `/* ==========================
+// ==== Log file started at ====
+// == ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')} ==
+// ========================== */\r\n`
+// );
+// stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Bot is ON | ${client.guilds.cache.size} Servers | ${client.users.cache.size} Users \r\n`);
+
+// client.on('message', message => {
+//   // stream.once('open', function(fd) {
+//     if (message.author.bot) return;
+//     stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name} (${message.channel.id}) : ${message.guild.name} (${message.guild.id})] \r\n`);
+//   // });
+// });
 
 client.login(token);
