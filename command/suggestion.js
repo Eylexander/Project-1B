@@ -15,9 +15,6 @@ module.exports.execute = async (client, message, args) => {
     if (!args[0]) {
         message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
     } else {
-        fs.writeFile('../tools/Suggestions.json', console.log(), 'utf8', (err) => {
-            if (err) console.log(err)
-            log("No fail!")
-        })
+        
     }
 };

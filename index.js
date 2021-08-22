@@ -9,6 +9,10 @@ client.commands = new Discord.Collection();
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
+//Log system
+require('./logs/log_boot.js')
+
+
 // Debug command
 client.on('message', message => {
   if (message.author.bot) return;
@@ -17,6 +21,9 @@ client.on('message', message => {
   };
   if (message.content.toLowerCase() === "oui") {
     message.reply("non")
+  };
+  if (message.mentions.has(client.user)) {
+    message.channel.send(`My prefix is \`\`${prefix}\`\``)
   };
   log(`${message.author.tag} : "${message.content}" on [${message.channel.name} : ${message.guild.name}]`);
 });
@@ -45,14 +52,7 @@ fs.readdir('./command/', (err, file) => {
   });
 });
 
-// Reading Tools
-fs.readdir('./tools/', (err, file) => {
-  if (err) return log(err);
-  file.forEach((file) => {
-
-  })
-});
-
+// Bad word reading system
 client.on('message', message => {
   // const regex = new RegExp(`(\\b|\\d)(${badwords.join('|')})(\\b\\d)`, 'i');
   // if (regex.test(message.content)) {
@@ -73,30 +73,5 @@ client.on('message', message => {
   //   message.reply(`Please do not swear.`);
   // };
 });
-
-
-//Log system
-
-client.once('ready', ready => {
-  fs.readFile('./tools/log_boot.js', (err) => {
-    if (err) throw err;
-  })
-});
-
-// var stream = fs.createWriteStream('./tools/logs.txt', {'flags': 'a'});
-// stream.write(
-// `/* ==========================
-// ==== Log file started at ====
-// == ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')} ==
-// ========================== */\r\n`
-// );
-// stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Bot is ON | ${client.guilds.cache.size} Servers | ${client.users.cache.size} Users \r\n`);
-
-// client.on('message', message => {
-//   // stream.once('open', function(fd) {
-//     if (message.author.bot) return;
-//     stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name} (${message.channel.id}) : ${message.guild.name} (${message.guild.id})] \r\n`);
-//   // });
-// });
 
 client.login(token);
