@@ -1,3 +1,9 @@
+# All private infos
+
 settings.json
+
+# All npm packages
+
 package.json
-node_modules
+package-lock.json
+node_modules/**
