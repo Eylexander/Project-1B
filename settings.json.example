@@ -1,6 +1,7 @@
 {
   "prefix" : "+",
   "token": "",
+  "newsapi": "",
   "admin" : "",
   "bot_info" : {
     "name" : "Project 1B",

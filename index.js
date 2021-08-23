@@ -10,8 +10,8 @@ console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 //Log system
-require('./logs/log_boot.js')
-
+const { onMessage } = require('./logs/log_boot.js')
+client.on('message', onMessage.bind(null, client))
 
 // Debug command
 client.on('message', message => {
@@ -22,9 +22,11 @@ client.on('message', message => {
   if (message.content.toLowerCase() === "oui") {
     message.reply("non")
   };
-  if (message.mentions.has(client.user)) {
+
+  if(message.content.slice().trim().split(/ +/)[0] === message.mentions.has(client.user)) {
     message.channel.send(`My prefix is \`\`${prefix}\`\``)
   };
+
   log(`${message.author.tag} : "${message.content}" on [${message.channel.name} : ${message.guild.name}]`);
 });
 

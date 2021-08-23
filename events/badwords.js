@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const badwords = require ('../tools/word_libraries.json');
+// const badwords = require ('../tools/word_libraries.json');
 
 module.exports = (message) => {
     // let foundInText = false;
