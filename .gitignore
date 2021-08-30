@@ -1,6 +1,7 @@
 # All private infos
 
 settings.json
+logs/
 
 # All npm packages
 

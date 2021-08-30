@@ -3,15 +3,15 @@ const Discord = require('discord.js');
 const axios = require('axios');
 
 module.exports.help = {
-    name : "cryptonews",
-    description: 'Crypto News',
+    name : "news",
+    description: 'News about everything',
     aliases : ['news','newscrypto'],
-    usage : ''
+    usage : '[topic]'
 };
 
 module.exports.execute = async (client, message, args) => {
     try {
-        const { data } = await axios.get(`https://newsapi.org/v2/everything?q=crypto&apiKey=${newsapi}&pageSize=1&sortBy=publishedAt`);
+        const { data } = await axios.get(`https://newsapi.org/v2/everything?q=${args[0]}&apiKey=${newsapi}&pageSize=1&sortBy=publishedAt`);
   
         // Destructure useful data from response
         const {
@@ -23,7 +23,7 @@ module.exports.execute = async (client, message, args) => {
         } = data.articles[0];
     
         const embed = new Discord.MessageEmbed()
-            .setAuthor('CryptoNews', client.user.displayAvatarURL({ dynamic : true }))
+            .setAuthor('News', client.user.displayAvatarURL({ dynamic : true }))
             .setTitle(title)
             .setURL(url)
             .setColor('RANDOM')
