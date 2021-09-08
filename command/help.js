@@ -11,9 +11,21 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     if (!args[0]) {
-        message.channel.send(`Description: ${module.exports.help.description}\nUsage: ${prefix}${module.exports.help.name} ${module.exports.help.usage}`)
+        message.channel.send(`If you need some help!\nUsage: ${prefix}${module.exports.help.name} ${module.exports.help.usage}`)
     } else {
         // message.channel.send(`Description: ${command.description}\nUsage: ${prefix}${command.name} ${command.usage}`)
         message.channel.send(`Description : ${args.description}`);
+
+        const help = new Discord.MessageEmbed()
+            .setColor('RANDOM')
+            .setTitle("Help command")
+            .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+            .addFields(
+                { name: 'Test', value: 'Test', inline: true},
+            )
+            .setTimestamp()
+            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+
+        return message.channel.send(help);
     }
 };

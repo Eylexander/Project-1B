@@ -1,3 +1,5 @@
+const { admin } = require('../settings.json')
+
 module.exports.help = {
     name : "say",
     description: 'Say command',
@@ -6,6 +8,8 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    message.channel.bulkDelete(1)
-    message.channel.send(args.join(' '))
+    if (message.author.id == admin || message.member.hasPermission('ADMINISTRATOR')) {
+        message.channel.bulkDelete(1)
+        message.channel.send(args.join(' '))
+    }
 };

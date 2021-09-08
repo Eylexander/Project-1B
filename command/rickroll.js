@@ -14,6 +14,7 @@ module.exports.execute = async (client, message, args) => {
   
   let targetMember = message.mentions.users.first();
   const embed = new Discord.MessageEmbed()
+      .setColor('RANDOM')
       .setTitle(`${message.author.username} rickrolled ${targetMember.username}!`)
       .setImage('https://media.tenor.com/images/a1505c6e6d37aa2b7c5953741c0177dc/tenor.gif')
       .setTimestamp()

@@ -4,14 +4,14 @@ const axios = require('axios');
 
 module.exports.help = {
     name : "news",
-    description: 'News about everything',
+    description: 'News about everything but it is very random',
     aliases : ['news','newscrypto'],
     usage : '[topic]'
 };
 
 module.exports.execute = async (client, message, args) => {
     try {
-        const { data } = await axios.get(`https://newsapi.org/v2/everything?q=${args[0]}&apiKey=${newsapi}&pageSize=1&sortBy=publishedAt`);
+        const { data } = await axios.get(`https://newsapi.org/v2/everything?q=${args[0].toLowerCase()}&apiKey=${newsapi}&pageSize=1&sortBy=publishedAt`);
   
         // Destructure useful data from response
         const {
