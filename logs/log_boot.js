@@ -24,5 +24,5 @@ stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Bot is ON | ${ssiz
 exports.onMessage = function (client, message) {
     if (message.author.bot) return;
     stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name} (${message.channel.id}) : ${message.guild.name} (${message.guild.id})] \r\n`);
-    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${console.log}\r\n`);
+    // stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${console.log}\r\n`);
 };

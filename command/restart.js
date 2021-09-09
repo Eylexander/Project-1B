@@ -19,7 +19,7 @@ module.exports.execute = async (client, message, args) => {
                 await client.destroy()
                 client.login(token)
                 await message.edit('Restart worked')
-                setTimeout(() => {message.delete()}, 3000)
+                setTimeout(() => {message.delete()}, 2000)
             });
     } else {
         return;
