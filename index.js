@@ -10,7 +10,7 @@ console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 //Log system
-const { onMessage } = require('./logs/log_boot.js')
+const { onMessage } = require('./tools/log_boot.js')
 client.on('message', onMessage.bind(null, client))
 
 // Debug command
