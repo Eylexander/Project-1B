@@ -34,13 +34,13 @@ module.exports.execute = async (client, message, args) => {
   const adminusers = message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
 
 // Search for args
-  if (args[0] === 'server' || args[0] === 'serveur' || args[0] === 'serv') {
+    if (['server', 'serveur', 'serv'].includes(args[0])) {
     const server = new Discord.MessageEmbed()
       .setColor('RANDOM')
       .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
       .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
       .addFields(
-        { name: 'Owner', value: `${message.guild.owner.user.tag} (${message.guild.owner.id})`, inline: false},
+        { name: 'Owner', value: `${message.guild.owner === null ? 'No Owner Located' : message.guild.owner.user.tag + '(message.guild.owner.id)'}`, inline: false},
         { name: 'Created at', value: message.guild.createdAt.toLocaleString(), inline: true},
         { name: 'Location', value: `${location.charAt(0).toUpperCase() + location.slice(1)}`, inline: true},
         { name: 'Member Count', value: `${message.guild.memberCount}`, inline: true},
@@ -54,7 +54,7 @@ module.exports.execute = async (client, message, args) => {
 
     message.channel.send(server);
   }
-  else if (args[0] === 'bot' || args[0] === 'client' || args[0] === 'discordbot'){
+  else if (['bot', 'client', 'discordbot'].includes(args[0])){
     const bot = new Discord.MessageEmbed()
       .setColor('RANDOM')
       .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
@@ -70,9 +70,28 @@ module.exports.execute = async (client, message, args) => {
       .setTimestamp()
       .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-    message.channel.send(bot);
+    if (['dev', 'specs'].includes(args[1])){
+      const botspecs = new Discord.MessageEmbed()
+        .setColor('RANDOM')
+        .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
+        .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+        .addFields(
+          { name: 'Version', value: version, inline: true},
+          { name: 'Librairie', value: `Discord.js 12.5.0`, inline: true},
+          { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + '))}`, inline: true},
+          { name: 'Servers', value: client.guilds.cache.size, inline: true},
+          { name: 'Channels', value: client.channels.cache.size, inline: true},
+          { name: 'Uptime (s)', value: `${days}d${hours}h${minutes}m${seconds}s`, inline: true},
+        )
+        .setTimestamp()
+        .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+  
+      message.channel.send(botspecs);
+    } else {
+      message.channel.send(bot);
+    }
   } 
-  else if (args[0] === 'host' || args[0] === 'hs' || args[0] === 'heberg'){
+  else if (['host', 'hs', 'heberg'].includes(args[0])){
     const host = new Discord.MessageEmbed()
       .setColor('RANDOM')
       .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
@@ -108,5 +127,5 @@ module.exports.execute = async (client, message, args) => {
   };
 };
 
+// Function not working, need to improve it
 // { name: 'Member Count', value: `${message.guild.memberCount - message.guild.members.filter(m=>m.user.bot).size} (${message.guild.members.filter(m=>m.user.bot).size} bots)`, inline: true},
-        
