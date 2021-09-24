@@ -8,7 +8,7 @@ module.exports.help = {
     name: "info",
     description : "Show bot information",
     aliases : ["stats", "botinfo","infos"],
-    usage : '[Specific info]'
+    usage : '[Specific search] [Mode]'
 };
 
 module.exports.execute = async (client, message, args) => {

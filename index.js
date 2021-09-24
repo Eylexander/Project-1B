@@ -19,10 +19,7 @@ client.on('message', message => {
   if (message.content.toLowerCase() === 'hey') {
     message.reply("I do work for now!");
   };
-  if (message.content.toLowerCase() === "oui") {
-    message.reply("non")
-  };
-
+  
   if(message.content.slice().trim().split(/ +/)[0] === message.mentions.has(client.user)) {
     message.channel.send(`My prefix is \`\`${prefix}\`\``)
   };

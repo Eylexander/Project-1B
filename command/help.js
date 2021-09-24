@@ -10,6 +10,8 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
+    var desc  = command.map(cmd => `**${cmd.name}**: ${cmd.description || 'No description available.'}`)
+
     if (!args[0]) {
         message.channel.send(`If you need some help!\nUsage: ${prefix}${module.exports.help.name} ${module.exports.help.usage}`)
     } else {
@@ -21,7 +23,7 @@ module.exports.execute = async (client, message, args) => {
             .setTitle("Help command")
             .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
             .addFields(
-                { name: 'Test', value: 'Test', inline: true},
+                desc.join('\n')
             )
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
