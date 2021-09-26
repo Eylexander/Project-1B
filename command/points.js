@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const db = require("better-sqlite3");
-const sql = new db('./database/scores.sqlite');
-
+const sql = db('./database/scores.sqlite');
+const { updateScores, score } = require('../tools/dbUtils.js');
 
 module.exports.help = {
     name : "points",
@@ -11,18 +11,7 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const {
-    initDatabases,
-    updateScores
-    } = require('./tools/dbUtils.js')
-
-    client.on('ready', () => {
-        initDatabases(sql)
-    })
-
-    client.on('message', () => {
-        updateScores(sql)
-    })
-
-    message.channel.send(`You currently have ${score.points} points and are level ${score.level}!`);
+    const test = updateScores(score, message);
+    const player = message.author.id 
+    message.channel.send('Here you go' + await test.updateScores(player, message))
 };

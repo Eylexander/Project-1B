@@ -14,21 +14,25 @@ const { onMessage } = require('./tools/log_boot.js')
 client.on('message', onMessage.bind(null, client))
 
 // Database Utils
-// const db = require("better-sqlite3");
-// const sql = new db('./database/scores.sqlite');
+const db = require("better-sqlite3");
+const sql = new db('./database/scores.sqlite');
 
-// const {
-//   initDatabases,
-//   updateScores
-// } = require('./tools/dbUtils.js')
+const {
+  initDatabases,
+  updateScores,
+  getScore,
+  setScore
+} = require('./tools/dbUtils.js')
 
-// client.on('ready', () => {
-//   initDatabases(sql)
-// })
+client.on('ready', () => {
+  initDatabases(sql)
+})
 
-// client.on('message', () => {
-//   updateScores(sql)
-// })
+client.on('message', () => {
+  updateScores(sql)
+  getScore(sql)
+  setScore(sql)
+})
 
 // Debug command
 client.on('message', message => {
