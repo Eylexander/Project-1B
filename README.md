@@ -10,5 +10,5 @@ To install the bot, you will have to :
 - Clone the repo
 - Do a little **npm init** and **npm install**
 - Install those libraries from **npm** : 
-    - discord.js (be carefull with the version) ; chalk ; moment ; axios
+    - discord.js@12.5.0 ; chalk ; moment ; axios ; node-gyp better-sqlite3
 - Rename **settings.json.example** to **settings.json**

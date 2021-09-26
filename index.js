@@ -9,9 +9,26 @@ client.commands = new Discord.Collection();
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-//Log system
+// Log system
 const { onMessage } = require('./tools/log_boot.js')
 client.on('message', onMessage.bind(null, client))
+
+// Database Utils
+// const db = require("better-sqlite3");
+// const sql = new db('./database/scores.sqlite');
+
+// const {
+//   initDatabases,
+//   updateScores
+// } = require('./tools/dbUtils.js')
+
+// client.on('ready', () => {
+//   initDatabases(sql)
+// })
+
+// client.on('message', () => {
+//   updateScores(sql)
+// })
 
 // Debug command
 client.on('message', message => {

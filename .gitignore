@@ -2,6 +2,7 @@
 
 settings.json
 logs/
+database/
 
 # All npm packages
 

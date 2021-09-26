@@ -5,6 +5,10 @@ const fs = require('fs');
 const ssize = client.guilds.cache.size;
 const usize = client.users.cache.size;
 
+if (!fs.existsSync('./logs')) {
+    fs.mkdirSync('./logs')
+}
+
 const file = (moment().format('YY-MM-DD HH') + ('h') + moment().format('mm'));
 const folder = './logs/' + (moment().format('YYYY-MM-DD'));
 
