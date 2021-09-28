@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const axios = require('axios');
-const {prefix} = require('../settings.json');
+const {prefix} = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/settings.json');
 
 module.exports.help = {
     name : "price",

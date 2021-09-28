@@ -15,24 +15,9 @@ client.on('message', onMessage.bind(null, client))
 
 // Database Utils
 const db = require("better-sqlite3");
-const sql = new db('./database/scores.sqlite');
-
-const {
-  initDatabases,
-  updateScores,
-  getScore,
-  setScore
-} = require('./tools/dbUtils.js')
-
-client.on('ready', () => {
-  initDatabases(sql)
-})
-
-client.on('message', () => {
-  updateScores(sql)
-  getScore(sql)
-  setScore(sql)
-})
+const sql = new db('./database/money.sqlite');
+const { initDatabases } = require('./tools/dbUtils.js')
+client.on('ready', () => { initDatabases(sql) })
 
 // Debug command
 client.on('message', message => {
@@ -40,8 +25,8 @@ client.on('message', message => {
   if (message.content.toLowerCase() === 'hey') {
     message.reply("I do work for now!");
   };
-  
-  if(message.content.slice().trim().split(/ +/)[0] === message.mentions.has(client.user)) {
+
+  if (message.content.slice().trim().split(/ +/)[0] == message.mentions.has(client.user.id)) {
     message.channel.send(`My prefix is \`\`${prefix}\`\``)
   };
 
@@ -58,40 +43,16 @@ fs.readdir("./events/", (err, files) => {
   });
 });
 
-// Reading all Command Files
-fs.readdir('./command/', (err, file) => {
-  if (err) return log(err);
-  if (file.length <= 0) {return log(chalk.bgRed('There is no files in ./command/'))};
-  log(`Loading a total of ${file.length} commands.`);
-  file.forEach((file) => {
-    if (!file.endsWith('.js')) return;
-    let props = require(`./command/${file}`);
-    let commandName = props.help.name;
-    log(`Loading Command: ${commandName}`);
-    client.commands.set(commandName, props);
-  });
-});
+// Reading all Command Folders
+const commandFolders = fs.readdirSync('./commands');
 
-// Bad word reading system
-client.on('message', message => {
-  // const regex = new RegExp(`(\\b|\\d)(${badwords.join('|')})(\\b\\d)`, 'i');
-  // if (regex.test(message.content)) {
-  //   message.reply('Please do not say bad words.').then(message => {setTimeout(() => {message.delete()}, 2500)});
-  //   message.delete();
-  // }
-  // if (message.content.toLowerCase().includes(badwords[i].toLowerCase())) foundInText = true;
-  // if (foundInText) {
-  //   try {
-  //     message.delete();
-  //     message.reply("cé pa bi1 les insultes").then(message => {setTimeout(() => {message.delete()}, 2500)});
-  //   } catch (error) {
-  //     console.log(error)
-  //   } 
-  // }
-  // if (badwords.some(word => message.toString().toLowerCase().includes(word))) {
-  //   message.delete().catch(e => console.error("Couldn't delete message.")); 
-  //   message.reply(`Please do not swear.`);
-  // };
-});
+for (const folder of commandFolders) {
+    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
+    log(`Loading Commands from Folder: ${folder}`)
+    for (const file of commandFiles) {
+        const command = require(`./commands/${folder}/${file}`);
+        client.commands.set(command.help.name, command);
+    }
+}
 
 client.login(token);

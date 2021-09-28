@@ -1,4 +1,4 @@
-const { admin, token } = require('../settings.json')
+const { admin, token } = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/settings.json')
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 

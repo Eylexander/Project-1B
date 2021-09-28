@@ -1,5 +1,4 @@
-const Discord = require('discord.js');
-const settings = require('../settings.json');
+const settings = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/settings.json');
 const chalk = require('chalk');
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
