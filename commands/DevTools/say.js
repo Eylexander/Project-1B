@@ -1,4 +1,4 @@
-const { admin } = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/settings.json')
+const { admin } = require('../../settings.json')
 
 module.exports.help = {
     name : "say",

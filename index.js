@@ -9,10 +9,6 @@ client.commands = new Discord.Collection();
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-// Log system
-// const { onMessage } = require('./tools/log_boot.js')
-// client.on('message', onMessage.bind(null, client))
-
 // WordReading System
 const { onMessage } = require('./tools/message_listener.js')
 client.on('message', onMessage.bind(null, client))
@@ -22,20 +18,6 @@ const db = require("better-sqlite3");
 const sql = new db('./database/money.sqlite');
 const { initDatabases } = require('./tools/dbUtils.js')
 client.on('ready', () => { initDatabases(sql) })
-
-// Debug command
-client.on('message', message => {
-  if (message.author.bot) return;
-  if (message.content.toLowerCase() === 'hey') {
-    message.reply("I do work for now!");
-  };
-
-  if (message.content === `<@!${client.user.id}>`) {
-    message.channel.send(`My prefix is \`\`${prefix}\`\``)
-  };
-
-  log(`${message.author.tag} : "${message.content}" on [${message.channel.name} : ${message.guild.name}]`);
-});
 
 // Reading all Event Files
 fs.readdir("./events/", (err, files) => {

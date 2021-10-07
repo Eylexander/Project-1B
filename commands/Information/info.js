@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 var os = require('os');
-const {version} = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/package.json');
+const {version} = require('../../package.json');
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 

@@ -4,6 +4,8 @@ const moment = require('moment');
 const fs = require('fs');
 const { usize, ssize } = require('../events/ready.js')
 
+const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+
 // Defining Files
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
 const file = (moment().format('YY-MM-DD HH') + ('h') + moment().format('mm'));
@@ -25,10 +27,21 @@ stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Client is ON | ${s
 exports.onMessage = function (client, message) {
     if (message.author.bot) return;
     stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name} (${message.channel.id}) : ${message.guild.name} (${message.guild.id})] \r\n`);
+    
     for (const trigger of badwords) {
         if (message.content.includes(trigger)) {
             message.reply("Oui")
             break
         }
     }
+
+    if (message.content.toLowerCase() === 'hey') {
+        message.reply("I do work for now!");
+    };
+
+    if (message.content === `<@!${client.user.id}>`) {
+        message.channel.send(`My prefix is \`\`${prefix}\`\``)
+    };
+
+    log(`${message.author.tag} : "${message.content}" on [${message.channel.name} : ${message.guild.name}]`);
 };

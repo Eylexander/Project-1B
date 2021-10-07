@@ -1,4 +1,4 @@
-const {newsapi} = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/settings.json');
+const {newsapi} = require('../../settings.json');
 const Discord = require('discord.js');
 const axios = require('axios');
 
