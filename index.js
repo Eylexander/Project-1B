@@ -10,7 +10,11 @@ console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 // Log system
-const { onMessage } = require('./tools/log_boot.js')
+// const { onMessage } = require('./tools/log_boot.js')
+// client.on('message', onMessage.bind(null, client))
+
+// WordReading System
+const { onMessage } = require('./tools/message_listener.js')
 client.on('message', onMessage.bind(null, client))
 
 // Database Utils
@@ -26,7 +30,7 @@ client.on('message', message => {
     message.reply("I do work for now!");
   };
 
-  if (message.content.slice().trim().split(/ +/)[0] == message.mentions.has(client.user.id)) {
+  if (message.content === `<@!${client.user.id}>`) {
     message.channel.send(`My prefix is \`\`${prefix}\`\``)
   };
 

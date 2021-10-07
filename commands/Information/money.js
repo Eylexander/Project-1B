@@ -18,5 +18,5 @@ module.exports.execute = async (client, message, args) => {
     }
     message.channel.send(`You actually have ${money} money !`)
     money++;
-    // setmoney.run(money)
+    setmoney.run(money++)
 };
