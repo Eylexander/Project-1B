@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { prefix } = require('C:/Users/Eylexander/Desktop/Projets/Project-1B/settings.json');
+const { prefix } = require('../../package.json');
 
 module.exports.help = {
     name : "help",

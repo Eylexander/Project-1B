@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const db = require("better-sqlite3");
-const sql = db('../../database/money.sqlite');
-const { getmoney, setmoney } = require('../../tools/dbUtils.js');
+// const sql = db('../../database/money.sqlite');
+// const { getmoney, setmoney } = require('../../tools/dbUtils.js');
 
 module.exports.help = {
     name : "money",

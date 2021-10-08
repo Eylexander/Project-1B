@@ -14,10 +14,10 @@ const { onMessage } = require('./tools/message_listener.js')
 client.on('message', onMessage.bind(null, client))
 
 // Database Utils
+const dbUtils = require('./tools/dbUtils.js')
 const db = require("better-sqlite3");
 const sql = new db('./database/money.sqlite');
-const { initDatabases } = require('./tools/dbUtils.js')
-client.on('ready', () => { initDatabases(sql) })
+client.on('ready', () => { dbUtils.initDatabases(sql) })
 
 // Reading all Event Files
 fs.readdir("./events/", (err, files) => {
