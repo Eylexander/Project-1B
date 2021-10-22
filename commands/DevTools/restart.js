@@ -14,8 +14,7 @@ module.exports.execute = async (client, message, args) => {
         if(message.author.id === admin) {
             log('Restarting ...')
             setTimeout(() => {message.delete()}, 1000)
-            message.channel.send('Restarting...')
-            // .then(message => {setTimeout(() => {message.delete()}, 2500)})        
+            message.channel.send('Restarting...')    
                 .then(async message => {
                     await client.destroy()
                     client.login(token)

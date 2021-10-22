@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const db = require("better-sqlite3");
-// const sql = db('../../database/money.sqlite');
-// const { getmoney, setmoney } = require('../../tools/dbUtils.js');
+const sql = new db('./database/stats.sqlite');
+const { getmoney, setmoney } = require('../../tools/dbUtils.js');
 
 module.exports.help = {
     name : "money",
@@ -11,12 +11,21 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    let money; 
-    money = getmoney.get(message.author.id, message.author.tag)
-    if (!money) {
-        money = { id: `${message.author.id}-${message.author.tag}`, user: message.author.id, money: 0 }
+    const getmoney = sql.prepare("SELECT * FROM stats WHERE user = ? AND tag = ?");
+    const setmoney = sql.prepare("INSERT OR REPLACE INTO stats (id, user, money) VALUES (@id, @user, @money);");
+
+    let stats; 
+    stats = getmoney.get(message.author.id, message.author.tag)
+    if (!stats) {
+        stats = {
+            id: message.author.id,
+            user: message.author.tag,
+            money: 0 }
     }
-    message.channel.send(`You actually have ${money} money !`)
-    money++;
-    setmoney.run(money++)
+    message.channel.send(`You actually have ${stats.money} money !`)
+    setmoney.run({
+        id: message.author.id,
+        user: message.author.tag,
+        money : stats++
+    })
 };

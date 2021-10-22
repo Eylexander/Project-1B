@@ -30,7 +30,7 @@ exports.onMessage = function (client, message) {
     
     for (const trigger of badwords) {
         if (message.content.includes(trigger)) {
-            message.reply("Oui")
+            message.reply("Saucisse")
             break
         }
     }
