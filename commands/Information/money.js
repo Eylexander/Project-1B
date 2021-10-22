@@ -11,7 +11,7 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const getmoney = sql.prepare("SELECT * FROM stats WHERE user = ? AND tag = ?");
+    const getmoney = sql.prepare("SELECT * FROM stats WHERE id = ? AND user = ?");
     const setmoney = sql.prepare("INSERT OR REPLACE INTO stats (id, user, money) VALUES (@id, @user, @money);");
 
     let stats; 
