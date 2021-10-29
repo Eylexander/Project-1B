@@ -18,14 +18,9 @@ module.exports.execute = async (client, message, args) => {
     stats = getmoney.get(message.author.id, message.author.tag)
     if (!stats) {
         stats = {
-            id: message.author.id,
-            user: message.author.tag,
-            money: 0 }
+            id : message.author.id,
+            user : message.author.tag,
+            money : 0 }
     }
     message.channel.send(`You actually have ${stats.money} money !`)
-    setmoney.run({
-        id: message.author.id,
-        user: message.author.tag,
-        money : stats++
-    })
 };

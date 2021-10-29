@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const {token, prefix} = require('./settings.json');
+const { token } = require('./settings.json');
 const chalk = require('chalk');
 const moment = require('moment');
 const fs = require('fs');
@@ -31,7 +31,6 @@ fs.readdir("./events/", (err, files) => {
 
 // Reading all Command Folders
 const commandFolders = fs.readdirSync('./commands');
-
 for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
     log(`Loading Commands from Folder: ${folder}`)

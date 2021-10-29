@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { ricks } = require('../../tools/word_libraries.json')
 
 module.exports.help = {
   name : "rickroll",
@@ -16,7 +17,7 @@ module.exports.execute = async (client, message, args) => {
   const embed = new Discord.MessageEmbed()
       .setColor('RANDOM')
       .setTitle(`${message.author.username} rickrolled ${targetMember.username}!`)
-      .setImage('https://media.tenor.com/images/a1505c6e6d37aa2b7c5953741c0177dc/tenor.gif')
+      .setImage(ricks[Math.floor(Math.random()*ricks.length)])
       .setTimestamp()
       .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
   
