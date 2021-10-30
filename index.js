@@ -16,17 +16,18 @@ client.on('message', onMessage.bind(null, client))
 // Database Utils
 const dbUtils = require('./tools/dbUtils.js')
 const db = require("better-sqlite3");
-const sql = new db('./database/stats.sqlite');
-client.on('ready', () => { dbUtils.initDatabases(sql) })
+const inv = new db('./database/stats.sqlite');
+const sent = new db('./database/infos.sqlite')
+client.on('ready', () => { dbUtils.initDatabases(inv, sent) })
 
 // Reading all Event Files
 fs.readdir("./events/", (err, files) => {
-  if (err) return console.error(err);
-  files.forEach((file) => {
-    const event = require(`./events/${file}`);
-    let eventName = file.split(".")[0];
-    client.on(eventName, event.bind(null, client));
-  });
+    if (err) return console.error(err);
+    files.forEach((file) => {
+        const event = require(`./events/${file}`);
+        let eventName = file.split(".")[0];
+        client.on(eventName, event.bind(null, client));
+    });
 });
 
 // Reading all Command Folders

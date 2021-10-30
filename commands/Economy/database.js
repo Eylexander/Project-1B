@@ -1,4 +1,5 @@
 const fs = require("fs")
+const { admin } = require('../../settings.json')
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
@@ -10,6 +11,7 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
+    if (!message.author.id === admin) return
     if (['add', 'plus'].includes(args[0])) {
         message.channel.send("U serious ?")
     } else if (['remove', 'del', 'rem'].includes(args[0])) {

@@ -4,15 +4,27 @@ if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
 
 // Define the database
 const db = require("better-sqlite3");
-const sql = new db('./database/stats.sqlite');
+const inv = new db('./database/stats.sqlite');
+const sent = new db('./database/infos.sqlite')
 
 exports.initDatabases = function () {
-    const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'stats';").get();
-    if (!table['count(*)']) {
-        sql.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER);").run();
+    // Define the stats.sqlite database
+    const stats = inv.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'stats';").get();
+    if (!stats['count(*)']) {
+        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER);").run();
         // Ensure that the "id" row is always unique and indexed.
-        sql.prepare("CREATE UNIQUE INDEX idx_stats_id ON stats (id);").run();
-        sql.pragma("asynchronous = 1");
-        sql.pragma("journal_mode = wal");
+        inv.prepare("CREATE UNIQUE INDEX idx_stats_id ON stats (id);").run();
+        inv.pragma("asynchronous = 1");
+        inv.pragma("journal_mode = wal");
+    }
+
+    // Define the infos.sqlite database
+    const suggestion = sent.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'infos';").get();
+    if (!suggestion['count(*)']) {
+        sent.prepare("CREATE TABLE infos (id TEXT PRIMARY KEY, user TEXT, name INTEGER, suggestions INTEGER);").run();
+        // Ensure that the "id" row is always unique and indexed.
+        sent.prepare("CREATE UNIQUE INDEX idx_infos_id ON infos (id);").run();
+        sent.pragma("asynchronous = 1");
+        sent.pragma("journal_mode = wal");
     }
 };

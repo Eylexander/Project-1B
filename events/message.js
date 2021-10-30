@@ -2,7 +2,6 @@ const Discord = require('discord.js');
 const {prefix} = require('../settings.json');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
-const { score, getScore, setScore, initDatabases } = require('../tools/dbUtils.js');
 
 module.exports = (client, message) => {
     if(message.author.bot) return;

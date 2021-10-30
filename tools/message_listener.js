@@ -29,7 +29,7 @@ exports.onMessage = function (client, message) {
     
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
-        if (message.content.includes(trigger.toLowerCase())) {
+        if (!message.content.startswith === "+" && message.content.toLowerCase().includes(trigger)) {
             message.reply(response[Math.floor(Math.random()*response.length)])
             break
         }
