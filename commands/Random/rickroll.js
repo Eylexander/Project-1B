@@ -10,10 +10,10 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     if (!args[0]) {
-      return message.channel.send('You have to tag someone !');
+        return message.channel.send('You have to tag someone !');
     };
 
-    let targetMember = message.mentions.users.first();
+    const targetMember = message.mentions.users.first();
     const embed = new Discord.MessageEmbed()
         .setColor('RANDOM')
         .setTitle(`${message.author.username} rickrolled ${targetMember.username}!`)
@@ -24,6 +24,7 @@ module.exports.execute = async (client, message, args) => {
     if (args[0] === targetMember) {
         return message.channel.send(embed);
     } else {
-        return message.channel.send("You failed your command somewhere.")
+        message.channel.send("You failed your command somewhere.")
+        message.channel.send(args[0])
     }
 };

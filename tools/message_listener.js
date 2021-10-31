@@ -1,10 +1,11 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const moment = require('moment');
+const { prefix } = require('../settings.json')
 const fs = require('fs');
 const { usize, ssize } = require('../events/ready.js')
 const { badwords, response } = require('./word_libraries.json')
 
+const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 // Defining Files
@@ -29,7 +30,7 @@ exports.onMessage = function (client, message) {
     
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
-        if (!message.content.startswith === "+" && message.content.toLowerCase().includes(trigger)) {
+        if (!client.commands.stored && message.content.toLowerCase().includes(trigger)) {
             message.reply(response[Math.floor(Math.random()*response.length)])
             break
         }

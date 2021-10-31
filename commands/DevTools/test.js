@@ -5,7 +5,7 @@ module.exports.help = {
     name : "test",
     description: 'Pong command',
     aliases : ['tst','try'],
-    usage : ''
+    usage : 'none'
 };
 
 module.exports.execute = async (client, message, args) => {

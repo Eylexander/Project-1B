@@ -17,7 +17,7 @@ module.exports.execute = async (client, message, args) => {
     } else if (['remove', 'del', 'rem'].includes(args[0])) {
         fs.stat(`./database/${args[1]}.sqlite`, function(err, stat) {
             if(err == null) {
-                message.channel.send('Database existing!')
+                message.channel.send(`Database named ${args[1]}.sqlite existing!`)
                 try {
                     fs.unlinkSync(`./database/${args[1]}.sqlite`)
                 } catch (err) {

@@ -24,17 +24,23 @@ module.exports.execute = async (client, message, args) => {
         if (args[1] === targetMember) {
             message.channel.send(`${targetMember.tag} sent 1 suggestion.\n${infos.name} : ${infos.suggestions}`)
         }
-    }
+    };
 
     if (args < 1) {
         message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
     } else {
-        addsuggestion.run({
-            id : message.author.id,
-            user : message.author.tag,
-            name : String(args[0]),
-            suggestions : String(args.join(' '))
-        })
-        message.channel.send('Your suggestion was added!')
-    }
+        try {
+            sugg = args.shift()
+            addsuggestion.run({
+                id : message.author.id,
+                user : message.author.tag,
+                name : String(args[0]),
+                suggestions : String(sugg.join(' '))
+            })
+            message.channel.send('Your suggestion was added!')
+        } catch (err) {
+            log(err)
+            message.channel.send('You can\'t do that')
+        }
+    };
 };

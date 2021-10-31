@@ -70,26 +70,26 @@ module.exports.execute = async (client, message, args) => {
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-    if (['dev', 'specs'].includes(args[1])){
-        const botspecs = new Discord.MessageEmbed()
-            .setColor('RANDOM')
-            .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
-            .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
-            .addFields(
-                { name: 'Version', value: version, inline: true},
-                { name: 'Librairie', value: `Discord.js 12.5.0`, inline: true},
-                { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + '))}`, inline: true},
-                { name: 'Servers', value: client.guilds.cache.size, inline: true},
-                { name: 'Channels', value: client.channels.cache.size, inline: true},
-                { name: 'Uptime (s)', value: `${days}d${hours}h${minutes}m${seconds}s`, inline: true},
-            )
-            .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+        if (['dev', 'specs'].includes(args[1])){
+            const botspecs = new Discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
+                .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: 'Version', value: version, inline: true},
+                    { name: 'Librairie', value: `Discord.js 12.5.0`, inline: true},
+                    { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + '))}`, inline: true},
+                    { name: 'Servers', value: client.guilds.cache.size, inline: true},
+                    { name: 'Channels', value: client.channels.cache.size, inline: true},
+                    { name: 'Uptime (s)', value: `${days}d${hours}h${minutes}m${seconds}s`, inline: true},
+                )
+                .setTimestamp()
+                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
   
-        message.channel.send(botspecs);
-    } else {
-        message.channel.send(bot);
-    }
+            message.channel.send(botspecs);
+        } else {
+            message.channel.send(bot);
+        }
     } 
     else if (['host', 'hs', 'heberg'].includes(args[0])){
         const host = new Discord.MessageEmbed()

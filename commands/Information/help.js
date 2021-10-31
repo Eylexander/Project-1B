@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
-const { prefix } = require('../../package.json');
+const fs = require('fs')
+const { prefix } = require('../../settings.json');
 
 module.exports.help = {
     name : "help",
@@ -9,30 +10,59 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    let cmd = args[0];
-
-    const command = client.commands.get(cmd)
-    const commandalias = client.commands.find(cmdObj => cmdObj.help.aliases && cmdObj.help.aliases.includes(cmd));
-
-    var desc  = command.map(cmd => `**${cmd.name}**: ${cmd.description || 'No description available.'}`)
-
     if (!args[0]) {
-        message.channel.send(`If you need some help!\nUsage: ${prefix}${module.exports.help.name} ${module.exports.help.usage}`)
-    } else {
-        // message.channel.send(`Description: ${command.description}\nUsage: ${prefix}${command.name} ${command.usage}`)
-        message.channel.send(`Description : ${command.help.description}`);
-
-        const help = new Discord.MessageEmbed()
+        const global = new Discord.MessageEmbed()
             .setColor('RANDOM')
-            .setTitle("Help command")
+            .setTitle(client.user.username + " commands")
             .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
             .addFields(
-                { name: 'Commandes', value: desc.join('\n'), inline: true },
-                { name: 'Aliases', value, commandalias, inline: true}
+                { name: "Categories", value: "oui", inline: true }
+            )
+            .setTimestamp()
+            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+        
+        message.channel.send(global)
+    } else {
+        let cmd = args[0].toLowerCase();
+        const cmdname = cmd.charAt(0).toUpperCase() + cmd.slice(1)
+
+        const command = client.commands.get(cmd)
+        const commandalias = client.commands.find(cmdObj => cmdObj.help.aliases && cmdObj.help.aliases.includes(cmd));
+
+        // var desc  = command.map(cmd => `**${cmd.name}**: ${cmd.description || 'No description available.'}`)
+
+        const categories = new Discord.MessageEmbed()
+            .setColor('RANDOM')
+            .setTitle(" Help")
+            .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+            .addFields(
+                { name: 'Commandes', value: command, inline: true },
+                { name: 'Aliases', value: commandalias, inline: true}
             )
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-        return message.channel.send(help);
+        message.channel.send(categories);
+
+
+        try {
+            const info = new Discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setTitle(cmdname + " Help")
+                .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: 'Name', value: command.help.name, inline: true },
+                    { name: 'Aliases', value: command.help.aliases, inline: true },
+                    { name: 'Description', value: command.help.description, inline: false},
+                    { name: 'Usage', value: command.help.usage, inline: true}
+                )
+                .setTimestamp()
+                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+                
+            message.channel.send(info)
+        } catch (err) {
+            console.log(err)
+            message.channel.send("It's seems like the command do not exist.")
+        }
     }
 };

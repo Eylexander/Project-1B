@@ -7,7 +7,7 @@ module.exports.help = {
     name : "money",
     description: 'See your amount of Money!',
     aliases : ['bal','balance'],
-    usage : ''
+    usage : 'none'
 };
 
 module.exports.execute = async (client, message, args) => {
