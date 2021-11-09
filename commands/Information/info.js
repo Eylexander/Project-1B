@@ -53,8 +53,7 @@ module.exports.execute = async (client, message, args) => {
         .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
         
         message.channel.send(server);
-    }
-    else if (['bot', 'client', 'discordbot'].includes(args[0])) {
+    } else if (['bot', 'client', 'discordbot'].includes(args[0])) {
         const bot = new Discord.MessageEmbed()
             .setColor('RANDOM')
             .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
@@ -70,7 +69,7 @@ module.exports.execute = async (client, message, args) => {
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-        if (['dev', 'specs'].includes(args[1])){
+        if (['dev', 'specs'].includes(args[1])) {
             const botspecs = new Discord.MessageEmbed()
                 .setColor('RANDOM')
                 .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
@@ -90,8 +89,7 @@ module.exports.execute = async (client, message, args) => {
         } else {
             message.channel.send(bot);
         }
-    } 
-    else if (['host', 'hs', 'heberg'].includes(args[0])){
+    } else if (['host', 'hs', 'heberg'].includes(args[0])) {
         const host = new Discord.MessageEmbed()
             .setColor('RANDOM')
             .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
@@ -106,8 +104,7 @@ module.exports.execute = async (client, message, args) => {
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
       message.channel.send(host);
-    }
-    else {
+    } else {
         const global = new Discord.MessageEmbed()
             .setColor('RANDOM')
             .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))

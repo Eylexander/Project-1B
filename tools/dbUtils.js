@@ -11,7 +11,7 @@ exports.initDatabases = function () {
     // Define the stats.sqlite database
     const stats = inv.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'stats';").get();
     if (!stats['count(*)']) {
-        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER);").run();
+        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER, mana INTEGER);").run();
         // Ensure that the "id" row is always unique and indexed.
         inv.prepare("CREATE UNIQUE INDEX idx_stats_id ON stats (id);").run();
         inv.pragma("asynchronous = 1");

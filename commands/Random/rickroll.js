@@ -9,11 +9,13 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    if (!args[0]) {
+    const userMention = args[0].match(/<@!?([0-9]*)>/)
+    if (!args[0] || userMention == null) {
         return message.channel.send('You have to tag someone !');
-    };
-
-    const targetMember = message.mentions.users.first();
+    } else {
+        const user = client.users.get(userMention[1])
+    }
+    
     const embed = new Discord.MessageEmbed()
         .setColor('RANDOM')
         .setTitle(`${message.author.username} rickrolled ${targetMember.username}!`)
@@ -21,7 +23,7 @@ module.exports.execute = async (client, message, args) => {
         .setTimestamp()
         .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-    if (args[0] === targetMember) {
+    if (args[0] === user.tag) {
         return message.channel.send(embed);
     } else {
         message.channel.send("You failed your command somewhere.")

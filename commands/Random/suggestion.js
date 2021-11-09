@@ -16,17 +16,26 @@ module.exports.execute = async (client, message, args) => {
     const getsuggestion = sent.prepare("SELECT * FROM infos WHERE id = ? AND user = ?");
     const addsuggestion = sent.prepare("INSERT INTO infos (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);");
 
-    if (['get', 'see'].includes(args[0])) {
-        let targetMember = message.mentions.users.first();
+    const infos = getsuggestion.get(message.author.id, message.author.tag)
 
-        if (!message.author === admin) return
-        if (!args[1]) return message.channel.send('Please, specify someone!')
-        if (args[1] === targetMember) {
-            message.channel.send(`${targetMember.tag} sent 1 suggestion.\n${infos.name} : ${infos.suggestions}`)
+    // const userMention = args[1].match(/<@!?([0-9]*)>/)
+    // if (userMention == null) {
+    //     return message.channel.send('You have to tag someone !');
+    // } else {
+    //     const user = client.users.get(userMention[1])
+    // }
+
+    if (['get', 'see'].includes(args[0])) {
+        if (!(message.author === admin)) return
+        if (args < 1) {
+            message.channel.send(`You sent ${infos.name} : ${infos.suggestions}`)
         }
+        // if (args[1] === user) {
+        //     message.channel.send(`${user.tag} sent 1 suggestion.\n${infos.name} : ${infos.suggestions}`)
+        // }
     };
 
-    if (args < 1) {
+    if (args < 1 && !(['get', 'see'].includes(args[0]))) {
         message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
     } else {
         try {
