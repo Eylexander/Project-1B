@@ -13,7 +13,7 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
     if (!message.author.id === admin) return
     if (['add', 'plus'].includes(args[0])) {
-        message.channel.send("U serious ?")
+        message.channel.send("U serious bro ?")
     } else if (['remove', 'del', 'rem'].includes(args[0])) {
         fs.stat(`./database/${args[1]}.sqlite`, function(err, stat) {
             if(err == null) {

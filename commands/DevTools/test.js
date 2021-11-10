@@ -9,18 +9,25 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-  const userMention = args[0].match(/<@!?([0-9]*)>/)
-  if (userMention == null) {
-  
-    return message.channel.send("Il faut mentionner quelqu'un.")
-  
-  } else {
-  
-    const user = client.users.get(userMention[1])
-  
-    return message.channel.send('Bonsoir ' + user.username)
-  }
+    for (var i = 0 ; i < 5; i++) {
+        message.channel.send(Math.ceil(Math.random() * 50 * Number(args[0]) + Number(args[0]) * (Math.random() * 20)));
+        // more statements
+    }
 }
+
+// module.exports.execute = async (client, message, args) => {
+//   const userMention = args[0].match(/<@!?([0-9]*)>/)
+//   if (userMention == null) {
+  
+//     return message.channel.send("Il faut mentionner quelqu'un.")
+  
+//   } else {
+  
+//     const user = client.users.get(userMention[1])
+  
+//     return message.channel.send('Bonsoir ' + user.username)
+//   }
+// }
 
 // module.exports.execute = async (client, message, args) => {
 //     const notSupported = "The operating system used to host this bot is not supported for this command."

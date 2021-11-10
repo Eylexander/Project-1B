@@ -16,7 +16,7 @@ module.exports.execute = async (client, message, args) => {
             setTimeout(() => {message.delete()}, 500)
             message.channel.send('Logging out...')
                 .then(message => {
-                    setTimeout(() => {message.delete()}, 2000)})
+                    setTimeout(() => {message.delete()}, 1500)})
                     setTimeout(() => { process.exit(1) }, 3000);
         } else {
             return;
