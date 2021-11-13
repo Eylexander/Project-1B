@@ -26,24 +26,39 @@ module.exports.execute = async (client, message, args) => {
         message.channel.send('You just created your own profile!')
     }
 
-    if (!args[0]) {
-        const inventory = new Discord.MessageEmbed()
-        .setColor('RANDOM')
-        .setTitle(message.author.username + '\'s Inventory')
-        .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
-        .addFields(
-            { name: "Money", value: `${stats.money} $`, inline: true },
-            { name: 'Energy', value: `${stats.mana} mana / 150`, inline: true}
-        )
-        .setTimestamp()
-        .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+    const inventory = new Discord.MessageEmbed()
+            .setColor('RANDOM')
+            .setTitle(message.author.username + '\'s Inventory')
+            .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
+            .addFields(
+                { name: "Money", value: `${stats.money} $`, inline: true },
+                { name: 'Energy', value: `${stats.mana} mana / 150`, inline: true}
+            )
+            .setTimestamp()
+            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-    message.channel.send(inventory)
-    } else if (['see', 'get'].includes(args[0])) {
-        return
-    } else if (['money'].includes(args[0])) {
-        if (['add', 'plus'].includes(args[1])) {
-            return
+    if (!args[0]) {
+        return message.channel.send(inventory)
+    } else {
+        const userMention = args[0].match(/<@!?([0-9]*)>/)
+        if (userMention == null) {
+            return message.channel.send(inventory)
+        } else {
+            const user = client.users.cache.get(userMention[1])
+            const victim = getstats.get(user.id, user.tag)
+
+            const spying = new Discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setTitle(user.username + '\'s Inventory')
+                .setThumbnail(user.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: "Money", value: `${victim.money} $`, inline: true },
+                    { name: 'Energy', value: `${victim.mana} mana / 150`, inline: true}
+                )
+                .setTimestamp()
+                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+
+            message.channel.send(spying)
         }
     }
 };

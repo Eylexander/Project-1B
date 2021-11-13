@@ -40,7 +40,7 @@ module.exports.execute = async (client, message, args) => {
         .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
         .addFields(
-            { name: 'Owner', value: `${message.guild.owner === null ? 'No Owner Located' : message.guild.owner.user.tag + '(message.guild.owner.id)'}`, inline: false},
+            { name: 'Owner', value: `${message.guild.owner === null ? 'No Owner Located' : message.guild.owner.user.tag + ' (' + message.guild.owner.id + ')'}`, inline: false},
             { name: 'Created at', value: message.guild.createdAt.toLocaleString(), inline: true},
             { name: 'Location', value: `${location.charAt(0).toUpperCase() + location.slice(1)}`, inline: true},
             { name: 'Member Count', value: `${message.guild.memberCount}`, inline: true},

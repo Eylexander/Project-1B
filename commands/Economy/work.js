@@ -22,7 +22,6 @@ module.exports.execute = async (client, message, args) => {
             money : 0,
             mana : 0 
         }
-        message.channel.send('You just created your own profile!')
     }
 
     if (args[0] === 'mana') {
@@ -30,9 +29,9 @@ module.exports.execute = async (client, message, args) => {
             id : message.author.id,
             user : message.author.tag,
             money : stats.money,
-            mana : stats.mana + Number(args[1])
+            mana : (Number(args[1]) === null || Number(args[1]) === NaN) ? (stats.mana + 10) : (stats.mana + Number(args[1]))
         })
-        message.channel.send(`You cheated and added yourself ${Number(args[1])} mana!`)
+        message.channel.send(`You cheated and added yourself ${Number(args[1]) === null ? '10' : Number(args[1])} mana!`)
     } else if (!args[0]) {
         return message.channel.send('You can\'t work with letters')
     } else {
