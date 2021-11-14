@@ -23,19 +23,20 @@ module.exports.execute = async (client, message, args) => {
             money : 0,
             mana : 0
         }
+        setstats.run(stats)
         message.channel.send('You just created your own profile!')
     }
 
     const inventory = new Discord.MessageEmbed()
-            .setColor('RANDOM')
-            .setTitle(message.author.username + '\'s Inventory')
-            .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
-            .addFields(
-                { name: "Money", value: `${stats.money} $`, inline: true },
-                { name: 'Energy', value: `${stats.mana} mana / 150`, inline: true}
-            )
-            .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+        .setColor('RANDOM')
+        .setTitle(message.author.username + '\'s Inventory')
+        .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
+        .addFields(
+            { name: "Money", value: `${stats.money} $`, inline: true },
+            { name: 'Energy', value: `${stats.mana} mana / 150`, inline: true}
+        )
+        .setTimestamp()
+        .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
     if (!args[0]) {
         return message.channel.send(inventory)
