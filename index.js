@@ -17,8 +17,9 @@ client.on('message', onMessage.bind(null, client))
 const dbUtils = require('./tools/dbUtils.js')
 const db = require("better-sqlite3");
 const inv = new db('./database/stats.sqlite');
-const sent = new db('./database/infos.sqlite')
-client.on('ready', () => { dbUtils.initDatabases(inv, sent) })
+const sent = new db('./database/infos.sqlite');
+const dev = new db('./database/devtool.sqlite')
+client.on('ready', () => { dbUtils.initDatabases(inv, sent, dev) })
 
 // Reading all Event Files
 fs.readdir("./events/", (err, files) => {
