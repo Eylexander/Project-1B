@@ -5,7 +5,7 @@
         "non",
         "oui"
     ],
-    "response": [
+    "randomwords": [
         "Patate",
         "Oui",
         "Bien et toi ?",
@@ -15,6 +15,9 @@
         "Finalement non.",
         "Banques Suisses",
         "Les Carpates"
+    ],
+    "suicide": [
+        "suicide"
     ],
     "ricks": [
         "https://media.tenor.com/images/a1505c6e6d37aa2b7c5953741c0177dc/tenor.gif",

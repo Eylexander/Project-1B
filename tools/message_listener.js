@@ -1,9 +1,9 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { prefix } = require('../settings.json')
+const { prefix, admin } = require('../settings.json')
 const fs = require('fs');
 const { usize, ssize } = require('../events/ready.js')
-const { badwords, response } = require('./word_libraries.json')
+const { badwords, randomwords, suicide } = require('./word_libraries.json')
 
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
@@ -30,14 +30,20 @@ exports.onMessage = function (client, message) {
     
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
-        if (!message.content.startsWith === "+" && message.content.toLowerCase().includes(trigger)) {
-            message.reply(response[Math.floor(Math.random()*response.length)])
+        if (message.content.toLowerCase().includes(trigger)) {
+            message.reply(randomwords[Math.floor(Math.random()*randomwords.length)])
             break
         }
     };
+    for (const selfkill of suicide) {
+        if (message.content.toLowerCase().includes(selfkill)) {
+            message.channel.send('If anyone is contemplating suicide, please do not do it. It is not worth it, call this number instead: 1-800-273-8255. Or if you are not in the USA you can find your local line here: http://www.suicide.org/international-suicide-hotlines.html')
+            break
+        }
+    }
 
     // Basic command line -> Testing if bot can response
-    if (message.content.toLowerCase() === 'hey') {
+    if (message.content.toLowerCase() === 'hey' & message.author == admin) {
         message.reply("I do work for now!");
     };
 
