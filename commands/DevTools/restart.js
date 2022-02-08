@@ -11,19 +11,16 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     try {
-        if(message.author.id === admin) {
-            log('Restarting ...')
-            setTimeout(() => {message.delete()}, 1000)
-            message.channel.send('Restarting...')    
-                .then(async message => {
-                    await client.destroy()
-                    client.login(token)
-                    await message.edit('Restart worked')
-                    setTimeout(() => {message.delete()}, 2000)
-                });
-        } else {
-            return;
-        };
+        if (!message.author.id === admin) return ;
+        log('Restarting ...')
+        setTimeout(() => {message.delete()}, 1000)
+        message.channel.send('Restarting...')    
+            .then(async message => {
+                await client.destroy()
+                client.login(token)
+                await message.edit('Restart worked')
+                setTimeout(() => {message.delete()}, 2000)
+            });
     } catch(error) {
         log(error)
     }

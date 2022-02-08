@@ -11,6 +11,10 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     if (!args[0]) {
+        const categories = fs.readdirSync('../../commands');
+
+        // message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
+
         const global = new Discord.MessageEmbed()
             .setColor('RANDOM')
             .setTitle(client.user.username + " commands")
@@ -24,26 +28,10 @@ module.exports.execute = async (client, message, args) => {
         message.channel.send(global)
     } else {
         let cmd = args[0].toLowerCase();
+        const command = client.commands.get(cmd)
         const cmdname = cmd.charAt(0).toUpperCase() + cmd.slice(1)
 
-        const command = client.commands.get(cmd)
-        const commandalias = client.commands.find(cmdObj => cmdObj.help.aliases && cmdObj.help.aliases.includes(cmd));
-
         // var desc  = command.map(cmd => `**${cmd.name}**: ${cmd.description || 'No description available.'}`)
-
-        const categories = new Discord.MessageEmbed()
-            .setColor('RANDOM')
-            .setTitle(" Help")
-            .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
-            .addFields(
-                { name: 'Commandes', value: command, inline: true },
-                { name: 'Aliases', value: commandalias, inline: true}
-            )
-            .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
-
-        message.channel.send(categories);
-
 
         try {
             const info = new Discord.MessageEmbed()

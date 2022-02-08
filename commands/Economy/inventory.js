@@ -4,9 +4,9 @@ const inv = new db('./database/stats.sqlite');
 
 module.exports.help = {
     name : "inventory",
-    description: 'See your own stuff!',
+    description: 'See your Inventory!',
     aliases : ['me','balance','inv','money'],
-    usage : ''
+    usage : '< none | player >'
 };
 
 module.exports.execute = async (client, message, args) => {
@@ -45,16 +45,18 @@ module.exports.execute = async (client, message, args) => {
         if (userMention == null) {
             return message.channel.send(inventory)
         } else {
-            const user = client.users.cache.get(userMention[1])
-            const victim = getstats.get(user.id, user.tag)
+            const usercalled = client.users.cache.get(userMention[1])
+            const player = getstats.get(usercalled.id, usercalled.tag)
+
+            if (!(getstats.get(usercalled.id, usercalled.tag))) return message.channel.send('This user is not a player!')
 
             const spying = new Discord.MessageEmbed()
                 .setColor('RANDOM')
-                .setTitle(user.username + '\'s Inventory')
-                .setThumbnail(user.displayAvatarURL({ dynamic : true }))
+                .setTitle(usercalled.username + '\'s Inventory')
+                .setThumbnail(usercalled.displayAvatarURL({ dynamic : true }))
                 .addFields(
-                    { name: "Money", value: `${victim.money} $`, inline: true },
-                    { name: 'Energy', value: `${victim.mana} mana / 150`, inline: true}
+                    { name: "Money", value: `${player.money} $`, inline: true },
+                    { name: 'Energy', value: `${player.mana} mana / 150`, inline: true}
                 )
                 .setTimestamp()
                 .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))

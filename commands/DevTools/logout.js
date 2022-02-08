@@ -11,16 +11,13 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     try {
-        if(message.author.id === admin) {
-            log('Disconnecting from console ...')
-            setTimeout(() => {message.delete()}, 500)
-            message.channel.send('Logging out...')
-                .then(message => {
-                    setTimeout(() => {message.delete()}, 1500)})
-                    setTimeout(() => { process.exit(1) }, 3000);
-        } else {
-            return;
-        };
+        if (!message.author.id === admin) return;
+        log('Disconnecting from console ...')
+        setTimeout(() => {message.delete()}, 1000)
+        message.channel.send('Logging out...')
+            .then(message => {
+                setTimeout(() => { message.delete()}, 1500) })
+                setTimeout(() => { process.exit(1) }, 3000);
     } catch(error) {
         log(error)
     }
