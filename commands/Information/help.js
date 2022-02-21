@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
-const fs = require('fs')
-const { prefix } = require('../../settings.json');
+const fs = require('fs');
 
 module.exports.help = {
     name : "help",
@@ -11,16 +10,24 @@ module.exports.help = {
 
 module.exports.execute = async (client, message, args) => {
     if (!args[0]) {
-        const categories = fs.readdirSync('../../commands');
-
-        // message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
+        folderslist = []
+        const categories = fs.readdirSync('./commands').join('\n')
+        // Listing all folders
+        // let folderslist = []
+        // fs.readdir('./commands/', function(folders) {
+        //     folders.forEach(function(folder) {
+        //         folderslist << folder
+        //     })
+        // })
+        // message.channel.send(folderslist)
 
         const global = new Discord.MessageEmbed()
             .setColor('RANDOM')
             .setTitle(client.user.username + " commands")
             .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
             .addFields(
-                { name: "Categories", value: "oui", inline: true }
+                { name: "Categories", value: `${categories}`, inline: true },
+                // {name: `Oui`, value: 'non', inline: true}
             )
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
@@ -30,8 +37,6 @@ module.exports.execute = async (client, message, args) => {
         let cmd = args[0].toLowerCase();
         const command = client.commands.get(cmd)
         const cmdname = cmd.charAt(0).toUpperCase() + cmd.slice(1)
-
-        // var desc  = command.map(cmd => `**${cmd.name}**: ${cmd.description || 'No description available.'}`)
 
         try {
             const info = new Discord.MessageEmbed()

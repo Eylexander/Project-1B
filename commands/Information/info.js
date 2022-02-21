@@ -8,7 +8,7 @@ module.exports.help = {
     name: "info",
     description : "Show bot information",
     aliases : ["stats", "botinfo","infos"],
-    usage : '[Specific search] [Mode]'
+    usage : '<server | bot | host | owner> [Mode]'
 };
 
 module.exports.execute = async (client, message, args) => {
@@ -104,6 +104,8 @@ module.exports.execute = async (client, message, args) => {
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
       message.channel.send(host);
+    } else if (['owner', 'dev', 'eylexander'].includes(args[0])) {
+        
     } else {
         const global = new Discord.MessageEmbed()
             .setColor('RANDOM')

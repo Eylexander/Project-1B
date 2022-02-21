@@ -11,9 +11,10 @@ module.exports.execute = async (client, message, args) => {
     if (message.author.id == admin) {
         setTimeout(() => {message.delete()}, 500)
         const param = args.slice(1)
+        const sleep = ms => new Promise(r => setTimeout(r, ms))
         for (let i = 0; i < args[0]; i++) {
             message.channel.send(param.join(' '))
-            setTimeout(() => {}, 2000) // Pause not working
+            await sleep(500)
         }
     }
 };

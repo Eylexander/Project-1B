@@ -1,23 +1,29 @@
 const Discord = require('discord.js');
+const moment = require('moment');
 
 module.exports.help = {
     name : "userinfo",
     description: 'Get someone\'s informations!',
-    aliases : ['ui'],
+    aliases : ['ui', 'uid'],
     usage : '<none | usertag>'
 };
 
 module.exports.execute = async (client, message, args) => {
+    // Defining all variables
+    
+    
+    
+
     const personal = new Discord.MessageEmbed()
         .setAuthor(message.author.tag, client.user.displayAvatarURL({ dynamic : true }))
-        .setTitle(message.author.name + '\'s Informations')
+        .setTitle(message.author.username + '\'s Informations')
         .setColor('RANDOM')
         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
         .addFields(
             {name: `ID`, value: message.author.id, inline: true},
-            {name: `Nickname`, value: message.author.displayname, inline: true},
-            {name: `Account Creation`, value: message.author.createdAt, inline: true},
-            {name: `Join Date`, value: message.author.joinedAt, inline: true}
+            {name: `Status`, value: message.author.presence.status, inline: true},
+            {name: `Account Creation`, value: moment.utc(message.author.createdAt).format('LLL'), inline: true},
+            {name: `Join Date`, value: moment.utc(message.author.createdAt).format('LLL'), inline: true}
         )
         .setImage(message.author.displayAvatarURL({ dynamic : true }))
         .setTimestamp()
@@ -32,6 +38,8 @@ module.exports.execute = async (client, message, args) => {
         } else {
             const usercalled = client.users.cache.get(userMention[1])
 
+            
+
             const external = new Discord.MessageEmbed()
                 .setAuthor(message.author.tag, client.user.displayAvatarURL({ dynamic : true }))
                 .setTitle(usercalled.name + '\'s Informations')
@@ -39,9 +47,9 @@ module.exports.execute = async (client, message, args) => {
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
                     {name: `ID`, value: usercalled.id, inline: true},
-                    {name: `Nickname`, value: usercalled.displayname, inline: true},
-                    {name: `Account Creation`, value: usercalled.createdAt, inline: true},
-                    {name: `Join Date`, value: usercalled.joinedAt, inline: true}
+                    {name: `Status`, value: usercalled.presence.status, inline: true},
+                    {name: `Account Creation`, value: moment.utc(usercalled.createdAt).format('LLL'), inline: true},
+                    {name: `Join Date`, value: moment.utc(usercalled.joinedAt).format('LLL'), inline: true}
                 )
                 .setImage(usercalled.displayAvatarURL({ dynamic : true }))
                 .setTimestamp()

@@ -6,7 +6,8 @@ if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
 const db = require("better-sqlite3");
 const inv = new db('./database/stats.sqlite');
 const sent = new db('./database/infos.sqlite');
-const tool = new db('./database/devtool.sqlite')
+const tool = new db('./database/devtool.sqlite');
+const ban = new db('./database/blockedusers.sqlite');
 
 exports.initDatabases = function () {
     // Define the stats.sqlite database
@@ -32,9 +33,18 @@ exports.initDatabases = function () {
     // Define the devtool.sqlite database
     const dev = tool.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'tool';").get();
     if (!dev['count(*)']) {
-        tool.prepare("CREATE TABLE tool (id TEXT PRIMARY KEY, user TEXT, todo TEXT, number INTERGER);").run();
+        tool.prepare("CREATE TABLE tool (id TEXT, user TEXT, todo TEXT, number INTERGER);").run();
         // Ensure that the "id" row is always unique and indexed.
-        tool.prepare("CREATE UNIQUE INDEX idx_devtool_id ON tool (user);").run();
+        // tool.prepare("CREATE UNIQUE INDEX idx_devtool_id ON tool (number);").run();
+        tool.pragma("asynchronous = 1");
+        tool.pragma("journal_mode = wal");
+    }
+
+    const blocked = ban.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'ban';").get();
+    if (!dev['count(*)']) {
+        tool.prepare("CREATE TABLE ban (id TEXT PRIMARY KEY, user TEXT);").run();
+        // Ensure that the "id" row is always unique and indexed.
+        tool.prepare("CREATE UNIQUE INDEX idx_devtool_id ON ban (id);").run();
         tool.pragma("asynchronous = 1");
         tool.pragma("journal_mode = wal");
     }
