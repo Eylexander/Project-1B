@@ -105,7 +105,19 @@ module.exports.execute = async (client, message, args) => {
 
       message.channel.send(host);
     } else if (['owner', 'dev', 'eylexander'].includes(args[0])) {
-        
+        const owner = new Discord.MessageEmbed()
+            .setColor('RANDOM')
+            .setAuthor(client.user.username, client.user.displayAvatarURL({ dynamic : true }))
+            .setThumbnail('https://cdn.discordapp.com/avatars/344526513577918477/0ebbf91a6b9d8326fa2f7f4eb6a93e70.webp')
+            .addFields(
+                { name: 'Github', value: 'https://github.com/Eylexander#readme', inline: true},
+                { name: 'Website', value: 'http://eylexanders.ddns.net/', inline: true},
+                { name: 'Contact', value: 'https://discord.com/users/344526513577918477', inline: true},
+            )
+            .setTimestamp()
+            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+
+        message.channel.send(owner);
     } else {
         const global = new Discord.MessageEmbed()
             .setColor('RANDOM')

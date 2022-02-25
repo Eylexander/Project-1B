@@ -11,7 +11,8 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
     // Defining all variables
     
-    
+    // const filteredRoles = message.member.roles.cache.filter(role => role.id != message.guild.id);
+    // const listedRoles = filteredRoles.sort((a, b) => b.position - a.position).map(role => role.toString()); 
     
 
     const personal = new Discord.MessageEmbed()
