@@ -33,19 +33,19 @@ exports.initDatabases = function () {
     // Define the devtool.sqlite database
     const dev = tool.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'tool';").get();
     if (!dev['count(*)']) {
-        tool.prepare("CREATE TABLE tool (id TEXT, user TEXT, todo TEXT, number INTERGER);").run();
+        tool.prepare("CREATE TABLE tool (id TEXT, user TEXT, todo TEXT, number INTERGER AUTO_INCREMENT);").run();
         // Ensure that the "id" row is always unique and indexed.
-        // tool.prepare("CREATE UNIQUE INDEX idx_devtool_id ON tool (number);").run();
+        tool.prepare("CREATE INDEX idx_devtool_id ON tool (number);").run();
         tool.pragma("asynchronous = 1");
         tool.pragma("journal_mode = wal");
     }
 
     const blocked = ban.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'ban';").get();
-    if (!dev['count(*)']) {
-        tool.prepare("CREATE TABLE ban (id TEXT PRIMARY KEY, user TEXT);").run();
+    if (!blocked['count(*)']) {
+        ban.prepare("CREATE TABLE ban (id TEXT PRIMARY KEY, user TEXT);").run();
         // Ensure that the "id" row is always unique and indexed.
-        tool.prepare("CREATE UNIQUE INDEX idx_devtool_id ON ban (id);").run();
-        tool.pragma("asynchronous = 1");
-        tool.pragma("journal_mode = wal");
+        ban.prepare("CREATE UNIQUE INDEX idx_blocked_id ON ban (id);").run();
+        ban.pragma("asynchronous = 1");
+        ban.pragma("journal_mode = wal");
     }
 };
