@@ -18,6 +18,7 @@ module.exports.execute = async (client, message, args) => {
             .then(message => {
                 setTimeout(() => { message.delete()}, 1500) })
                 setTimeout(() => { process.exit(1) }, 3000);
+                setTimeout(() => { client.destroy() }, 3000);
     } catch(error) {
         log(error)
     }
