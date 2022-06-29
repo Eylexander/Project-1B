@@ -111,7 +111,7 @@ module.exports.execute = async (client, message, args) => {
             .setThumbnail('https://cdn.discordapp.com/avatars/344526513577918477/0ebbf91a6b9d8326fa2f7f4eb6a93e70.webp')
             .addFields(
                 { name: 'Github', value: 'https://github.com/Eylexander#readme', inline: true},
-                { name: 'Website', value: 'http://eylexanders.ddns.net/', inline: true},
+                { name: 'Website', value: 'http://eylexander.xyz/', inline: true},
                 { name: 'Contact', value: 'https://discord.com/users/344526513577918477', inline: true},
             )
             .setTimestamp()
