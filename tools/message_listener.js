@@ -26,7 +26,7 @@ stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Client is ON | ${s
 
 exports.onMessage = function (client, message) {
     if (message.author.bot) return;
-    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" on [${message.channel.name === null ? "DM" : message.channel.name} (${message.channel.id === null ? "DM" : "DM"}) : ${message.guild.name === null ? "DM" : message.guild.name} (${message.guild.id === null ? "DM" : "DM"})] \r\n`);
+    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" ${message.guild === null ? "in DM" : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"} \r\n`);
     
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
@@ -53,5 +53,5 @@ exports.onMessage = function (client, message) {
     };
 
     // Basic message listener for Console
-    log(`${message.author.tag} : "${message.content}" on [${message.channel.name} : ${message.guild.name === null ? "DM" : message.guild.name}]`);
+    log(`${message.author.tag} : "${message.content}" on [${message.guild === null ? "DM" : "#"+message.channel.name + " : " + message.guild.name}]`);
 };
