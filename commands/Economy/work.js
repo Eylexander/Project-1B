@@ -1,5 +1,6 @@
 const db = require("better-sqlite3");
 const inv = new db('./database/stats.sqlite');
+const { admin } = require('../../settings.json')
 
 module.exports.help = {
     name : "work",
@@ -15,63 +16,48 @@ module.exports.execute = async (client, message, args) => {
     );
 
     let stats = getstats.get(message.author.id, message.author.tag)
+
+    function work(nbMana) {
+        inv === new db('./database/stats.sqlite');
+        workValue = Math.ceil(Math.random()*(8-2)+2 * nbMana)
+        inv.prepare("INSERT OR REPLACE INTO stats (id, user, money, mana) VALUES (@id, @user, @money, @mana);").run({
+            id : message.author.id,
+            user : message.author.tag,
+            money : stats.money + workValue,
+            mana : stats.mana - nbMana
+        })
+        message.channel.send(`You have used ${nbMana} mana to work and made ${workValue}$`)
+    }
+
     if (!stats) {
         stats = {
             id : message.author.id,
             user : message.author.tag,
             money : 0,
-            mana : 0 
+            mana : 10
         }
         setstats.run(stats)
+        message.channel.send(`You've just created your own profile!`)
+        work(1)
     }
 
-    if (args[0] === 'mana') {
-        let nb1 = Number(args[1])
+    if (message.author.id === admin && args[0] === 'cheat') {
         setstats.run({
             id : message.author.id,
             user : message.author.tag,
             money : stats.money,
-            mana : (nb1 === null || nb1 === NaN ? stats.mana+10 : stats.mana + nb1)
+            mana : stats.mana + Number(args[1])
         })
-        message.channel.send(`You cheated and added yourself ${nb1 === null || nb1 === NaN ? '10' : nb1} mana!`)
+        return message.channel.send(`Here you go boss, here's your free ${args[1]} mana!`)
     }
-    else if (!args[0]) {
-        const random1 = Math.ceil(Math.random() * 30 + (Math.random() * 10))
-        if (stats.mana > 0) {
-            setstats.run({
-                id : message.author.id,
-                user : message.author.tag,
-                money : `${(stats.money + random1) < 3 ? (stats.money + random1 * 1.5) : stats.money + random1}`,
-                mana : stats.mana - 1
-            })
-            message.channel.send(`You used 1 mana to work and made ${random1}$`)
+
+    if (stats.mana>0) {
+        if(!args[0]) { return work(1) }
+        else if(args.length<=1) {
+            if (stats.mana<=Number(args[0])) { work(stats.mana) }
+            else if (stats.mana>Number(args[0])) { work(Number(args[0])) }
         }
-    }
-    else {
-        const amountmana = Number(args[0])
-        const randone = Math.ceil(Math.random() * 30 * amountmana + amountmana * (Math.random() * 10))
-        if (stats.mana >= amountmana > 0) {
-            setstats.run({
-                id : message.author.id,
-                user : message.author.tag,
-                money : `${(stats.money + randone) < (amountmana * 3) ? (stats.money + randone * 1.5) : stats.money + randone}`,
-                mana : stats.mana - amountmana
-            })
-            message.channel.send(`You used ${amountmana} mana to work and made ${(stats.money + randone) < (amountmana * 3) ? (stats.money + randone * 1.5) : stats.money + randone}$`)
-        } else if (stats.mana <= 0) {
-            return message.channel.send('You already used all your mana!')
-        } else if (amountmana > stats.mana >= 0) {
-            const allmana = amountmana - (amountmana - stats.mana)
-            const randall = Math.ceil(Math.random() * 30 * allmana + allmana * (Math.random() * 10))
-            setstats.run({
-                id : message.author.id,
-                user : message.author.tag,
-                money : `${(stats.money + randall) < (allmana * 3) ? (stats.money + randall * 1.5) : stats.money + randall}`,
-                mana : stats.mana - allmana
-            })
-            message.channel.send(`You used all of your mana to work and made ${(stats.money + randall) < (allmana * 3) ? (stats.money + randall * 1.5) : stats.money + randall}$`)
-        } else {
-            message.channel.send('There was a problem.')
-        }
-    }
+    } else { return message.channel.send(`You've run out of mana!`) }
+
+    if (!Number(args[0])) { return message.channel.send('You have to type a number!') }
 };

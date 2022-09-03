@@ -21,10 +21,10 @@ module.exports.execute = async (client, message, args) => {
             id : message.author.id,
             user : message.author.tag,
             money : 0,
-            mana : 0
+            mana : 10
         }
         setstats.run(stats)
-        message.channel.send('You just created your own profile!')
+        message.channel.send(`You've just created your own profile!`)
     }
 
     const inventory = new Discord.MessageEmbed()
@@ -48,7 +48,7 @@ module.exports.execute = async (client, message, args) => {
             const usercalled = client.users.cache.get(userMention[1])
             const player = getstats.get(usercalled.id, usercalled.tag)
 
-            if (!(getstats.get(usercalled.id, usercalled.tag))) return message.channel.send('This user is not a player!')
+            if (!player) return message.channel.send('This user is not a player!')
 
             const spying = new Discord.MessageEmbed()
                 .setColor('RANDOM')

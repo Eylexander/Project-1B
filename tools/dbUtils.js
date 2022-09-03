@@ -33,9 +33,9 @@ exports.initDatabases = function () {
     // Define the devtool.sqlite database
     const dev = tool.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'tool';").get();
     if (!dev['count(*)']) {
-        tool.prepare("CREATE TABLE tool (id TEXT, user TEXT, todo TEXT, number INTERGER AUTO_INCREMENT);").run();
+        tool.prepare("CREATE TABLE tool (id INTERGER PRIMARY KEY, todo TEXT);").run();
         // Ensure that the "id" row is always unique and indexed.
-        tool.prepare("CREATE INDEX idx_devtool_id ON tool (number);").run();
+        tool.prepare("CREATE INDEX idx_devtool_id ON tool (id);").run();
         tool.pragma("asynchronous = 1");
         tool.pragma("journal_mode = wal");
     }

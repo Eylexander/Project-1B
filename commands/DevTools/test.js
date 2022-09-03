@@ -9,8 +9,9 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
+    const nbMana = args[0]
     for (var i = 0 ; i < 5; i++) {
-        message.channel.send(Math.ceil(Math.random() * 50 * Number(args[0]) + Number(args[0]) * (Math.random() * 20)));
+        message.channel.send(Math.floor(Math.random() * (nbMana-2) + 2)* 10);
         // more statements
     }
 }

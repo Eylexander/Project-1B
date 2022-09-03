@@ -10,13 +10,17 @@ module.exports.help = {
 }
 
 module.exports.execute = async (client, message, args) => {
-    if (args.length !== 2) {
-        return message.reply(
+    if (!args[0]) {
+        message.reply(
             `You must provide the crypto and the currency you want to compare:\n${prefix}${module.exports.help.name} ${module.exports.help.usage}`
         );
     } else {
         const coin = args[0].toLowerCase(); // Get rid off the grammar
-        const vsCurrency = args[1].toLowerCase();
+        if (!args[1]) {
+            vsCurrency = 'usd';
+        } else {
+            vsCurrency = args[1].toLowerCase();
+        }
         try {
             const { data } = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${vsCurrency}`); // Get crypto price from coingecko API
             

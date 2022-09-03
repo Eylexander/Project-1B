@@ -26,7 +26,7 @@ stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Client is ON | ${s
 
 exports.onMessage = function (client, message) {
     if (message.author.bot) return;
-    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" ${message.guild === null ? "in DM" : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"} \r\n`);
+    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" ${message.guild === null ? "in DM" : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"}\r\n`);
     
     // Bot auto-response to specific Words
     for (const trigger of badwords) {

@@ -39,8 +39,6 @@ module.exports.execute = async (client, message, args) => {
         } else {
             const usercalled = client.users.cache.get(userMention[1])
 
-            
-
             const external = new Discord.MessageEmbed()
                 .setAuthor(message.author.tag, client.user.displayAvatarURL({ dynamic : true }))
                 .setTitle(usercalled.name + '\'s Informations')
