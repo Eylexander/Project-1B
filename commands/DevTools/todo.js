@@ -15,7 +15,7 @@ module.exports.execute = async (client, message, args) => {
     const addtodo = dev.prepare(
         "INSERT INTO tool (id, todo) VALUES (@id, @todo);"
     );
-    const count = dev.prepare("SELECT COUNT (id) FROM tool");
+    const count = dev.prepare("SELECT * FROM tool").all();
     const deltodo = dev.prepare("DELETE FROM tool WHERE id = ?;");
 
     if (!message.author.id === admin) return;
@@ -44,9 +44,18 @@ module.exports.execute = async (client, message, args) => {
             message.channel.send('I can\'t delete a word. Specify a number')
         }
     } else if (['list', 'count'].includes(args[0])) {
-        message.channel.send(count.number.map().join('\n'))
+        const countEmbed = new Discord.MessageEmbed()
+            .setDescription(`Todo's`)
+            .setColor('RANDOM')
+            .setTimestamp()
+            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+
+        for (const data of count) {
+            countEmbed.addFields({ name: `ID : ${data.id}`, value: data.todo, inline: true})
+        }
+
+        return message.channel.send(countEmbed)
     } else {
-        message.channel.send('Yup, I bugged')
-        message.channel.send('```' + (console.error()) + '```')
+        return message.channel.send('```' + (console.error()) + '```')
     }
 };
