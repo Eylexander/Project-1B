@@ -10,12 +10,12 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const getstats = inv.prepare("SELECT * FROM stats WHERE id = ? AND user = ?");
-    const setstats = inv.prepare(
+    const getStats = inv.prepare("SELECT * FROM stats WHERE id = ? AND user = ?");
+    const setStats = inv.prepare(
         "INSERT OR REPLACE INTO stats (id, user, money, mana) VALUES (@id, @user, @money, @mana);"
     );
 
-    let stats = getstats.get(message.author.id, message.author.tag)
+    let stats = getStats.get(message.author.id, message.author.tag)
 
     function work(nbMana) {
         inv === new db('./database/stats.sqlite');
@@ -36,13 +36,13 @@ module.exports.execute = async (client, message, args) => {
             money : 0,
             mana : 10
         }
-        setstats.run(stats)
+        setStats.run(stats)
         message.channel.send(`You've just created your own profile!`)
         work(1)
     }
 
     if (message.author.id === admin && args[0] === 'cheat') {
-        setstats.run({
+        setStats.run({
             id : message.author.id,
             user : message.author.tag,
             money : stats.money,

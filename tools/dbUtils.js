@@ -33,7 +33,8 @@ exports.initDatabases = function () {
     // Define the devtool.sqlite database
     const dev = tool.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'tool';").get();
     if (!dev['count(*)']) {
-        tool.prepare("CREATE TABLE tool (id INTERGER PRIMARY KEY, todo TEXT);").run();
+        tool.prepare("CREATE TABLE tool (id INTEGER PRIMARY KEY, todo TEXT);").run();
+        tool.prepare("INSERT INTO tool (id, todo) VALUES (0, 'init');").run();
         // Ensure that the "id" row is always unique and indexed.
         tool.prepare("CREATE INDEX idx_devtool_id ON tool (id);").run();
         tool.pragma("asynchronous = 1");

@@ -17,20 +17,6 @@ module.exports.execute = async (client, message, args) => {
 }
 
 // module.exports.execute = async (client, message, args) => {
-//   const userMention = args[0].match(/<@!?([0-9]*)>/)
-//   if (userMention == null) {
-  
-//     return message.channel.send("Il faut mentionner quelqu'un.")
-  
-//   } else {
-  
-//     const user = client.users.get(userMention[1])
-  
-//     return message.channel.send('Bonsoir ' + user.username)
-//   }
-// }
-
-// module.exports.execute = async (client, message, args) => {
 //     const notSupported = "The operating system used to host this bot is not supported for this command."
 //       const full = '█'
 //       const empty = '░'

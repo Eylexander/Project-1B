@@ -13,43 +13,75 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const getsuggestion = sent.prepare("SELECT * FROM infos WHERE id = ? AND user = ?");
-    const addsuggestion = sent.prepare("INSERT INTO infos (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);");
+    const getUserSuggestion = sent.prepare(
+        "SELECT * FROM infos WHERE id = ? AND user = ?"
+    );
+    const addSuggestion = sent.prepare(
+        "INSERT INTO infos (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);"
+    );
+    const getSuggestions = sent.prepare("SELECT id, user, name, suggestions FROM infos WHERE id = ?;");
 
-    const infos = getsuggestion.get(message.author.id, message.author.tag)
+    if (!args[0]) {
+        return message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
+    }
 
-    // const userMention = args[1].match(/<@!?([0-9]*)>/)
-    // if (userMention == null) {
-    //     return message.channel.send('You have to tag someone !');
-    // } else {
-    //     const user = client.users.get(userMention[1])
-    // }
-
-    if (['get', 'see'].includes(args[0])) {
-        if (!(message.author === admin)) return
-        if (args < 1) {
-            message.channel.send(`You sent ${infos.name} : ${infos.suggestions}`)
+    if (['get', 'see', 'list'].includes(args[0])) {
+        if (!message.author === admin) return;
+        if (!args[1]) {
+            message.channel.send(`User ${message.author.username} (${message.author.id}) has ${getSuggestions.run(message.author.id).length} suggestion(s) :`)
+            for (const data of getSuggestions) {
+                message.channel.send(`\n${data.name} : ${data.suggestions}`)
+            }
+        } else {
+            if (args[1].match(/<@!?([0-9]*)>/)) {
+                const getMentionTag = args[1].match(/<@!?([0-9]*)>/)
+                const getUserObjectTag = client.users.cache.get(getMentionTag[1])
+    
+                message.channel.send(`User ${getUserObjectTag.username} (${getUserObjectTag.id}) has ${getSuggestions.get(getUserObjectTag.id).length} suggestion(s) :`)
+                for (const data of getSuggestions) {
+                    message.channel.send(`\n${data.name} : ${data.suggestions}`)
+                }
+            } else {
+                if (args[1].match(/([0-9]*)/)) {
+                    const getMentionId = args[1].match(/([0-9]*)/)
+                    const getUserObjectId = client.users.cache.get(getMentionId[1])
+    
+                    message.channel.send(`User ${getUserObjectId.username} (${getUserObjectId.id}) has ${getSuggestions.get(getUserObjectId.id).length} suggestion(s) :`)
+                    for (const data of getSuggestions) {
+                        message.channel.send(`\n${data.name} : ${data.suggestions}`)
+                    }
+                }
+            }
         }
-        // if (args[1] === user) {
-        //     message.channel.send(`${user.tag} sent 1 suggestion.\n${infos.name} : ${infos.suggestions}`)
-        // }
-    };
+    } else if (['add', 'new', 'create'].includes(args[0])) {
+        addSuggestion.run({
+            id: message.author.id,
+            user: message.author.username,
+            name: args[1],
+            suggestions: args.slice(2).join(" ")
+        });
+        return message.channel.send(`Suggestion added !`);
+    } else if (['remove', 'delete', 'del'].includes(args[0])) {
+        if (!message.author === admin) return;
+        if (args[1].match(/<@!?([0-9]*)>/)) {
+            const getMentionTag = args[1].match(/<@!?([0-9]*)>/)
+            const getUserObjectTag = client.users.cache.get(getMentionTag[1])
 
-    if (args < 1 && !(['get', 'see'].includes(args[0]))) {
-        message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
+            sent.prepare(`DELETE FROM infos WHERE id = ${getUserObjectTag.id};`).run();
+            message.channel.send(`User ${getUserObjectTag.username} (${getUserObjectTag.id}) suggestion deleted !`);
+        } else {
+            if (args[1].match(/([0-9]*)/)) {
+                const getMentionId = args[1].match(/([0-9]*)/)
+                const getUserObjectId = client.users.cache.get(getMentionId[1])
+
+                sent.prepare(`DELETE FROM infos WHERE id = ${getUserObjectId.id};`).run();
+                message.channel.send(`User ${getUserObjectId.username} (${getUserObjectId.id}) suggestion deleted !`);
+            } else {
+                sent.prepare(`DELETE FROM infos WHERE id = ${message.author.id};`).run();
+                message.channel.send(`User ${message.author.username} (${message.author.id}) suggestion deleted !`);
+            }
+        }
     } else {
-        try {
-            sugg = args.shift()
-            addsuggestion.run({
-                id : message.author.id,
-                user : message.author.tag,
-                name : String(args[0]),
-                suggestions : String(sugg.join(' '))
-            })
-            message.channel.send('Your suggestion was added!')
-        } catch (err) {
-            log(err)
-            message.channel.send('You can\'t do that')
-        }
-    };
+        return message.channel.send(`Please specify your idea using this format : ${prefix}suggestion ${module.exports.help.usage}`)
+    }
 };

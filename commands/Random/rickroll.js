@@ -18,7 +18,7 @@ module.exports.execute = async (client, message, args) => {
         
         const embed = new Discord.MessageEmbed()
             .setColor('RANDOM')
-            .setDescription(`**${message.author.username}** rickrolled **${user.username}**!`)
+            .setDescription(`**${message.author.username}** rickrolled **${user.username}** !`)
             .setImage(ricks[Math.floor(Math.random()*ricks.length)])
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))

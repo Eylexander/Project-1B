@@ -3,9 +3,12 @@ const {prefix} = require('../settings.json');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
+const db = require("better-sqlite3");
+const ban = new db('./database/blockedusers.sqlite');
+
 module.exports = (client, message) => {
     if(message.author.bot) return;
-    // if(!message.content.startsWith(prefix)) return;
+    if(ban.prepare(`SELECT id FROM ban WHERE id = ?;`).get(message.author.id)) return message.author.send("You are banned from using this bot.");
     if(message.content.startsWith(prefix)) {
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const cmd = args.shift().toLowerCase();
