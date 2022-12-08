@@ -1,12 +1,22 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
 const { prefix, admin } = require('../settings.json')
 const fs = require('fs');
-const { usize, ssize } = require('../events/ready.js')
 const { badwords, randomwords, suicide } = require('./word_libraries.json')
+
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMembers,
+	],
+});
 
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+
+const ssize = client.guilds.cache.size;
+const usize = eval(client.guilds.cache.map(g => g.memberCount).join(' + '));
 
 // Defining Files
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };

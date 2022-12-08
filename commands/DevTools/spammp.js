@@ -14,7 +14,7 @@ module.exports.execute = async (client, message, args) => {
 
     switch (args[0]) {
         case /<@!?([0-9]*)>/.test(args[0]):
-            const getMentionTag = args[1].match(/<@!?([0-9]*)>/)
+            const getMentionTag = args[0].match(/<@!?([0-9]*)>/)
             const getUserObjectTag = client.users.cache.get(getMentionTag[1])
 
             setTimeout(() => {message.delete()}, 500)
@@ -25,7 +25,7 @@ module.exports.execute = async (client, message, args) => {
             }
             break;
         case /^([0-9]*$)/.test(args[0]):
-            const getMentionId = args[1].match(/([0-9]*)/)
+            const getMentionId = args[0].match(/([0-9]*)/)
             const getUserObjectId = client.users.cache.get(getMentionId[1])
 
             setTimeout(() => {message.delete()}, 500)

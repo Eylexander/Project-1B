@@ -1,6 +1,6 @@
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
-const { dirname } = require('path');
+const settings = require('../../settings.json');
 
 module.exports.help = {
     name : "help",
@@ -11,12 +11,14 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
+    const categories = fs.readdirSync('./commands')
+
     switch (args[0]) {
-        case (client.commands.get(args[0])):
+        case (client.commands.filter(cmd => cmd.help.category === args[0])):
             const getCommand = client.commands.get(args[0]);
             const createCommandName = args[0].charAt(0).toUpperCase() + args[0].slice(1);
 
-            const createCommandEmbed = new Discord.MessageEmbed()
+            const createCommandEmbed = new EmbedBuilder()
                 .setColor('RANDOM')
                 .setTitle(createCommandName + " Help")
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
@@ -28,35 +30,28 @@ module.exports.execute = async (client, message, args) => {
                     { name: 'Parameters', value: getCommand.help.parameters, inline: true},
                 )
                 .setTimestamp()
-                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+                .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
                 
-            try {
-                message.channel.send(createCommandEmbed)
-            } catch (err) {
-                console.log(err)
-                message.channel.send("It's seems like the command do not exist.")
-            }
-            break;
-        case 'oui':
-            break;
-        default:
-            const createCategoriesEmbed = new Discord.MessageEmbed()
-                .setColor('RANDOM')
-                .setTitle(client.user.username + " commands")
-                .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
-                .addFields(
-                    { name: "Categories", value: 'List of every categories', inline: true },
-                )
-                .setTimestamp()
-                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
-
-            // const categories = fs.readdirSync('./commands')
-            // const directories = categories.filter(folder => fs.lstatSync(folder).isDirectory());
-            // directories.forEach(dir => {
-            //     dir.addFields({ name: dir, value: 'Field', inline: true})
-            // })
             
-            message.channel.send(createCategoriesEmbed)
+            message.channel.send({ embeds: [createCommandEmbed] })
+            break;
+        case (categories.includes(args[0])):
+            message.channel.send('Category');
+        default:
+            const createCategoriesEmbed = new EmbedBuilder()
+                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setTitle(client.user.username + " commands")
+                .setDescription("Use `" + settings.prefix + "help [command | category]` to get more information about a command or category.")
+                .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+                .addFields()
+                .setTimestamp()
+                .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
+
+            for (const dir of categories) {
+                createCategoriesEmbed.addFields({ name: dir, value: 'Category', inline: true})
+            }
+            
+            message.channel.send({ embeds: [createCategoriesEmbed] })
             break;
     }
 };

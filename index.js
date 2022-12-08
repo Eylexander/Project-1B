@@ -1,31 +1,29 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
-const { token } = require('./settings.json');
 const chalk = require('chalk');
 const moment = require('moment');
 const fs = require('fs');
-client.commands = new Discord.Collection();
+const { token } = require('./settings.json');
+
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMembers,
+	],
+});
+client.commands = new Collection();
 
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-// WordReading System
-const { onMessage } = require('./tools/message_listener.js')
-client.on('message', onMessage.bind(null, client))
-
-// Database Utils
-const dbUtils = require('./tools/dbUtils.js')
-client.on('ready', () => { dbUtils.initDatabases() })
-
 // Reading all Event Files
-fs.readdir("./events/", (err, files) => {
-    if (err) return console.error(err);
-    files.forEach((file) => {
-        const event = require(`./events/${file}`);
-        let eventName = file.split(".")[0];
-        client.on(eventName, event.bind(null, client));
-    });
-});
+const events = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
+for (const file of events) {
+  const eventName = file.split(".")[0];
+  const event = require(`./events/${file}`);
+  client.on(eventName, event.bind(null, client));
+}
 
 // Reading all Command Folders
 const commandFolders = fs.readdirSync('./commands');

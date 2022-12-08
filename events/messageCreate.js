@@ -1,7 +1,14 @@
-const Discord = require('discord.js');
-const {prefix} = require('../settings.json');
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
+const { prefix } = require('../settings.json');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMembers,
+	],
+});
+client.commands = new Collection();
 
 const db = require("better-sqlite3");
 const ban = new db('./database/blockedusers.sqlite');
