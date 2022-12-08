@@ -6,7 +6,8 @@ module.exports.help = {
     name : "weather",
     description: 'Weather command',
     aliases : ['wthr', 'meteo'],
-    usage : '[city]'
+    usage : '[city]',
+    parameters: '<city>'
 };
 
 module.exports.execute = async (client, message, args) => {

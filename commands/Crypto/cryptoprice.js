@@ -6,7 +6,8 @@ module.exports.help = {
     name : "price",
     description : "Check the cryptocurrency market",
     aliases : ['check', 'crypto'],
-    usage : '[Crypto Name] [Currency]'
+    usage : '[Crypto Name] [Currency]',
+    parameters : '<crypto> <currency>'
 }
 
 module.exports.execute = async (client, message, args) => {

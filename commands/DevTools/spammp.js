@@ -4,38 +4,39 @@ module.exports.help = {
     name : "spammp",
     description: 'Spam command via private message',
     aliases : ['annoymp','repeatmp'],
-    usage : '[Tag] [Number] [Information]'
+    usage : '[Tag] [Number] [Information]',
+    parameters: '<Tag> <Number>'
 };
 
 module.exports.execute = async (client, message, args) => {
-    if (message.author.id == admin) {
-        
-        if (args[0].match(/<@!?([0-9]*)>/)) {
-            const userMention = args[0].match(/<@!?([0-9]*)>/);
-            const user = client.users.cache.get(userMention[1])
+    if (!message.author.id === admin) return;
+    const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+    switch (args[0]) {
+        case /<@!?([0-9]*)>/.test(args[0]):
+            const getMentionTag = args[1].match(/<@!?([0-9]*)>/)
+            const getUserObjectTag = client.users.cache.get(getMentionTag[1])
+
             setTimeout(() => {message.delete()}, 500)
-            const sleep = ms => new Promise(r => setTimeout(r, ms))
-                for (let i = 0; i < args[1]; i++) {
-                    user.send(args.slice(2).join(' '))
-                    await sleep(500)
-                }
 
-        } else {
-            if (args[0].match(/^([0-9]*$)/)) {
-                const userId = args[0].match(/^([0-9]*$)/);
-                const userObject = await client.users.fetch(userId[1]);
-
-                setTimeout(() => {message.delete()}, 500)
-                const sleep = ms => new Promise(r => setTimeout(r, ms))
-                for (let i = 0; i < args[1]; i++) {
-                    userObject.send(args.slice(2).join(' '))
-                    await sleep(500)
-                }
-                
-            } else {
-                return message.channel.send('You have to tag someone !');
+            for (let i = 0; i < args[1]; i++) {
+                getUserObjectTag.send(args.slice(2).join(' '))
+                await sleep(500)
             }
-        }
+            break;
+        case /^([0-9]*$)/.test(args[0]):
+            const getMentionId = args[1].match(/([0-9]*)/)
+            const getUserObjectId = client.users.cache.get(getMentionId[1])
 
+            setTimeout(() => {message.delete()}, 500)
+
+            for (let i = 0; i < args[1]; i++) {
+                getUserObjectId.send(args.slice(2).join(' '))
+                await sleep(500)
+            }
+            break;
+        default:
+            message.channel.send('You have to tag or Id someone !');
+            break;
     }
 };

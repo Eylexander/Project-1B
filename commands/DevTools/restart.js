@@ -6,7 +6,8 @@ module.exports.help = {
     name : "restart",
     description: 'Restart command but does not apply changes.',
     aliases : ['rs','reset'],
-    usage : 'none'
+    usage : 'none',
+    parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {

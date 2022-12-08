@@ -4,16 +4,18 @@ module.exports.help = {
     name : "spam",
     description: 'Spam command',
     aliases : ['annoy','repeat'],
-    usage : '[number] [Information]'
+    usage : '[number] [Information]',
+    parameters: '<Number>'
 };
 
 module.exports.execute = async (client, message, args) => {
-    if (message.author.id == admin) {
-        setTimeout(() => {message.delete()}, 500)
-        const sleep = ms => new Promise(r => setTimeout(r, ms))
-        for (let i = 0; i < args[0]; i++) {
-            message.channel.send(args.slice(1).join(' '))
-            await sleep(500)
-        }
+    if (!message.author.id === admin) return;
+
+    setTimeout(() => {message.delete()}, 500)
+    const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+    for (let i = 0; i < args[0]; i++) {
+        message.channel.send(args.slice(1).join(' '))
+        await sleep(500)
     }
 };

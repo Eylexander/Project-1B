@@ -6,7 +6,8 @@ module.exports.help = {
     name : "logout",
     description: 'Disconnect from the console',
     aliases : ['out'],
-    usage : 'none'
+    usage : 'none',
+    parameters : 'none'
 };
 
 module.exports.execute = async (client, message, args) => {

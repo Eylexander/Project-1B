@@ -4,7 +4,8 @@ module.exports.help = {
     name : "say",
     description: 'Say command',
     aliases : ['tell','shout'],
-    usage : '[Information]'
+    usage : '[Information]',
+    parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {

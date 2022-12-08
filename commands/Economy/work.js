@@ -6,7 +6,8 @@ module.exports.help = {
     name : "work",
     description: 'Make some Money!',
     aliases : ['tryhard','work'],
-    usage : '[amount of mana]'
+    usage : '[amount of mana]',
+    parameters: '<amount>'
 };
 
 module.exports.execute = async (client, message, args) => {

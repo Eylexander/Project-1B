@@ -1,61 +1,62 @@
 const Discord = require('discord.js');
 const fs = require('fs');
+const { dirname } = require('path');
 
 module.exports.help = {
     name : "help",
     description : "Help command",
     aliases : ['h', 'halp'],
-    usage : '[command]',
+    usage : '[command | category]',
+    parameters: '<command | category>'
 };
 
 module.exports.execute = async (client, message, args) => {
-    if (!args[0]) {
-        folderslist = []
-        const categories = fs.readdirSync('./commands').join('\n')
-        // Listing all folders
-        // let folderslist = []
-        // fs.readdir('./commands/', function(folders) {
-        //     folders.forEach(function(folder) {
-        //         folderslist << folder
-        //     })
-        // })
-        // message.channel.send(folderslist)
+    switch (args[0]) {
+        case (client.commands.get(args[0])):
+            const getCommand = client.commands.get(args[0]);
+            const createCommandName = args[0].charAt(0).toUpperCase() + args[0].slice(1);
 
-        const global = new Discord.MessageEmbed()
-            .setColor('RANDOM')
-            .setTitle(client.user.username + " commands")
-            .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
-            .addFields(
-                { name: "Categories", value: `${categories}`, inline: true },
-                // {name: `Oui`, value: 'non', inline: true}
-            )
-            .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
-        
-        message.channel.send(global)
-    } else {
-        let cmd = args[0].toLowerCase();
-        const command = client.commands.get(cmd)
-        const cmdname = cmd.charAt(0).toUpperCase() + cmd.slice(1)
-
-        try {
-            const info = new Discord.MessageEmbed()
+            const createCommandEmbed = new Discord.MessageEmbed()
                 .setColor('RANDOM')
-                .setTitle(cmdname + " Help")
+                .setTitle(createCommandName + " Help")
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
-                    { name: 'Name', value: command.help.name, inline: true },
-                    { name: 'Aliases', value: command.help.aliases, inline: true },
-                    { name: 'Description', value: command.help.description, inline: false},
-                    { name: 'Usage', value: command.help.usage, inline: true}
+                    { name: 'Name', value: getCommand.help.name, inline: true },
+                    { name: 'Aliases', value: getCommand.help.aliases, inline: true },
+                    { name: 'Description', value: getCommand.help.description, inline: false},
+                    { name: 'Usage', value: getCommand.help.usage, inline: true},
+                    { name: 'Parameters', value: getCommand.help.parameters, inline: true},
                 )
                 .setTimestamp()
                 .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
                 
-            message.channel.send(info)
-        } catch (err) {
-            console.log(err)
-            message.channel.send("It's seems like the command do not exist.")
-        }
+            try {
+                message.channel.send(createCommandEmbed)
+            } catch (err) {
+                console.log(err)
+                message.channel.send("It's seems like the command do not exist.")
+            }
+            break;
+        case 'oui':
+            break;
+        default:
+            const createCategoriesEmbed = new Discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setTitle(client.user.username + " commands")
+                .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: "Categories", value: 'List of every categories', inline: true },
+                )
+                .setTimestamp()
+                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+
+            // const categories = fs.readdirSync('./commands')
+            // const directories = categories.filter(folder => fs.lstatSync(folder).isDirectory());
+            // directories.forEach(dir => {
+            //     dir.addFields({ name: dir, value: 'Field', inline: true})
+            // })
+            
+            message.channel.send(createCategoriesEmbed)
+            break;
     }
 };

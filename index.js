@@ -15,14 +15,7 @@ client.on('message', onMessage.bind(null, client))
 
 // Database Utils
 const dbUtils = require('./tools/dbUtils.js')
-const db = require("better-sqlite3");
-const inv = new db('./database/stats.sqlite');
-const sent = new db('./database/infos.sqlite');
-const dev = new db('./database/devtool.sqlite');
-// const ban = new db('./database/blockedusers.sqlite');
-client.on('ready', () => { dbUtils.initDatabases(inv, sent, dev,
-    //  ban
-     ) })
+client.on('ready', () => { dbUtils.initDatabases() })
 
 // Reading all Event Files
 fs.readdir("./events/", (err, files) => {
@@ -44,12 +37,5 @@ for (const folder of commandFolders) {
         client.commands.set(command.help.name, command);
     }
 }
-
-// Recycling users
-// const getban = ban.prepare("SELECT * FROM ban WHERE id = ?;");
-// const blockedUsers = getban.get()
-// client.on('interactionCreate', async interaction => {
-// 	if (blockedUsers.includes(interaction.user.id)) return;
-// });
 
 client.login(token);

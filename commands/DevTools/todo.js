@@ -7,7 +7,8 @@ module.exports.help = {
     name : "todo",
     description: 'Get todo list!',
     aliases : ['td'],
-    usage : '[none]'
+    usage : '[none]',
+    parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {
@@ -32,8 +33,9 @@ module.exports.execute = async (client, message, args) => {
         case 'add':
         case 'create':
             let getBiggestId = dev.prepare("SELECT MAX(id) FROM tool").get();
+            let createID = Number(getBiggestId['MAX(id)']) + 1;
             dev.prepare(
-                `INSERT INTO tool (id, todo) VALUES (${getBiggestId['MAX(id)'] + 1}, '${args.slice(1).join(' ')}');`
+                `INSERT INTO tool (id, todo) VALUES (${createID}, '${args.slice(1).join(' ')}');`
             ).run();
             message.channel.send('The task was added correctly. :thumbsup:')
             break;

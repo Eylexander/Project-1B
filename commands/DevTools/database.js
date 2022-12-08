@@ -7,7 +7,8 @@ module.exports.help = {
     name : "database",
     description: 'Control Databases',
     aliases : ['db'],
-    usage : '< add | remove > [name]'
+    usage : '< add | remove > [name]',
+    parameters: ['add', 'remove']
 };
 
 module.exports.execute = async (client, message, args) => {

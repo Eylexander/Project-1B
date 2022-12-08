@@ -8,7 +8,8 @@ module.exports.help = {
     name: "info",
     description : "Show bot information",
     aliases : ["stats", "botinfo","infos"],
-    usage : '<server | bot | host | owner> [Mode]'
+    usage : '<server | bot | host | owner> [Mode]',
+    parameters : ['server', 'serveur', 'serv', 'bot', 'client', 'discordbot', 'host', 'hs', 'heberg', 'owner', 'dev', 'eylexander']
 };
 
 module.exports.execute = async (client, message, args) => {
@@ -32,6 +33,7 @@ module.exports.execute = async (client, message, args) => {
 // Random variables
     const location = message.guild.region;
     const adminusers = message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
+    // const admins = message.guild.members.filter(member => member.hasPermission("ADMINISTRATOR"));
 
 // Search for args
     if (['server', 'serveur', 'serv'].includes(args[0])) {

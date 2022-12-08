@@ -7,7 +7,8 @@ module.exports.help = {
     name : "stop",
     description: 'Stop command',
     aliases : ['end','ends','off','kill'],
-    usage : 'none'
+    usage : 'none',
+    parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {

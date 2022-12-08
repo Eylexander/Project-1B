@@ -4,7 +4,8 @@ module.exports.help = {
     name : "ping",
     description: 'Ping command',
     aliases : ['pong'],
-    usage : 'none'
+    usage : 'none',
+    parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {

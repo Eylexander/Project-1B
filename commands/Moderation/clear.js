@@ -4,7 +4,8 @@ module.exports.help = {
     name : "clear",
     description : "To clear chat",
     aliases : ['clean', 'delete'],
-    usage : '[amount]'
+    usage : '[amount]',
+    parameters: '<amount>'
 };
 
 module.exports.execute = async (client, message, args) => {

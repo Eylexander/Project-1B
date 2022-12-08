@@ -5,7 +5,8 @@ module.exports.help = {
     name : "rickroll",
     description: 'Rickroll the people',
     aliases : ['rick', 'troll', 'rr'],
-    usage : '[user]'
+    usage : '[user]',
+    parameters: '<user>'
 };
 
 module.exports.execute = async (client, message, args) => {

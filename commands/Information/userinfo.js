@@ -5,7 +5,8 @@ module.exports.help = {
     name : "userinfo",
     description: 'Get someone\'s informations!',
     aliases : ['ui', 'uid'],
-    usage : '<none | usertag>'
+    usage : '<none | usertag>',
+    parameters: '<usertag>'
 };
 
 module.exports.execute = async (client, message, args) => {

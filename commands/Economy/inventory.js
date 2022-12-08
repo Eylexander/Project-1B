@@ -6,7 +6,8 @@ module.exports.help = {
     name : "inventory",
     description: 'See your Inventory!',
     aliases : ['me','balance','inv','money'],
-    usage : '< none | player >'
+    usage : '< none | player >',
+    parameters: '<tag>'
 };
 
 module.exports.execute = async (client, message, args) => {
@@ -38,12 +39,9 @@ module.exports.execute = async (client, message, args) => {
         .setTimestamp()
         .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
-    if (!args[0]) {
-        return message.channel.send(getPlayerInventory)
-    } else {
-        if (!args[0].match(/<@!?([0-9]*)>/)) {
-            return message.channel.send(getPlayerInventory)
-        } else {
+
+    switch(args[0]) {
+        case /<@!?([0-9]*)>/.test(args[0]):
             const getMentionId = args[0].match(/<@!?([0-9]*)>/)
             const getUserObject = client.users.cache.get(getMentionId[1])
             const getStranger = getStats.get(getUserObject.id, getUserObject.tag)
@@ -62,6 +60,29 @@ module.exports.execute = async (client, message, args) => {
                 .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
 
             message.channel.send(getStrangerInventory)
-        }
+            break;
+        case /([0-9]*)/.test(args[1]):
+            const getMentionIdbyId = args[1].match(/([0-9]*)/)
+            const getUserObjectId = client.users.cache.get(getMentionIdbyId[1])
+            const getStrangerbyId = getStats.get(getUserObjectId.id, getUserObjectId.tag)
+
+            if (!getStrangerbyId) return message.channel.send('This user is not a player!')
+
+            const getStrangerInventorybyId = new Discord.MessageEmbed()
+                .setColor('RANDOM')
+                .setTitle(getUserObject.username + '\'s Inventory')
+                .setThumbnail(getUserObject.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
+                    { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true}
+                )
+                .setTimestamp()
+                .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+
+            message.channel.send(getStrangerInventorybyId)
+            break;
+        default :
+            message.channel.send(getPlayerInventory)
+            break;
     }
 };

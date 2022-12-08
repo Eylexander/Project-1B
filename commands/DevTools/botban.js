@@ -6,7 +6,8 @@ module.exports.help = {
     name : "botban",
     description: 'Permaban users from using the bot',
     aliases : ['permaban','blockuser'],
-    usage : '[user]'
+    usage : '[user]',
+    parameters: '<tag>'
 };
 
 module.exports.execute = async (client, message, args) => {
@@ -15,69 +16,81 @@ module.exports.execute = async (client, message, args) => {
 
     if (!message.author.id === admin) return;
 
-    if (!args[0]) {
-        return message.channel.send("You must provide someone's ID or try a few parameters.")
-        // send help message
-    }
-
-    if (['list', 'count'].includes(args[0])) {
-        if (getListBanned.length == 0) {
-            message.channel.send("There is no banned users.")
-        } else {
-            let i;
-            for (const data of getListBanned) {
-                message.channel.send(`Banned user: ${data.user} (${data.id})`)
-            }
-            return message.channel.send(`There are ${getListBanned.length} users banned.`)
-        }
-        
-    } else {
-        if (args[1].match(/<@!?([0-9]*)>/)) {
-            const userMention = args[1].match(/<@!?([0-9]*)>/);
-            const user = client.users.cache.get(userMention[1]);
-
-            if (['add', 'ban'].includes(args[0])) {
-                if (!getBannedUserById.get(user.id)) {
-                    ban.prepare(`INSERT INTO ban (id, user) VALUES (${user.id}, '${user.username}');`).run();
-                    return message.channel.send(`Banned user ${user.username} (${user.id})`)
-                } else {
-                    return message.channel.send(`User ${user.username} (${user.id}) is already banned.`)
+    switch (args[0]) {
+        case 'list':
+        case 'count':
+            if (getListBanned.length == 0) {
+                message.channel.send("There is no banned users.")
+            } else {
+                for (const data of getListBanned) {
+                    message.channel.send(`Banned user: ${data.user} (${data.id})`)
                 }
-        
-            } else if (['remove', 'unban'].includes(args[0])) {
-                if (getBannedUserById.get(user.id)) {
-                    ban.prepare(`DELETE FROM ban WHERE id = ${user.id}`).run();
-                    return message.channel.send(`Unbanned user ${user.username} (${user.id})`)
-                } else {
-                    return message.channel.send(`User ${user.username} (${user.id}) is not banned.`)
-                }
+                message.channel.send(`There are ${getListBanned.length} users banned.`)
             }
-        } else {
-            if (args[1].match(/^([0-9]*$)/)) {
-                const userId = args[1].match(/^([0-9]*$)/);
-                const userObject = await client.users.fetch(userId[1]);
-    
-                if (['add', 'ban'].includes(args[0])) {
-                    if (!getBannedUserById.get(userObject.id)) {
-                        ban.prepare(`INSERT INTO ban (id, user) VALUES (${userObject.id}, '${userObject.username}');`).run();
-                        return message.channel.send(`Banned user ${userObject.id} (${userObject.username})`)
+            break;
+        case 'add':
+        case 'ban':
+            switch (args[1]) {
+                case /<@!?([0-9]*)>/.test(args[1]):
+                    const getMentionTag = args[1].match(/<@!?([0-9]*)>/)
+                    const getUserObjectTag = client.users.cache.get(getMentionTag[1])
+
+                    if (!getBannedUserById.get(user.id)) {
+                        ban.prepare(`INSERT INTO ban (id, user) VALUES (${getUserObjectTag.id}, '${getUserObjectTag.username}');`).run();
+                        message.channel.send(`Banned user ${getUserObjectTag.username} (${getUserObjectTag.id})`)
                     } else {
-                        return message.channel.send(`User ${userObject.username} (${userObject.id}) is already banned.`)
+                        message.channel.send(`User ${getUserObjectTag.username} (${getUserObjectTag.id}) is already banned.`)
                     }
-            
-                } else if (['remove', 'unban'].includes(args[0])) {
+                    break;
+                case /^([0-9]*$)/.test(args[1]):
+                    const getMentionId = args[1].match(/([0-9]*)/)
+                    const getUserObjectId = client.users.cache.get(getMentionId[1])
+
+                    if (!getBannedUserById.get(userObject.id)) {
+                        ban.prepare(`INSERT INTO ban (id, user) VALUES (${getUserObjectId.id}, '${getUserObjectId.username}');`).run();
+                        message.channel.send(`Banned user ${getUserObjectId.id} (${getUserObjectId.username})`)
+                    } else {
+                        message.channel.send(`User ${getUserObjectId.username} (${getUserObjectId.id}) is already banned.`)
+                    }
+                    break;
+                default:
+                    message.channel.send('You have to tag someone !');
+                    break;
+            }
+            break;
+        case 'remove':
+        case 'unban':
+            switch (args[1]) {
+                case /<@!?([0-9]*)>/.test(args[1]):
+                    const userMention = args[1].match(/<@!?([0-9]*)>/);
+                    const user = client.users.cache.get(userMention[1]);
+
+                    if (getBannedUserById.get(user.id)) {
+                        ban.prepare(`DELETE FROM ban WHERE id = ${user.id}`).run();
+                        return message.channel.send(`Unbanned user ${user.username} (${user.id})`)
+                    } else {
+                        return message.channel.send(`User ${user.username} (${user.id}) is not banned.`)
+                    }
+                    break;
+                case /^([0-9]*$)/.test(args[1]):
+                    const userId = args[1].match(/^([0-9]*$)/);
+                    const userObject = await client.users.fetch(userId[1]);
+
                     if (getBannedUserById.get(userObject.id)) {
                         ban.prepare(`DELETE FROM ban WHERE id = ${userObject.id}`).run();
                         return message.channel.send(`Unbanned user ${userObject.id} (${userObject.username})`)
                     } else {
                         return message.channel.send(`User ${userObject.username} (${userObject.id}) is not banned.`)
                     }
-                }
-            } else {
-                return message.channel.send('You have to tag someone !');
+                    break;
+                default:
+                    message.channel.send('You have to tag someone !');
+                    break;
             }
-        }
-            
+            break;
+        default:
+            message.channel.send("You must provide someone's ID or try a few parameters.")
+            // send help message
+            break;
     }
 };
-

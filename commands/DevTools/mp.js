@@ -4,29 +4,30 @@ module.exports.help = {
     name : "mp",
     description: 'Private Message anyone!',
     aliases : ['privatemessage','pm'],
-    usage : '[Tag] [Information]'
+    usage : '[Tag] [Information]',
+    parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {
-    if (message.author.id == admin) {
+    if (!message.author.id === admin) return;
 
-        if (args[0].match(/<@!?([0-9]*)>/)) {
-            const userMention = args[0].match(/<@!?([0-9]*)>/);
-            const user = client.users.cache.get(userMention[1])
+    switch (args[0]) {
+        case /<@!?([0-9]*)>/.test(args[0]):
+            const getMentionTag = args[1].match(/<@!?([0-9]*)>/)
+            const getUserObjectTag = client.users.cache.get(getMentionTag[1])
+
             setTimeout(() => {message.delete()}, 500)
-            user.send(args.slice(1).join(' '))
+            getUserObjectTag.send(args.slice(1).join(' '))
+            break;
+        case /^([0-9]*$)/.test(args[0]):
+            const getMentionId = args[1].match(/([0-9]*)/)
+            const getUserObjectId = client.users.cache.get(getMentionId[1])
 
-        } else {
-            if (args[0].match(/^([0-9]*$)/)) {
-                const userId = args[0].match(/^([0-9]*$)/);
-                const userObject = await client.users.fetch(userId[1]);
-
-                setTimeout(() => {message.delete()}, 500)
-                userObject.send(args.slice(1).join(' '))
-                
-            } else {
-                return message.channel.send('You have to tag someone !');
-            }
-        }
+            setTimeout(() => {message.delete()}, 500)
+            getUserObjectId.send(args.slice(1).join(' '))
+            break;
+        default:
+            message.channel.send('You have to tag or Id someone !');
+            break;
     }
 };

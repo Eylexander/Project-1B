@@ -6,7 +6,8 @@ module.exports.help = {
     name : "news",
     description: 'News about everything but it is very random',
     aliases : ['news','newscrypto'],
-    usage : '[topic]'
+    usage : '[topic]',
+    parameters: '<topic>'
 };
 
 module.exports.execute = async (client, message, args) => {

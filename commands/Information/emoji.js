@@ -8,7 +8,8 @@ module.exports.help = {
     name : "emoji",
     description: 'Show custom Emojis from your server.',
     aliases : ['emote'],
-    usage : '[emoji]'
+    usage : '[emoji]',
+    parameters: '<emoji>'
 };
 
 module.exports.execute = async (client, message, args) => {
