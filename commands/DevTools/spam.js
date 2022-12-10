@@ -11,6 +11,8 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
     if (!message.author.id === admin) return;
 
+    if (!args[0]) return message.reply({ content: "You have to enter a number !", allowedMentions: { repliedUser: false }})
+
     setTimeout(() => {message.delete()}, 500)
     const sleep = ms => new Promise(r => setTimeout(r, ms))
 

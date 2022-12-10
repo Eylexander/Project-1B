@@ -1,8 +1,8 @@
-const { prefix, admin } = require('../settings.json')
+const { prefix, admin, devserver } = require('../settings.json')
 const fs = require('fs');
 const { badwords, randomwords, suicide } = require('./word_libraries.json')
 
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -15,8 +15,7 @@ const client = new Client({
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-const ssize = client.guilds.cache.size;
-const usize = eval(client.guilds.cache.map(g => g.memberCount).join(' + '));
+const { ssize, usize } = require('../events/ready.js');
 
 // Defining Files
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
@@ -25,41 +24,40 @@ const folder = './logs/' + (moment().format('YYYY-MM-DD'));
 if (!fs.existsSync(folder)) { fs.mkdirSync(folder) };
 
 // Creating the writer
-var stream = fs.createWriteStream(`${folder}/${file}.txt`, {'flags': 'w'});
-stream.write(
-`/* ==========================
-==== Log file started at ====
-== ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')} ==
-========================== */\r\n`
-);
-stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Client is ON | ${ssize} Servers | ${usize} Users \r\n`);
+var stream = fs.createWriteStream(`${folder}/${file}.md`, {'flags': 'w'});
+stream.write(`# Session file started at ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}\r\n`);
+stream.write(`## [${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Client is ON | ${ssize} Servers | ${usize} Users \r\n`);
+stream.write('--- \r\n');
 
 exports.onMessage = function (client, message) {
     if (message.author.bot) return;
-    stream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] ${message.author.username} (${message.author.id}) : "${message.content}" ${message.guild === null ? "in DM" : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"}\r\n`);
+
+    stream.write(`### [${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] User ${message.author.username} (${message.author.id}) posted:
+${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"}\r\n`);
+    stream.write(`\r\n\`\`\`\r\n${message.content}\r\n\`\`\`\r\n`);
     
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
         if (message.content.toLowerCase().includes(trigger)) {
             message.reply(randomwords[Math.floor(Math.random()*randomwords.length)])
-            break
+            break;
         }
     };
     for (const selfkill of suicide) {
         if (message.content.toLowerCase().includes(selfkill)) {
             message.channel.send('If anyone is contemplating suicide, please do not do it. It is not worth it, call this number instead: 1-800-273-8255. Or if you are not in the USA you can find your local line here: http://www.suicide.org/international-suicide-hotlines.html')
-            break
+            break;
         }
     }
 
     // Basic command line -> Testing if bot can response
-    if (message.content.toLowerCase() === 'hey' & message.author == admin) {
-        message.reply("I do work for now!");
+    if (message.content.toLowerCase() === 'hey' & message.author == admin && message.guild.id == devserver) {
+        message.reply({ content: "I do work for now!", allowedMentions: { repliedUser: false }})
     };
 
     // Usefull command line -> Bot replies its own prefix
-    if (message.content === `<@!${client.user.id}>`) {
-        message.channel.send(`My prefix is \`\`${prefix}\`\``)
+    if (message.content === `<@${client.user.id}>`) {
+        message.reply({ content: `My prefix is \`\`${prefix}\`\``, allowedMentions: { repliedUser: false }})
     };
 
     // Basic message listener for Console

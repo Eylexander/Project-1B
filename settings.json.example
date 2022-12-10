@@ -4,6 +4,7 @@
   "newsapi": "",
   "weathertoken": "",
   "admin" : "",
+  "devserver" : "",
   "bot_info" : {
     "name" : "Project 1B",
     "version" : "0.1"

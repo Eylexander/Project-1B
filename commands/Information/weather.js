@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 const { weathertoken } = require('../../settings.json');
 
@@ -27,8 +27,8 @@ module.exports.execute = async (client, message, args) => {
         const cloudness = data.weather[0].description;
         const { pressure, humidity, temp_max, temp_min  } = data.main;
 
-        const weatherEmbed = new Discord.MessageEmbed()
-            .setColor('RANDOM')
+        const getWeatherEmbed = new EmbedBuilder()
+            .setColor(Math.floor(Math.random() * 16777214) + 1)
             .setTitle(`The temperature is ${currentTemp}\u00B0C in ${cityName}, ${country}`)
             .addFields(
                 { name: `Maximum Temperature:`, value: `${temp_max}\u00B0C`, inline: true },
@@ -40,8 +40,8 @@ module.exports.execute = async (client, message, args) => {
             )
             .setThumbnail(`http://openweathermap.org/img/w/${icon}.png`)
             .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
-            
-        message.channel.send(weatherEmbed);
+            .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
+        
+        message.channel.send({ embeds: [getWeatherEmbed] });
     }
 };

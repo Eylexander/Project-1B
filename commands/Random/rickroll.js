@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { ricks } = require('../../tools/word_libraries.json')
 
 module.exports.help = {
@@ -10,20 +10,19 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const userMention = args[0].match(/<@!?([0-9]*)>/)
 
-    if (!args[0] || userMention == null) {
-        return message.channel.send('You have to tag someone !');
+    if (!args[0] || !message.mentions.users.first()) {
+        return message.reply({ content: "You have to tag someone !", allowedMentions: { repliedUser: false }})
     } else {
-        const user = client.users.cache.get(userMention[1])
-        
-        const embed = new Discord.MessageEmbed()
-            .setColor('RANDOM')
-            .setDescription(`**${message.author.username}** rickrolled **${user.username}** !`)
+        const userMention = message.mentions.users.first();
+
+        const RickrollEmbed = new EmbedBuilder()
+            .setColor(Math.floor(Math.random() * 16777214) + 1)
+            .setDescription(`**${message.author.username}** rickrolled **${userMention.username}** !`)
             .setImage(ricks[Math.floor(Math.random()*ricks.length)])
             .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+            .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
 
-        return message.channel.send(embed);
+        return message.channel.send({ embeds: [RickrollEmbed] });
     }
 };
