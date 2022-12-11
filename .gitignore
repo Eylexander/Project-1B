@@ -6,7 +6,6 @@ database/
 
 # All npm packages
 
-package.json
 package-lock.json
 node_modules/
 .vs

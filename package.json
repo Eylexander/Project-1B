@@ -1,0 +1,26 @@
+{
+  "name": "project-1b",
+  "version": "0.0.1",
+  "description": "Learning JS through discordjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eylexander/Project-1B.git"
+  },
+  "author": "Eylexander",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Eylexander/Project-1B/issues"
+  },
+  "homepage": "https://github.com/Eylexander/Project-1B#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "better-sqlite3": "^7.6.2",
+    "chalk": "^4.1.2",
+    "discord.js": "^14.7.1",
+    "moment": "^2.29.4"
+  }
+}

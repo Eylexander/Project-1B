@@ -33,7 +33,7 @@ module.exports.execute = async (client, message, args) => {
 
 // Random variables
     const location = message.guild.region;
-    const adminusers = message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
+    // const adminusers = message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
     // const admins = message.guild.members.filter(member => member.hasPermission("ADMINISTRATOR"));
 
 // Search for args
