@@ -9,7 +9,7 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    if (message.author.id == admin || message.member.hasPermission('ADMINISTRATOR')) {
+    if (message.author.id == admin || message.member.permissions.has('ADMINISTRATOR')) {
         message.channel.bulkDelete(1)
         message.channel.send(args.join(' '))
     }

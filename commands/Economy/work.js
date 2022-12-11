@@ -1,6 +1,6 @@
 const db = require("better-sqlite3");
 const inv = new db('./database/stats.sqlite');
-const { admin } = require('../../settings.json')
+const { admin } = require('../../settings.json');
 
 module.exports.help = {
     name : "work",
@@ -11,12 +11,10 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const getStats = inv.prepare("SELECT * FROM stats WHERE id = ? AND user = ?");
+    const stats = inv.prepare("SELECT * FROM stats WHERE id = ? AND user = ?").get(message.author.id, message.author.tag);
     const setStats = inv.prepare(
         "INSERT OR REPLACE INTO stats (id, user, money, mana) VALUES (@id, @user, @money, @mana);"
     );
-
-    let stats = getStats.get(message.author.id, message.author.tag)
 
     function work(nbMana) {
         inv === new db('./database/stats.sqlite');

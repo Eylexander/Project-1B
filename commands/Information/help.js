@@ -1,3 +1,4 @@
+const { channel } = require('diagnostics_channel');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const settings = require('../../settings.json');
@@ -19,7 +20,7 @@ module.exports.execute = async (client, message, args) => {
             const createCommandName = args[0].charAt(0).toUpperCase() + args[0].slice(1);
 
             const createCommandEmbed = new EmbedBuilder()
-                .setColor('RANDOM')
+                .setColor(Math.floor(Math.random() * 16777214) + 1)
                 .setTitle(createCommandName + " Help")
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
@@ -37,7 +38,7 @@ module.exports.execute = async (client, message, args) => {
             break;
         case (categories.includes(args[0])):
             message.channel.send('Category');
-        default:
+        case undefined || null:
             const createCategoriesEmbed = new EmbedBuilder()
                 .setColor(Math.floor(Math.random() * 16777214) + 1)
                 .setTitle(client.user.username + " commands")
@@ -52,6 +53,9 @@ module.exports.execute = async (client, message, args) => {
             }
             
             message.channel.send({ embeds: [createCategoriesEmbed] })
+            break;
+        default:
+            message.channel.send("I bugged")
             break;
     }
 };

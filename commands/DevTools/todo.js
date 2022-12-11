@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const db = require('better-sqlite3')
 const dev = new db('./database/devtool.sqlite')
-const admin = require('../../settings.json')
+const { admin } = require('../../settings.json')
 
 module.exports.help = {
     name : "todo",
@@ -12,20 +12,12 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const getTodo = dev.prepare("SELECT * FROM tool WHERE id = ?;");
-    const addTodo = dev.prepare(
-        "INSERT INTO tool (id, todo) VALUES (@id, @todo);"
-    );
     const getTodobyId = dev.prepare("SELECT id FROM tool WHERE id = ?;");
     const count = dev.prepare("SELECT * FROM tool").all();
 
     if (!message.author.id === admin) return;
-    if (!args[0]) {
+    if (!args[1] && !args[0] == ('list' || 'show')) {
         return message.channel.send("You need to provide your idea.")
-    } else {
-        if (!args[1] && !args[0] == ('list' || 'show')) {
-            return message.channel.send("You need to provide your idea.")
-        }
     }
 
     switch (args[0]) {
@@ -51,19 +43,20 @@ module.exports.execute = async (client, message, args) => {
             break;
         case 'list':
         case 'show':
-            const countEmbed = new Discord.MessageEmbed()
-            .setDescription(`Todo's`)
-            .setColor('RANDOM')
-            .setTimestamp()
-            .setFooter(`Requested by ${message.author.username}`, message.author.displayAvatarURL({ dynamic: true }))
+            const countEmbed = new EmbedBuilder()
+                .setDescription(`Todo's`)
+                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setTimestamp()
+                .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
 
             for (const data of count) {
                 countEmbed.addFields({ name: `ID : ${data.id}`, value: data.todo, inline: false})
             }
 
-            message.channel.send(countEmbed)
+            message.channel.send({ embeds : [countEmbed] })
             break;
-        default :
+        default:
+            message.channel.send("You need to provide your idea.");
             break;
     }
 };

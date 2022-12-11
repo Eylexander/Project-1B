@@ -10,11 +10,7 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const nbMana = args[0]
-    for (var i = 0 ; i < 5; i++) {
-        message.channel.send(Math.floor(Math.random() * (nbMana-2) + 2)* 10);
-        // more statements
-    }
+    // more statements
 }
 
 // module.exports.execute = async (client, message, args) => {

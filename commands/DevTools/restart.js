@@ -11,9 +11,9 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
+    if (!message.author.id === admin) return;
     try {
-        if (!message.author.id === admin) return ;
-        log('Restarting ...')
+        log('Restarting ...');
         setTimeout(() => {message.delete()}, 1000)
         message.channel.send('Restarting...')    
             .then(async message => {

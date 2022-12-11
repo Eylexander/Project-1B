@@ -17,17 +17,19 @@ module.exports.execute = async (client, message, args) => {
     try {
         const emoteRegex = args[0].match(/<:.+:(\d+)>/)
         const animatedEmoteRegex = args[0].match(/<a:.+:(\d+)>/)
-
         const unicodeEmoji = args[0].match(/((?<!\\)<:[^:]+:(\d+)>)|\p{Emoji_Presentation}|\p{Extended_Pictographic}/gmu);
 
-        if (emoji = emoteRegex) {
-            message.channel.send(`https://cdn.discordapp.com/emojis/${emoji[1]}.png?v=1`)
-        }
-        else if (emoji = animatedEmoteRegex) {
-            message.channel.send(`https://cdn.discordapp.com/emojis/${emoji[1]}.gif?v=1`)
-        }
-        else if (emoji = unicodeEmoji) {
-            message.channel.send(`${unicodeEmoji}`)
+        switch (emoji) {
+            case emoteRegex:
+                message.channel.send(`https://cdn.discordapp.com/emojis/${emoji[1]}.png?v=1`)
+                break;
+            case animatedEmoteRegex:
+                message.channel.send(`https://cdn.discordapp.com/emojis/${emoji[1]}.gif?v=1`)
+                break;
+            case unicodeEmoji:
+                message.channel.send(`${unicodeEmoji}`)
+            default:
+                break;
         }
     } catch (err) {
         log(err)
