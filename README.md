@@ -1,9 +1,9 @@
 # Project-1B
 
 <div align="center">
+
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/Eylexander/Project-1B)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Eylexander/Project-1B/blob/main/LICENSE)
-[![GitHub tag](https://img.shields.io/github/tag/Smaug6739/Spiritus.svg)](https://github.com/Eylexander/Project-1B/tags/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 </div>
