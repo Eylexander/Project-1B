@@ -24,10 +24,8 @@ module.exports.execute = async (client, message, args) => {
         case 'plus':
         case 'add':
         case 'create':
-            let getBiggestId = dev.prepare("SELECT MAX(id) FROM tool").get();
-            let createID = Number(getBiggestId['MAX(id)']) + 1;
             dev.prepare(
-                `INSERT INTO tool (id, todo) VALUES (${createID}, '${args.slice(1).join(' ')}');`
+                `INSERT INTO tool (todo) VALUES ('${args.slice(1).join(' ')}');`
             ).run();
             message.channel.send('The task was added correctly. :thumbsup:')
             break;

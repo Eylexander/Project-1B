@@ -12,7 +12,8 @@ module.exports.execute = async (client, message, args) => {
     if (!message.author.id === admin) return;
 
     switch (args[0]) {
-        case undefined || null:
+        case undefined:
+        case null:
             message.channel.send('You have to tag or Id someone !');
             break;
         default:

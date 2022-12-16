@@ -17,6 +17,7 @@ module.exports.execute = async (client, message, args) => {
     );
 
     let playerStats = getStats.get(message.author.id)
+    inv.prepare(`UPDATE stats SET user = '${message.author.tag}' WHERE id = ${message.author.id}`).run();
     if (!playerStats) {
         playerStats = {
             id : message.author.id,
@@ -28,21 +29,21 @@ module.exports.execute = async (client, message, args) => {
         message.channel.send(`You've just created your own profile!`)
     }
 
-    const getPlayerInventory = new EmbedBuilder()
-        .setColor(Math.floor(Math.random() * 16777214) + 1)
-        .setTitle(message.author.username + '\'s Inventory')
-        .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
-        .addFields(
-            { name: "Money", value: `${playerStats.money} $`, inline: true },
-            { name: 'Energy', value: `${playerStats.mana} mana / 150`, inline: true}
-        )
-        .setTimestamp()
-        .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
-
-
     switch(args[0]) {
-        case undefined || null:
-            message.channel.send(getPlayerInventory)
+        case undefined:
+        case null:
+            const getPlayerInventory = new EmbedBuilder()
+                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setTitle(message.author.username + '\'s Inventory')
+                .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: "Money", value: `${playerStats.money} $`, inline: true },
+                    { name: 'Energy', value: `${playerStats.mana} mana / 150`, inline: true}
+                )
+                .setTimestamp()
+                .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
+
+            message.reply({ embeds: [getPlayerInventory], allowedMentions: { repliedUser: false }})
             break;
         default:
             if (message.mentions.users.first()) {
@@ -62,29 +63,28 @@ module.exports.execute = async (client, message, args) => {
                     .setTimestamp()
                     .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
                 
-                message.channel.send({ embeds: [getUserTagEmbed] })
+                return message.reply({ embeds: [getUserTagEmbed], allowedMentions: { repliedUser: false }})
                     
             } else {
-                // if (args[0].match(/([0-9]*)/)) {
-                //     const getMentionId = args[0].match(/([0-9]*)/)
-                //     const getStrangerbyId = getStats.get(getMentionId[1]);
+                if (args[0].match(/([0-9]*)/)) {
+                    const getMentionId = args[0].match(/([0-9]*)/)
+                    const getStrangerbyId = getStats.get(getMentionId[1]);
 
-                //     if (!getStrangerbyId) return message.channel.send('This user is not a player!')
+                    if (!getStrangerbyId) return message.channel.send('This user is not a player!')
 
-                //     const getUserIdEmbed = new EmbedBuilder()
-                //         .setColor(Math.floor(Math.random() * 16777214) + 1)
-                //         .setTitle(getStrangerbyId.tag.split("#")[0] + '\'s Inventory')
-                //         .setThumbnail(getUserObjectId.displayAvatarURL({ dynamic : true }))
-                //         .addFields(
-                //             { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
-                //             { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true}
-                //         )
-                //         .setTimestamp()
-                //         .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
+                    const getUserIdEmbed = new EmbedBuilder()
+                        .setColor(Math.floor(Math.random() * 16777214) + 1)
+                        .setTitle(getStrangerbyId.user.split('#')[0] + '\'s Inventory')
+                        .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+                        .addFields(
+                            { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
+                            { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true}
+                        )
+                        .setTimestamp()
+                        .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
                     
-                //     message.channel.send({ embeds: [getUserIdEmbed] })
-                // }
-                message.channel.send({ embeds: [getPlayerInventory] })
+                    return message.reply({ embeds: [getUserIdEmbed], allowedMentions: { repliedUser: false }})
+                }
             }
             break;
     }

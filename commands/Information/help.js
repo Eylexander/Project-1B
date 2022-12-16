@@ -38,7 +38,8 @@ module.exports.execute = async (client, message, args) => {
             break;
         case (categories.includes(args[0])):
             message.channel.send('Category');
-        case undefined || null:
+        case undefined:
+        case null:
             const createCategoriesEmbed = new EmbedBuilder()
                 .setColor(Math.floor(Math.random() * 16777214) + 1)
                 .setTitle(client.user.username + " commands")

@@ -17,7 +17,7 @@ const { onMessage } = require('../tools/message_listener.js');
 module.exports = {
     name: Events.MessageCreate,
     once: false,
-    // execute(client, message) {
+    // execute(message) {
     //     if (message.author.bot) return;
     //     if(message.content.startsWith(prefix)) {
     //         if(ban.prepare(`SELECT id FROM ban WHERE id = ?;`).get(message.author.id)) return message.author.send("You are banned from using this bot.");

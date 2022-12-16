@@ -13,8 +13,9 @@ module.exports.execute = async (client, message, args) => {
     const sleep = ms => new Promise(r => setTimeout(r, ms))
 
     switch (args[0] && args[1]) {
-        case undefined || null:
-            message.channel.send('You have to tag or Id someone !');
+        case undefined:
+        case null:
+            message.reply({content: 'You have to tag or Id someone !', allowedMentions: { repliedUser: false }});
             break;
         default:
             if (message.mentions.users.first()) {

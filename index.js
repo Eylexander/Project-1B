@@ -18,8 +18,8 @@ console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 // WordReading System
-const { onMessage } = require('./tools/message_listener.js')
-client.on('messageCreate', onMessage.bind(null, client))
+const { onMessage } = require('./tools/message_listener.js');
+client.on('messageCreate', onMessage.bind(null, client));
 
 // Reading all Event Files
 
