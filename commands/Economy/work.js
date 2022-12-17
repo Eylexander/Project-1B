@@ -11,19 +11,24 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
-    const stats = inv.prepare("SELECT * FROM stats WHERE id = ? AND user = ?").get(message.author.id, message.author.tag);
+    const stats = inv.prepare("SELECT * FROM stats WHERE id = ?;").get(message.author.id);
     const setStats = inv.prepare(
-        "INSERT OR REPLACE INTO stats (id, user, money, mana) VALUES (@id, @user, @money, @mana);"
+        "INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, business, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @business, @level, @xp);"
     );
 
     function work(nbMana) {
         inv === new db('./database/stats.sqlite');
-        workValue = Math.ceil(Math.random()*(8-2)+2 * nbMana)
-        inv.prepare("INSERT OR REPLACE INTO stats (id, user, money, mana) VALUES (@id, @user, @money, @mana);").run({
+        const getLevelData = inv.prepare("SELECT level FROM stats WHERE id = ?;").get(message.author.id).level;
+        workValue = Math.ceil(Math.random()*(15*getLevelData-2*getLevelData)+3*getLevelData * nbMana)
+        inv.prepare("INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, business, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @business, @level, @xp);").run({
             id : message.author.id,
             user : message.author.tag,
             money : stats.money + workValue,
-            mana : stats.mana - nbMana
+            mana : stats.mana - nbMana,
+            maxmana : stats.maxmana,
+            business : stats.business,
+            level : stats.level,
+            xp : Math.floor(stats.xp + workValue/4),
         })
         message.channel.send(`You have used ${nbMana} mana to work and made ${workValue}$`)
     }
@@ -33,11 +38,29 @@ module.exports.execute = async (client, message, args) => {
             id : message.author.id,
             user : message.author.tag,
             money : 0,
-            mana : 10
+            mana : 10,
+            maxmana : 150,
+            business : 'none',
+            level : 1,
+            xp : 0,
         }
         setStats.run(stats)
         message.channel.send(`You've just created your own profile!`)
         work(1)
+    }
+
+    if (stats.xp >= stats.level**2*100) {
+        setStats.run({
+            id : message.author.id,
+            user : message.author.tag,
+            money : stats.money,
+            mana : stats.mana,
+            maxmana : stats.maxmana + 10,
+            business : stats.business,
+            level : stats.level + 1,
+            xp : stats.xp - stats.level*100,
+        })
+        message.channel.send(`You've just leveled up! You're now level ${stats.level+1}!`)
     }
 
     if (message.author.id === admin && args[0] === 'cheat') {
@@ -45,7 +68,11 @@ module.exports.execute = async (client, message, args) => {
             id : message.author.id,
             user : message.author.tag,
             money : stats.money,
-            mana : stats.mana + Number(args[1])
+            mana : stats.mana + Number(args[1]),
+            maxmana : stats.maxmana,
+            business : stats.business,
+            level : stats.level,
+            xp : stats.xp,
         })
         return message.channel.send(`Here you go boss, here's your free ${args[1]} mana!`)
     }

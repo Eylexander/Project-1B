@@ -13,7 +13,7 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
     const getStats = inv.prepare("SELECT * FROM stats WHERE id = ?");
     const setStats = inv.prepare(
-        "INSERT OR REPLACE INTO stats (id, user, money, mana) VALUES (@id, @user, @money, @mana);"
+        "INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, business, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @business, @level, @xp);"
     );
 
     let playerStats = getStats.get(message.author.id)
@@ -23,7 +23,11 @@ module.exports.execute = async (client, message, args) => {
             id : message.author.id,
             user : message.author.tag,
             money : 0,
-            mana : 10
+            mana : 10,
+            maxmana : 150,
+            business : 'none',
+            level : 1,
+            xp : 0,
         }
         setStats.run(playerStats)
         message.channel.send(`You've just created your own profile!`)
