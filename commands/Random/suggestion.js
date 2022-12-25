@@ -1,11 +1,8 @@
 const { prefix, admin } = require('../../settings.json');
-const moment = require('moment');
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+const { EmbedBuilder } = require('discord.js');
 
 const db = require("better-sqlite3");
 const sent = new db('./database/infos.sqlite');
-
-const { EmbedBuilder } = require('discord.js');
 
 module.exports.help = {
     name : "suggestion",

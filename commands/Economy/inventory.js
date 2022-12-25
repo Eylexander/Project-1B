@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const db = require("better-sqlite3");
-const inv = new db('./database/stats.sqlite');
+const inv = new db('./database/economy/stats.sqlite');
 
 module.exports.help = {
     name : "inventory",
@@ -26,6 +26,7 @@ module.exports.execute = async (client, message, args) => {
             mana : 10,
             maxmana : 150,
             business : 'none',
+            businessID : 0,
             level : 1,
             xp : 0,
         }
@@ -42,7 +43,10 @@ module.exports.execute = async (client, message, args) => {
                 .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
                 .addFields(
                     { name: "Money", value: `${playerStats.money} $`, inline: true },
-                    { name: 'Energy', value: `${playerStats.mana} mana / 150`, inline: true}
+                    { name: 'Energy', value: `${playerStats.mana} mana / 150`, inline: true},
+                    { name: 'Business', value: `${playerStats.business}`, inline: false},
+                    { name: 'Level', value: `${playerStats.level}`, inline: true},
+                    { name: 'XP', value: `${playerStats.xp}`, inline: true}
                 )
                 .setTimestamp()
                 .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
@@ -62,7 +66,10 @@ module.exports.execute = async (client, message, args) => {
                     .setThumbnail(getMentionTag.displayAvatarURL({ dynamic : true }))
                     .addFields(
                         { name: "Money", value: `${getStranger.money} $`, inline: true },
-                        { name: 'Energy', value: `${getStranger.mana} mana / 150`, inline: true}
+                        { name: 'Energy', value: `${getStranger.mana} mana / 150`, inline: true},
+                        { name: 'Business', value: `${getStranger.business}`, inline: false},
+                        { name: 'Level', value: `${getStranger.level}`, inline: true},
+                        { name: 'XP', value: `${getStranger.xp}`, inline: true}
                     )
                     .setTimestamp()
                     .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
@@ -82,7 +89,10 @@ module.exports.execute = async (client, message, args) => {
                         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                         .addFields(
                             { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
-                            { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true}
+                            { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true},
+                            { name: 'Business', value: `${getStrangerbyId.business}`, inline: false},
+                            { name: 'Level', value: `${getStrangerbyId.level}`, inline: true},
+                            { name: 'XP', value: `${getStrangerbyId.xp}`, inline: true}
                         )
                         .setTimestamp()
                         .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})

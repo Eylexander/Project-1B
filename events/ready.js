@@ -5,7 +5,7 @@ const dbUtils = require('../tools/dbUtils.js');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 const db = require("better-sqlite3");
-const stats = new db('./database/stats.sqlite');
+const stats = new db('./database/economy/stats.sqlite');
 
 module.exports = {
   name: Events.ClientReady,
@@ -27,12 +27,12 @@ module.exports = {
       for (const user of users) {
         const getManaAmount = stats.prepare("SELECT mana, maxmana FROM stats WHERE id = ?;").get(user.id);
 
-        if (getManaAmount.mana <= getManaAmount.maxmana) {
+        if (getManaAmount.mana < getManaAmount.maxmana) {
           stats.prepare("UPDATE stats SET mana = mana + 1 WHERE id = ?;").run(user.id);
         } else {
           clearInterval(interval);
         }
       }
-    }, 60000);
+    }, 600);
   }
 }

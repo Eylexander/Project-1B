@@ -1,5 +1,5 @@
 const db = require("better-sqlite3");
-const inv = new db('./database/stats.sqlite');
+const inv = new db('./database/economy/stats.sqlite');
 const { admin } = require('../../settings.json');
 
 module.exports.help = {
@@ -16,6 +16,23 @@ module.exports.execute = async (client, message, args) => {
         "INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, business, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @business, @level, @xp);"
     );
 
+    function levelup() {
+        if (stats.xp >= stats.level**2*100) {
+            setStats.run({
+                id : message.author.id,
+                user : message.author.tag,
+                money : stats.money,
+                mana : stats.mana,
+                maxmana : stats.maxmana,
+                business : stats.business,
+                businessID : stats.businessID,
+                level : stats.level + 1,
+                xp : stats.xp - stats.level**2*100,
+            })
+            message.channel.send(`You've just leveled up to level ${stats.level + 1}!`)
+        }
+    }
+
     function work(nbMana) {
         inv === new db('./database/stats.sqlite');
         const getLevelData = inv.prepare("SELECT level FROM stats WHERE id = ?;").get(message.author.id).level;
@@ -27,9 +44,13 @@ module.exports.execute = async (client, message, args) => {
             mana : stats.mana - nbMana,
             maxmana : stats.maxmana,
             business : stats.business,
+            businessID : stats.businessID,
             level : stats.level,
             xp : Math.floor(stats.xp + workValue/4),
         })
+
+        levelup()
+
         message.channel.send(`You have used ${nbMana} mana to work and made ${workValue}$`)
     }
 
@@ -41,6 +62,7 @@ module.exports.execute = async (client, message, args) => {
             mana : 10,
             maxmana : 150,
             business : 'none',
+            businessID : 0,
             level : 1,
             xp : 0,
         }
@@ -49,21 +71,7 @@ module.exports.execute = async (client, message, args) => {
         work(1)
     }
 
-    if (stats.xp >= stats.level**2*100) {
-        setStats.run({
-            id : message.author.id,
-            user : message.author.tag,
-            money : stats.money,
-            mana : stats.mana,
-            maxmana : stats.maxmana + 10,
-            business : stats.business,
-            level : stats.level + 1,
-            xp : stats.xp - stats.level*100,
-        })
-        message.channel.send(`You've just leveled up! You're now level ${stats.level+1}!`)
-    }
-
-    if (message.author.id === admin && args[0] === 'cheat') {
+    if (message.author.id === admin && args[0] === 'cheat' && args[1]) {
         setStats.run({
             id : message.author.id,
             user : message.author.tag,
@@ -71,6 +79,7 @@ module.exports.execute = async (client, message, args) => {
             mana : stats.mana + Number(args[1]),
             maxmana : stats.maxmana,
             business : stats.business,
+            businessID : stats.businessID,
             level : stats.level,
             xp : stats.xp,
         })
