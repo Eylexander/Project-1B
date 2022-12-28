@@ -1,38 +1,30 @@
-const { ActivityType, Events } = require('discord.js');
-const chalk = require('chalk');
-const moment = require('moment');
 const dbUtils = require('../tools/dbUtils.js');
+const chalk = require('chalk');
+const fs = require('node:fs');
+const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-const db = require("better-sqlite3");
-const stats = new db('./database/economy/stats.sqlite');
-
-module.exports = {
-  name: Events.ClientReady,
-  once: true,
-  execute(client) {
+module.exports = (client) => {
     const ssize = client.guilds.cache.size;
     const usize = eval(client.guilds.cache.map(g => g.memberCount).join(' + '));
     
     log(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgGreen(`ON`) + (`.`));
-    client.user.setActivity('In Progress...', { type: ActivityType.Watching });
-    client.user.setStatus('dnd');
+    // client.user.setPresence({activities: [{ name: 'In Progress...', type: 'WATCHING' }], status: 'online'});
+    client.user.setActivity('In Progress...', { type: 'WATCHING' });
     log(chalk.black.bgWhite(`${ssize} Servers`) + (` - `) + chalk.black.bgWhite(`${usize} Users`) + (`.`));
+    
+    // Defining Files
+if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
+if (!fs.existsSync('./logs/errors')) { fs.mkdirSync('./logs/errors') };
+const file = (moment().format('YY-MM-DD HH') + ('h') + moment().format('mm'));
+const folder = './logs/' + (moment().format('YYYY-MM-DD'));
+if (!fs.existsSync(folder)) { fs.mkdirSync(folder) };
+
+    // Creating the writer
+var stream = fs.createWriteStream(`${folder}/${file}.md`, {'flags': 'w'});
+stream.write(`# Session file started at ${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}\r\n`);
+stream.write(`## [${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] Client is ON | ${ssize} Servers | ${usize} Users \r\n`);
+stream.write('--- \r\n');
 
     dbUtils.initDatabases();
-
-    const interval = setInterval(async () => {
-      const users = stats.prepare("SELECT * FROM stats;").all();
-
-      for (const user of users) {
-        const getManaAmount = stats.prepare("SELECT mana, maxmana FROM stats WHERE id = ?;").get(user.id);
-
-        if (getManaAmount.mana < getManaAmount.maxmana) {
-          stats.prepare("UPDATE stats SET mana = mana + 1 WHERE id = ?;").run(user.id);
-        } else {
-          clearInterval(interval);
-        }
-      }
-    }, 600);
-  }
-}
+};

@@ -1,3 +1,4 @@
+const { SlashCommandBuilder } = require('discord.js');
 const fs = require("fs")
 const { admin } = require('../../settings.json')
 const moment = require('moment');
@@ -49,6 +50,93 @@ module.exports.execute = async (client, message, args) => {
                     } else {
                         log('Some other error: ', err.code);
                         message.channel.send('I failed somewhere')
+                    }
+                });
+            }
+            break;
+    }
+};
+
+module.exports.data = new SlashCommandBuilder()
+    .setName(module.exports.help.name)
+    .setDescription(module.exports.help.description)
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('add')
+            .setDescription('Add a database')
+            .addStringOption(option =>
+                option.setName('name')
+                    .setDescription('Name of the database')
+                    .setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('remove')
+            .setDescription('Remove a database')
+            .addStringOption(option =>
+                option.setName('name')
+                    .setDescription('Name of the database')
+                    .setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('list')
+            .setDescription('List all databases'))
+    .setDMPermission(true);
+
+module.exports.run = async (client, interaction) => {
+    if (!(interaction.member?.user.id ?? interaction.user.id) === admin) return;
+
+    switch (interaction.options.getSubcommand()) {
+        case 'add':
+            interaction.reply({
+                content: "U serious bro ?",
+                ephemeral: true
+            })
+            break;
+        case 'remove':
+            fs.stat(`./database/${interaction.options.getString('name')}.sqlite`, function(err, stat) {
+                if(err == null) {
+                    interaction.reply({
+                        content: `Database named ${interaction.options.getString('name')}.sqlite existing!`,
+                        ephemeral: true
+                    })
+                    try {
+                        fs.unlinkSync(`./database/${interaction.options.getString('name')}.sqlite`)
+                    } catch (err) {
+                        log(err)
+                        interaction.reply({
+                            content: 'I can\'t delete that!',
+                            ephemeral: true
+                        })
+                    }
+                } else if(err.code === 'ENOENT') {
+                    interaction.reply({
+                        content: 'Database not existing!',
+                        ephemeral: true
+                    })
+                } else {
+                    log('Some other error: ', err.code);
+                    interaction.reply({
+                        content: 'I failed somewhere',
+                        ephemeral: true
+                    })
+                }
+            });
+            break;
+        case 'list':
+            const databaseFolder = fs.readdirSync('./database');
+            for (const file of databaseFolder) {
+                fs.stat(`./database/${file}.sqlite`, function(err, stat) {
+                    if(err == null) {
+                        interaction.reply({
+                            content: `Database named ${file}.sqlite existing!`,
+                            ephemeral: true
+                        })
+                    } else {
+                        log('Some other error: ', err.code);
+                        interaction.reply({
+                            content: 'I failed somewhere',
+                            ephemeral: true
+                        })
                     }
                 });
             }

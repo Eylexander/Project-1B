@@ -4,11 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { token } = require('./settings.json');
 
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, Events } = require('discord.js');
 const client = new Client({
+	partials: ["CHANNEL"],
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.DirectMessages,
 		GatewayIntentBits.MessageContent,
 		GatewayIntentBits.GuildMembers,
 	],
@@ -25,13 +27,8 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	} else if (!event.once) {
-		client.on(event.name, (...args) => event.execute(...args));
-	} else {
-        console.error(`Event ${event.name} does not have a valid type.`);
-    }
+	let eventName = file.split(".")[0];
+	client.on(eventName, event.bind(null, client));
 }
 
 // Reading all Command Folders
@@ -41,8 +38,20 @@ for (const folder of commandFolders) {
     log(`Loading Commands from Folder: ${folder}`)
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
-        client.commands.set(command.help.name, command);
+        client.commands.set(path.parse(file).name, command);
     }
 }
+
+// InteractionCreate Event Temporary
+const { onInteraction } = require('./tools/InteractionCreate.js');
+client.on(Events.InteractionCreate, async interaction => {
+	onInteraction(client, interaction);
+});
+
+const { onLoad } = require('./tools/economyHandler.js');
+client.on(Events.ready, async () => {
+	onLoad().execute();
+});
+// End of Temporary
 
 client.login(token);

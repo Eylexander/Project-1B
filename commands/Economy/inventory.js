@@ -1,12 +1,12 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const db = require("better-sqlite3");
 const inv = new db('./database/economy/stats.sqlite');
 
 module.exports.help = {
-    name : "inventory",
+    name: "inventory",
     description: 'See your Inventory!',
-    aliases : ['me','balance','inv','money'],
-    usage : '< none | player >',
+    aliases: ['me','balance','inv','money'],
+    usage: '< none | player >',
     parameters: '<tag>'
 };
 
@@ -73,7 +73,7 @@ module.exports.execute = async (client, message, args) => {
                     )
                     .setTimestamp()
                     .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
-                
+                    
                 return message.reply({ embeds: [getUserTagEmbed], allowedMentions: { repliedUser: false }})
                     
             } else {
@@ -96,10 +96,23 @@ module.exports.execute = async (client, message, args) => {
                         )
                         .setTimestamp()
                         .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
-                    
+                        
                     return message.reply({ embeds: [getUserIdEmbed], allowedMentions: { repliedUser: false }})
                 }
             }
             break;
     }
+};
+
+module.exports.data = new SlashCommandBuilder()
+    .setName(module.exports.help.name)
+    .setDescription(module.exports.help.description)
+    .addStringOption(option =>
+        option
+            .setName('player')
+            .setDescription('The player you want to see the inventory of'))
+    .setDMPermission(true)
+
+module.exports.run = async (client, interaction) => {
+    interaction.reply({ content: "This command is not yet available!", ephemeral: true })
 };

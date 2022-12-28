@@ -3,15 +3,17 @@ const { token } = require('./settings.json');
 const fs = require('node:fs');
 
 const commands = [];
-// Grab all the command files from the commands directory you created earlier
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-// for (const file of commandFiles) {
-// 	const command = require(`./commands/${file}`);
-	const command = require(`./commands/Information/ping.js`);
-	commands.push(command.data.toJSON());
-// }
+const commandFolders = fs.readdirSync('./commands');
+for (const folder of commandFolders) {
+    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const command = require(`./commands/${folder}/${file}`);
+        commands.push(command.data.toJSON());
+		// console.log(`Loaded Command: ${command.help.name}`);
+		// console.log(command.data.toJSON());
+    }
+}
 
 // Construct and prepare an instance of the REST module
 const rest = new REST({ version: '10' }).setToken(token);

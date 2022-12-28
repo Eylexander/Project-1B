@@ -1,17 +1,31 @@
-const Discord = require('discord.js');
-var os = require('os');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports.help = {
-    name : "test",
-    description: 'Pong command',
-    aliases : ['tst','try'],
-    usage : 'none',
+    name: "test",
+    description: 'Test random stuff command',
+    aliases: ['tst','try'],
+    usage: 'none',
     parameters: 'none'
 };
 
 module.exports.execute = async (client, message, args) => {
-    // more statements
-}
+    message.reply({
+        content: 'Pong!',
+        allowedMentions: { repliedUser: false }
+    })
+};
+
+module.exports.data = new SlashCommandBuilder()
+    .setName(module.exports.help.name)
+    .setDescription(module.exports.help.description)
+    .setDMPermission(true)
+
+module.exports.run = async (client, interaction) => {
+    interaction.reply({
+        content: 'Pong!',
+        ephemeral: true
+    })
+};
 
 // module.exports.execute = async (client, message, args) => {
 //     const notSupported = "The operating system used to host this bot is not supported for this command."

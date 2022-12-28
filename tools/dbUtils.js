@@ -56,11 +56,9 @@ exports.initDatabases = function () {
     }
 
     // Define the infos.sqlite database for the suggestion system
-    const suggestion = sent.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'infos';").get();
+    const suggestion = sent.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'infos';").get();
     if (!suggestion['count(*)']) {
         sent.prepare("CREATE TABLE infos (id TEXT PRIMARY KEY, user TEXT, name INTEGER, suggestions INTEGER);").run();
-        // Ensure that the "id" row is always unique and indexed.
-        sent.prepare("CREATE UNIQUE INDEX idx_infos_id ON infos (id);").run();
         sent.pragma("asynchronous = 1");
         sent.pragma("journal_mode = wal");
     }

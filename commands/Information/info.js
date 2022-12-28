@@ -1,20 +1,21 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 var os = require('os');
-const {version} = require('../../package.json');
-const { admin } = require('../../settings.json')
+const { version } = require('../../package.json');
+const { admin } = require('../../settings.json');
+
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 module.exports.help = {
-    name: "info",
-    description : "Show bot information",
-    aliases : ["stats", "botinfo","infos"],
+    name : "info",
+    description: 'Show bot information',
+    aliases : ['stats', 'botinfo','infos'],
     usage : '<server | bot | host | owner> [Mode]',
-    parameters : ['server', 'serveur', 'serv', 'bot', 'client', 'discordbot', 'host', 'hs', 'heberg', 'owner', 'dev', 'eylexander']
+    parameters: ['server', 'serveur', 'serv', 'bot', 'client', 'discordbot', 'host', 'hs', 'heberg', 'owner', 'dev', 'eylexander']
 };
 
 module.exports.execute = async (client, message, args) => {
-// Calculate precise RAM
+    // Calculate precise RAM
     const totalram = ((os.totalmem() / 10**6 + " ").split('.')[0]);
     const freeram = ((os.freemem() / 10**6 + " ").split('.')[0]);
     const usedram = (((os.totalmem() - os.freemem()) / 10**6 + " ").split('.')[0]);
@@ -22,7 +23,7 @@ module.exports.execute = async (client, message, args) => {
 
     const usedcpu = process.cpuUsage().heapUsed;
 
-// Calculate precise uptime
+    // Calculate precise uptime
     let totalSeconds = (client.uptime / 1000);
     let days = Math.floor(totalSeconds / 86400);
     totalSeconds %= 86400;
@@ -31,13 +32,12 @@ module.exports.execute = async (client, message, args) => {
     let minutes = Math.floor(totalSeconds / 60);
     let seconds = Math.floor(totalSeconds % 60);
 
-// Random variables
+    // Random variables
     const location = message.guild.region;
     // const adminusers = message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
     // const admins = message.guild.members.filter(member => member.hasPermission("ADMINISTRATOR"));
 
-// Search for args
-
+    // Search for args
     switch(args[0]) {
         case 'server':
         case 'serveur':
@@ -78,7 +78,7 @@ module.exports.execute = async (client, message, args) => {
                 )
                 .setTimestamp()
                 .setFooter({text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic : true })});
-            
+                
             switch(args[1]) {
                 case 'dev':
                 case 'specs':
@@ -136,7 +136,7 @@ module.exports.execute = async (client, message, args) => {
                 )
                 .setTimestamp()
                 .setFooter({text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic : true })});
-            
+                
             message.channel.send({ embeds: [getOwnerEmbed] })
             break;
         default:
@@ -158,7 +158,48 @@ module.exports.execute = async (client, message, args) => {
             message.channel.send({ embeds: [getGlobalEmbed] })
             break;
     }
-}
+};
+
+module.exports.data = new SlashCommandBuilder()
+    .setName(module.exports.help.name)
+    .setDescription(module.exports.help.description)
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('server')
+            .setDescription('Show server information')
+            .addStringOption(option =>
+                option.setName('mode')
+                    .setDescription('Show server information')
+                    .setRequired(false)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('bot')
+            .setDescription('Show bot information')
+            .addStringOption(option =>
+                option.setName('mode')
+                    .setDescription('Show bot information')
+                    .setRequired(false)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('host')
+            .setDescription('Show host information')
+            .addStringOption(option =>
+                option.setName('mode')
+                    .setDescription('Show host information')
+                    .setRequired(false)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('owner')
+            .setDescription('Show owner information')
+            .addStringOption(option =>
+                option.setName('mode')
+                    .setDescription('Show owner information')
+                    .setRequired(false)))
+    .setDMPermission(false)
+
+module.exports.run = async (client, interaction) => {
+    interaction.reply({ content: 'This command is not available in DMs', ephemeral: true })
+};
 
 // Function not working, need to improve it
 // { name: 'Member Count', value: `${message.guild.memberCount - message.guild.members.filter(m=>m.user.bot).size} (${message.guild.members.filter(m=>m.user.bot).size} bots)`, inline: true},
