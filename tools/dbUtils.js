@@ -31,7 +31,7 @@ exports.initDatabases = function () {
 
     const business = bus.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'business';").get();
     if (!business['count(*)']) {
-        bus.prepare("CREATE TABLE business (id TEXT PRIMARY KEY, business TEXT, level INTEGER, number INTEGER);").run();
+        bus.prepare("CREATE TABLE business (id TEXT PRIMARY KEY, business TEXT, salary INTEGER, level INTEGER, number INTEGER, description TEXT, image TEXT);").run();
         // Ensure that the "id" row is always unique and indexed.
         bus.prepare("CREATE UNIQUE INDEX idx_business_id ON business (id);").run();
         bus.pragma("asynchronous = 1");

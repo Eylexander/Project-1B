@@ -15,6 +15,7 @@ module.exports.execute = async (client, message, args) => {
     const setStats = inv.prepare(
         "INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, business, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @business, @level, @xp);"
     );
+    const makeName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 
     let playerStats = getStats.get(message.author.id)
     inv.prepare(`UPDATE stats SET user = '${message.author.tag}' WHERE id = ${message.author.id}`).run();
@@ -44,7 +45,7 @@ module.exports.execute = async (client, message, args) => {
                 .addFields(
                     { name: "Money", value: `${playerStats.money} $`, inline: true },
                     { name: 'Energy', value: `${playerStats.mana} mana / 150`, inline: true},
-                    { name: 'Business', value: `${playerStats.business}`, inline: false},
+                    { name: 'Business', value: `${makeName(playerStats.business)}`, inline: false},
                     { name: 'Level', value: `${playerStats.level}`, inline: true},
                     { name: 'XP', value: `${playerStats.xp}`, inline: true}
                 )
@@ -67,7 +68,7 @@ module.exports.execute = async (client, message, args) => {
                     .addFields(
                         { name: "Money", value: `${getStranger.money} $`, inline: true },
                         { name: 'Energy', value: `${getStranger.mana} mana / 150`, inline: true},
-                        { name: 'Business', value: `${getStranger.business}`, inline: false},
+                        { name: 'Business', value: `${makeName(getStranger.business)}`, inline: false},
                         { name: 'Level', value: `${getStranger.level}`, inline: true},
                         { name: 'XP', value: `${getStranger.xp}`, inline: true}
                     )
@@ -90,7 +91,7 @@ module.exports.execute = async (client, message, args) => {
                         .addFields(
                             { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
                             { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true},
-                            { name: 'Business', value: `${getStrangerbyId.business}`, inline: false},
+                            { name: 'Business', value: `${makeName(getStrangerbyId.business)}`, inline: false},
                             { name: 'Level', value: `${getStrangerbyId.level}`, inline: true},
                             { name: 'XP', value: `${getStrangerbyId.xp}`, inline: true}
                         )

@@ -54,4 +54,7 @@ client.on(Events.ready, async () => {
 });
 // End of Temporary
 
+// Mana regeneration
+require('./tools/economyHandler.js').onLoad();
+
 client.login(token);

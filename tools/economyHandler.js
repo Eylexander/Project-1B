@@ -3,7 +3,7 @@ const stats = new db('./database/economy/stats.sqlite');
 
 exports.onLoad = function () {
     // Mana regeneration
-    const interval = setInterval(async () => {
+    setInterval(async () => {
         const users = stats.prepare("SELECT * FROM stats;").all();
     
         for (const user of users) {
@@ -11,9 +11,10 @@ exports.onLoad = function () {
     
         if (getManaAmount.mana < getManaAmount.maxmana) {
             stats.prepare("UPDATE stats SET mana = mana + 1 WHERE id = ?;").run(user.id);
+            // console.log(`Mana regeneration for ${user.id}!`);
         } else {
-            clearInterval(interval);
+            clearInterval(this);
         }
         }
-    }, 600);
+    }, 2*60*1000);
 };
