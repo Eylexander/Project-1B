@@ -6,6 +6,7 @@ const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 const db = require("better-sqlite3");
+if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
 const ban = new db('./database/blockedusers.sqlite');
 
 // Creating the writer

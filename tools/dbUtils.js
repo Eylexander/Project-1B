@@ -19,16 +19,6 @@ const usit = new db('./database/economy/useritems.sqlite');
 
 exports.initDatabases = function () {
     // Define the stats.sqlite database for the economy system
-    const stats = inv.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'stats';").get();
-    if (!stats['count(*)']) {
-        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER, mana INTEGER, maxmana INTEGER, business TEXT, businessID INTEGER, level INTEGER, xp INTEGER);").run();
-        inv.prepare("ALTER TABLE stats ADD FOREIGN KEY (businessID) REFERENCES business (id);").run();
-        // Ensure that the "id" row is always unique and indexed.
-        inv.prepare("CREATE UNIQUE INDEX idx_stats_id ON stats (id);").run();
-        inv.pragma("asynchronous = 1");
-        inv.pragma("journal_mode = wal");
-    }
-
     const business = bus.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'business';").get();
     if (!business['count(*)']) {
         bus.prepare("CREATE TABLE business (id TEXT PRIMARY KEY, business TEXT, salary INTEGER, level INTEGER, number INTEGER, description TEXT, image TEXT);").run();
@@ -36,6 +26,15 @@ exports.initDatabases = function () {
         bus.prepare("CREATE UNIQUE INDEX idx_business_id ON business (id);").run();
         bus.pragma("asynchronous = 1");
         bus.pragma("journal_mode = wal");
+    }
+
+    const stats = inv.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'stats';").get();
+    if (!stats['count(*)']) {
+        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER, mana INTEGER, maxmana INTEGER, business TEXT, businessID INTEGER, level INTEGER, xp INTEGER, FOREIGN KEY (businessID) REFERENCES business (id));").run();
+        // Ensure that the "id" row is always unique and indexed.
+        inv.prepare("CREATE UNIQUE INDEX idx_stats_id ON stats (id);").run();
+        inv.pragma("asynchronous = 1");
+        inv.pragma("journal_mode = wal");
     }
 
     const items = ite.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'items';").get();
@@ -49,12 +48,11 @@ exports.initDatabases = function () {
 
     const useritems = usit.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'useritems';").get();
     if (!useritems['count(*)']) {
-        usit.prepare("CREATE TABLE useritems (id TEXT PRIMARY KEY, user TEXT, itemid INTEGER, amount INTEGER);").run();
-        usit.prepare("ALTER TABLE useritems ADD FOREIGN KEY (itemid) REFERENCES items (id);").run();
+        usit.prepare("CREATE TABLE useritems (id TEXT PRIMARY KEY, user TEXT, itemid INTEGER, amount INTEGER, FOREIGN KEY (itemid) REFERENCES items (id));").run();
         usit.pragma("asynchronous = 1");
         usit.pragma("journal_mode = wal");
     }
-
+    
     // Define the infos.sqlite database for the suggestion system
     const suggestion = sent.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'infos';").get();
     if (!suggestion['count(*)']) {
