@@ -4,12 +4,14 @@ const fs = require('node:fs');
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-module.exports = (client) => {
+module.exports = async (client) => {
     const ssize = client.guilds.cache.size;
     const usize = eval(client.guilds.cache.map(g => g.memberCount).join(' + '));
     
     log(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgGreen(`ON`) + (`.`));
-    client.user.setPresence({ activities: [{ name: 'Progress...' }], status: 'idle' });
+    // client.user.setPresence({ activities: [{ name: 'Progress...' }], status: 'idle' });
+    await client.user.setActivity({ name: "Progress...", type: 'WATCHING' });
+    await client.user.setStatus('online');
     log(chalk.black.bgWhite(`${ssize} Servers`) + (` - `) + chalk.black.bgWhite(`${usize} Users`) + (`.`));
     
     // Defining Files
