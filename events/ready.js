@@ -9,8 +9,7 @@ module.exports = (client) => {
     const usize = eval(client.guilds.cache.map(g => g.memberCount).join(' + '));
     
     log(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgGreen(`ON`) + (`.`));
-    // client.user.setPresence({activities: [{ name: 'In Progress...', type: 'WATCHING' }], status: 'online'});
-    client.user.setActivity('In Progress...', { type: 'WATCHING' });
+    client.user.setPresence({ activities: [{ name: 'Progress...' }], status: 'idle' });
     log(chalk.black.bgWhite(`${ssize} Servers`) + (` - `) + chalk.black.bgWhite(`${usize} Users`) + (`.`));
     
     // Defining Files
