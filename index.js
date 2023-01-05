@@ -49,8 +49,17 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 const { onLoad } = require('./tools/economyHandler.js');
-client.on(Events.ready, async () => {
+client.on(Events.ready, () => {
 	onLoad().execute();
+
+	// setInterval (async function () {
+    //     client.user.setActivity("Progress...", { type: 'WATCHING' });
+    //     client.user.setStatus('online');
+    // }, 1000);
+
+	var interval = setInterval (function () {
+        client.user.setActivity("Progress...", { type: 'WATCHING' });
+    }, 1* 3000);
 });
 // End of Temporary
 

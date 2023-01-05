@@ -9,9 +9,12 @@ module.exports = async (client) => {
     const usize = eval(client.guilds.cache.map(g => g.memberCount).join(' + '));
     
     log(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgGreen(`ON`) + (`.`));
-    // client.user.setPresence({ activities: [{ name: 'Progress...' }], status: 'idle' });
-    await client.user.setActivity({ name: "Progress...", type: 'WATCHING' });
-    await client.user.setStatus('online');
+
+    // setInterval(async () => {
+    //     await client.user.setActivity("Progress...", { type: 'WATCHING' });
+    //     await client.user.setStatus('online');
+    // }, 1000);
+
     log(chalk.black.bgWhite(`${ssize} Servers`) + (` - `) + chalk.black.bgWhite(`${usize} Users`) + (`.`));
     
     // Defining Files

@@ -32,7 +32,7 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
     };
     for (const selfkill of suicide) {
         if (message.content.toLowerCase().includes(selfkill)) {
-            message.channel.send('If anyone is contemplating suicide, please do not do it. It is not worth it, call this number instead: 1-800-273-8255. Or if you are not in the USA you can find your local line here: http://www.suicide.org/international-suicide-hotlines.html')
+            message.channel.send('If anyone is contemplating suicide, please do not do it.\nIt is not worth it, call this number instead from SOS Amitié: **09 72 39 40 50**.\nOr if you are not in France you can call the international line here: **01 40 44 46 45** or find your local line here: http://www.suicide.org/international-suicide-hotlines.html')
             break;
         }
     }
