@@ -214,7 +214,7 @@ module.exports.run = async (client, interaction) => {
     } else {
 
         // Get a list of all the command categories
-        const categories = fs.readdirSync('./commands').map(dir => dir.toLowerCase());
+        const categories = fs.readdirSync('./commands').map(dir => dir);
 
         // Create the basic embed
         const createCategoriesEmbed = new EmbedBuilder()
