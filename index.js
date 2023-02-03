@@ -20,6 +20,9 @@ client.commands = new Collection();
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
+// Mana regeneration
+require('./tools/economyHandler.js').onLoad();
+
 // Reading all Event Files
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
@@ -47,23 +50,5 @@ const { onInteraction } = require('./tools/InteractionCreate.js');
 client.on(Events.InteractionCreate, async interaction => {
 	onInteraction(client, interaction);
 });
-
-const { onLoad } = require('./tools/economyHandler.js');
-client.on(Events.ready, () => {
-	onLoad().execute();
-
-	// setInterval (async function () {
-    //     client.user.setActivity("Progress...", { type: 'WATCHING' });
-    //     client.user.setStatus('online');
-    // }, 1000);
-
-	var interval = setInterval (function () {
-        client.user.setActivity("Progress...", { type: 'WATCHING' });
-    }, 1* 3000);
-});
-// End of Temporary
-
-// Mana regeneration
-require('./tools/economyHandler.js').onLoad();
 
 client.login(token);

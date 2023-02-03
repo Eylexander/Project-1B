@@ -198,7 +198,7 @@ module.exports.data = new SlashCommandBuilder()
     .setDMPermission(false)
 
 module.exports.run = async (client, interaction) => {
-    interaction.reply({ content: 'This command is not available in DMs', ephemeral: true })
+    interaction.reply({ content: 'This command is not available yet', ephemeral: true })
 };
 
 // Function not working, need to improve it

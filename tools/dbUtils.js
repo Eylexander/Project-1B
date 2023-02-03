@@ -21,7 +21,7 @@ exports.initDatabases = function () {
     // Define the stats.sqlite database for the economy system
     const business = bus.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'business';").get();
     if (!business['count(*)']) {
-        bus.prepare("CREATE TABLE business (id TEXT PRIMARY KEY, business TEXT, salary INTEGER, level INTEGER, number INTEGER, description TEXT, image TEXT);").run();
+        bus.prepare("CREATE TABLE business (id TEXT PRIMARY KEY, business TEXT, salary INTEGER, level INTEGER, description TEXT, image TEXT);").run();
         // Ensure that the "id" row is always unique and indexed.
         bus.prepare("CREATE UNIQUE INDEX idx_business_id ON business (id);").run();
         bus.pragma("asynchronous = 1");
@@ -30,7 +30,7 @@ exports.initDatabases = function () {
 
     const stats = inv.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'stats';").get();
     if (!stats['count(*)']) {
-        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER, mana INTEGER, maxmana INTEGER, business TEXT, businessID INTEGER, level INTEGER, xp INTEGER);").run();
+        inv.prepare("CREATE TABLE stats (id TEXT PRIMARY KEY, user TEXT, money INTEGER, mana INTEGER, maxmana INTEGER, businessID INTEGER, level INTEGER, xp INTEGER);").run();
         // Ensure that the "id" row is always unique and indexed.
         inv.prepare("CREATE UNIQUE INDEX idx_stats_id ON stats (id);").run();
         inv.pragma("asynchronous = 1");
