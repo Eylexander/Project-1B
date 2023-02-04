@@ -189,8 +189,16 @@ module.exports.execute = async (client, message, args) => {
                 // Check if the user is a player or not
                 if (!getStranger) return message.channel.send('This user is not a player!')
 
-                // Get business object from player's business ID
-                const getJobObject = getBusiness.get(getStranger.businessID);
+                // Get business object from guy's business ID
+                let getJobObject = getBusiness.get(playerStats.businessID.toString());
+                if (playerStats.businessID == 0) {
+                    getJobObject = {
+                        business: 'None',
+                        money: 0,
+                        maxmana: 0,
+                        mana: 0
+                    }
+                }
 
                 // Construct the embed to show the user's inventory
                 const getUserTagEmbed = new EmbedBuilder()
@@ -232,7 +240,7 @@ module.exports.execute = async (client, message, args) => {
                         .addFields(
                             { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
                             { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true},
-                            { name: 'Business', value: `${makeName(getJobObject.business)}`, inline: false},
+                            { name: 'Business', value: `${makeName(getJobObject.businessID)}`, inline: false},
                             { name: 'Level', value: `${getStrangerbyId.level}`, inline: true},
                             { name: 'XP', value: `${getStrangerbyId.xp}`, inline: true}
                         )
