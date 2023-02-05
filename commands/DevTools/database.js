@@ -1,9 +1,10 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const fs = require("fs")
 const { admin } = require('../../settings.json')
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
+// Create the json script for the help command
 module.exports.help = {
     name : "database",
     description: 'Control Databases',
@@ -12,17 +13,32 @@ module.exports.help = {
     parameters: ['add', 'remove']
 };
 
+// Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-    if (!message.author.id === admin) return;
 
+    // Creation of a function to capitalize the first letter of a string
+    const makeName = (name) => name.toLowerCase().charAt(0).toUpperCase() + name.toLowerCase().slice(1);
+
+    // Check if the user is the admin
+    if (message.author.id !== admin) return;
+
+    // Check the inputs and do the action
     switch (args[0]) {
         case 'add':
         case 'plus':
-            message.channel.send("U serious bro ?")
+            // Troll the user if he wants to add a database
+            // (It is not possible to add a database with this command)
+            message.reply({
+                content: 'I can\'t add a database, you have to do it yourself!',
+                allowedMentions: { repliedUser: false }
+            })
             break;
         case 'remove':
         case 'del':
         case 'rem':
+            // Check if the database exists and delete it
+            // Technically it checks if the file exists and tries to delete it
+            // In facts it is not possible to delete a database with this command
             fs.stat(`./database/${args[1]}.sqlite`, function(err, stat) {
                 if(err == null) {
                     message.channel.send(`Database named ${args[1]}.sqlite existing!`)
@@ -41,105 +57,39 @@ module.exports.execute = async (client, message, args) => {
             });
             break;
         case 'list':
-        case 'name':
-            const databaseFolder = fs.readdirSync('./database');
-            for (const file of databaseFolder) {
-                fs.stat(`./database/${file}.sqlite`, function(err, stat) {
-                    if(err == null) {
-                        message.channel.send(`Database named ${file}.sqlite existing!`)
-                    } else {
-                        log('Some other error: ', err.code);
-                        message.channel.send('I failed somewhere')
-                    }
-                });
+        case 'name':            
+            // Create the embed
+            const createDBEmbed = new EmbedBuilder()
+                .setTitle('Databases')
+                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
+                .addFields()
+                .setTimestamp()
+                .setFooter({text: `Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic : true })});
+
+            // Get the database files
+            const databaseFolders = fs.readdirSync('./database').map(dir => dir);
+            // Loop through the database folders
+            for (const folder of databaseFolders) {
+                // Get a list of all the database files in the folder
+                const databaseFiles = fs.readdirSync(`./database/${folder}`)
+                    .filter(file => file.endsWith('.sqlite'))
+                    .map(cmd => cmd.replace('.sqlite', ''))
+                    .join(', ');
+
+                // Add the database files to the embed
+                createDBEmbed.addFields({
+                    name: `${makeName(folder)}`,
+                    value: databaseFiles
+                })
             }
-            break;
-    }
-};
 
-module.exports.data = new SlashCommandBuilder()
-    .setName(module.exports.help.name)
-    .setDescription(module.exports.help.description)
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('add')
-            .setDescription('Add a database')
-            .addStringOption(option =>
-                option.setName('name')
-                    .setDescription('Name of the database')
-                    .setRequired(true)))
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('remove')
-            .setDescription('Remove a database')
-            .addStringOption(option =>
-                option.setName('name')
-                    .setDescription('Name of the database')
-                    .setRequired(true)))
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('list')
-            .setDescription('List all databases'))
-    .setDMPermission(true);
-
-module.exports.run = async (client, interaction) => {
-    if (!(interaction.member?.user.id ?? interaction.user.id) === admin) return;
-
-    switch (interaction.options.getSubcommand()) {
-        case 'add':
-            interaction.reply({
-                content: "U serious bro ?",
-                ephemeral: true
-            })
-            break;
-        case 'remove':
-            fs.stat(`./database/${interaction.options.getString('name')}.sqlite`, function(err, stat) {
-                if(err == null) {
-                    interaction.reply({
-                        content: `Database named ${interaction.options.getString('name')}.sqlite existing!`,
-                        ephemeral: true
-                    })
-                    try {
-                        fs.unlinkSync(`./database/${interaction.options.getString('name')}.sqlite`)
-                    } catch (err) {
-                        log(err)
-                        interaction.reply({
-                            content: 'I can\'t delete that!',
-                            ephemeral: true
-                        })
-                    }
-                } else if(err.code === 'ENOENT') {
-                    interaction.reply({
-                        content: 'Database not existing!',
-                        ephemeral: true
-                    })
-                } else {
-                    log('Some other error: ', err.code);
-                    interaction.reply({
-                        content: 'I failed somewhere',
-                        ephemeral: true
-                    })
-                }
+            // Send the embed
+            message.reply({
+                embeds: [createDBEmbed],
+                allowedMentions: { repliedUser: false }
             });
-            break;
-        case 'list':
-            const databaseFolder = fs.readdirSync('./database');
-            for (const file of databaseFolder) {
-                fs.stat(`./database/${file}.sqlite`, function(err, stat) {
-                    if(err == null) {
-                        interaction.reply({
-                            content: `Database named ${file}.sqlite existing!`,
-                            ephemeral: true
-                        })
-                    } else {
-                        log('Some other error: ', err.code);
-                        interaction.reply({
-                            content: 'I failed somewhere',
-                            ephemeral: true
-                        })
-                    }
-                });
-            }
+
             break;
     }
 };

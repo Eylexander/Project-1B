@@ -1,6 +1,7 @@
-const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { PermissionsBitField } = require('discord.js');
 const { admin } = require('../../settings.json')
 
+// Create the json script for the help command
 module.exports.help = {
     name : "say",
     description: 'Say command',
@@ -9,29 +10,23 @@ module.exports.help = {
     parameters: 'none'
 };
 
+// Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
+
+    // Check the inputs
+    if (!args[0])
+    return message.reply({
+        content: 'Please provide a message to send',
+        allowedMentions: { repliedUser: false }
+    });
+
+    // Check if the user is an admin or has the admin permission
     if (message.author.id == admin || message.member.permissions.has('ADMINISTRATOR')) {
-        message.channel.bulkDelete(1)
-        message.channel.send(args.join(' '))
-    }
-};
+        
+        // Delete the original message
+        setTimeout(() => {message.delete()}, 200);
 
-module.exports.data = new SlashCommandBuilder()
-    .setName(module.exports.help.name)
-    .setDescription(module.exports.help.description)
-    .addStringOption(option =>
-        option
-            .setName('message')
-            .setDescription('Message to say')
-            .setRequired(true))
-    .setDefaultMemberPermissions(PermissionsBitField.Flags.ADMINISTRATOR)
-    .setDMPermission(true)
-
-module.exports.run = async (client, interaction) => {
-    if ((interaction.member?.user.id ?? interaction.user.id == admin)) {
-        interaction.channel.send(interaction.options.getString('message'));
-        return interaction.reply({ content: `Sent message.`, ephemeral: true })
+        // Send the message
+        message.channel.send(args.join(' '));
     }
-    interaction.channel.send(interaction.options.getString('message'));
-    interaction.reply({ content: `Sent message.`, ephemeral: true })
 };

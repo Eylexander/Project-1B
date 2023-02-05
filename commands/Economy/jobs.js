@@ -15,17 +15,19 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
+
     // Get the list of jobs from the database by ID order
-    const list = bus.prepare("SELECT * FROM business ORDER BY id ASC;").all();
+    const list = bus.prepare("SELECT id, business, description FROM business ORDER BY id ASC;").all();
     // Get the user's job status
-    const checkJobsStatus = inv.prepare("SELECT businessID FROM stats WHERE id = ?").get(message.author.id);
+    const checkJobsStatus = inv.prepare("SELECT businessID, level FROM stats WHERE id = ?").get(message.author.id);
 
     // Create a function to get the job's name
     const getJobsNames = list.map((data) => data.business);
-    // Create a function to get the job's ID
-    const getJobsIDs = list.map((data) => data.id);
+    // Create a function to combine the job's name and ID
+    const getJobsValues = getJobsNames.concat(list.map((data) => data.id));
+
     // Creation of a function to capitalize the first letter of a string
-    const makeName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+    const makeName = (name) => name.toLowerCase().charAt(0).toUpperCase() + name.toLowerCase().slice(1);
 
     // Check the inputs
     switch (args[0]) {
@@ -77,13 +79,19 @@ module.exports.execute = async (client, message, args) => {
             return message.reply({ content: "The ID must be a number!", allowedMentions: { repliedUser: false } });
             
             // Check if the job exists in the database and remove it if it does
-            const checkJobonRemove = bus.prepare("SELECT * FROM business WHERE id = ?").get(args[1]);
+            const checkJobonRemove = bus.prepare("SELECT id FROM business WHERE id = ?").get(args[1]);
             if (checkJobonRemove) {
                 removeJob.run(args[1]);
 
-                message.reply({ content: "The job has been removed!", allowedMentions: { repliedUser: false } });
+                message.reply({
+                    content: "The job has been removed!",
+                    allowedMentions: { repliedUser: false }
+                });
             } else {
-                message.reply({ content: "The job doesn't exist!", allowedMentions: { repliedUser: false } });
+                message.reply({
+                    content: "The job doesn't exist!",
+                    allowedMentions: { repliedUser: false }
+                });
             }
             break;
 
@@ -99,7 +107,8 @@ module.exports.execute = async (client, message, args) => {
                 return message.reply({ content: "The column must be one of the following: id, business, salary, level, number, description, image!", allowedMentions: { repliedUser: false } });
             }
             // Check if the ID is a number
-            else if (!Number(args[1])) return message.reply({ content: "The ID must be a number!", allowedMentions: { repliedUser: false } });
+            else if (!Number(args[1]))
+            return message.reply({ content: "The ID must be a number!", allowedMentions: { repliedUser: false } });
             
             // Check if the column is description or business and get the new value
             const getNewValue = ['description', 'business'].includes(args[2]) ? args.slice(3).join(" ") : args[3];
@@ -107,16 +116,24 @@ module.exports.execute = async (client, message, args) => {
             // Prepare the database to edit a job
             const editJob = bus.prepare(`UPDATE business SET ${args[2]} = ? WHERE id = ?;`);
             // Check if the job exists in the database
-            const checkJobonEdit = bus.prepare("SELECT * FROM business WHERE id = ?").get(args[1]);
+            const checkJobonEdit = bus.prepare("SELECT id FROM business WHERE id = ?").get(args[1]);
             
             // Check if the job exists in the database and edit it if it does
             if (checkJobonEdit) {
                 editJob.run(getNewValue, args[1]);
-                message.reply({ content: "The job has been edited!", allowedMentions: { repliedUser: false } });
+
+                message.reply({
+                    content: "The job has been edited!",
+                    allowedMentions: { repliedUser: false }
+                });
             } else {
-                message.reply({ content: "The job doesn't exist!", allowedMentions: { repliedUser: false } });
+                message.reply({
+                    content: "The job doesn't exist!",
+                    allowedMentions: { repliedUser: false }
+                });
             }
             break;
+
         case "all":
         case 'info':
         case "list":
@@ -139,61 +156,37 @@ module.exports.execute = async (client, message, args) => {
                     .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 
                 // Send the embed
-                message.reply({ embeds: [getEveryJobsEmbed], allowedMentions: { repliedUser: false } });
-    
-            } else if (getJobsNames.includes(args[1])) {
-                // If the user has specified a job name, send the info about the job
-                // Prepare the database to get the job info
-                const getJobbyName = bus.prepare("SELECT * FROM business WHERE business = ?;").get(args[1]);
-                
+                return message.reply({
+                    embeds: [getEveryJobsEmbed],
+                    allowedMentions: { repliedUser: false }
+                });
+            }
+
+            // Check if the args is a number or a string
+            let makeArgs;
+            if (Number(args[1])) { makeArgs = args[1].toString(); } else { makeArgs = args[1].toLowerCase(); };
+
+            // Check if the job exists in the database
+            if (getJobsValues.includes(makeArgs)) {
+                // Get the job from the database using the ID or the name
+                const getJobbyValue = bus.prepare(`SELECT * FROM business WHERE id = ? OR business = ?;`).get(makeArgs, makeArgs);
+
                 // Create the embed
-                const getJobNameEmbed = new EmbedBuilder()
-                    .setTitle(makeName(getJobbyName.business))
+                const getJobValueEmbed = new EmbedBuilder()
+                    .setTitle(makeName(getJobbyValue.business))
                     .setColor(Math.floor(Math.random()*16777215) + 1)
-                    .setThumbnail(client.user.displayAvatarURL())   
-                    .setDescription(getJobbyName.description.toString())
+                    .setThumbnail(client.user.displayAvatarURL())
+                    .setDescription(getJobbyValue.description.toString())
                     .addFields(
-                        { name: "ID", value: getJobbyName.id.toString(), inline: true },
-                        { name: "Salary", value: `${getJobbyName.salary.toString()} $/hour`, inline: true },
-                        { name: "Level", value: getJobbyName.level.toString(), inline: true },
-                        { name: "Number of Workers", value: getJobbyName.number.toString(), inline: true }
+                        { name: "ID", value: getJobbyValue.id.toString(), inline: true },
+                        { name: "Salary", value: getJobbyValue.salary.toString(), inline: true },
+                        { name: "Level", value: getJobbyValue.level.toString(), inline: true },
                     )
                     .setTimestamp()
-                    .setImage(getJobbyName.image === null ? message.author.displayAvatarURL() : getJobbyName.image)
-                    .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
+                    .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 
                 // Send the embed
-                message.reply({
-                    embeds: [getJobNameEmbed],
-                    allowedMentions: { repliedUser: false }
-                })
-
-            } else if (getJobsIDs.includes(args[1])) {
-                // If the user has specified a job ID, send the info about the job
-                // Prepare the database to get the job info
-                const getJobbyID = bus.prepare("SELECT * FROM business WHERE id = ?;").get(args[1]);
-                
-                // Create the embed
-                const getJobIDEmbed = new EmbedBuilder()
-                    .setTitle(makeName(getJobbyID.business))
-                    .setColor(Math.floor(Math.random()*16777215) + 1)
-                    .setThumbnail(client.user.displayAvatarURL())   
-                    .setDescription(getJobbyID.description.toString())
-                    .addFields(
-                        { name: "ID", value: getJobbyID.id.toString(), inline: true },
-                        { name: "Salary", value: `${getJobbyID.salary.toString()} $/hour`, inline: true },
-                        { name: "Level", value: getJobbyID.level.toString(), inline: true },
-                        { name: "Number of Workers", value: getJobbyID.number.toString(), inline: true }
-                    )
-                    .setTimestamp()
-                    .setImage(getJobbyID.image === null ? message.author.displayAvatarURL() : getJobbyID.image)
-                    .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
-
-                // Send the embed
-                message.reply({
-                    embeds: [getJobIDEmbed],
-                    allowedMentions: { repliedUser: false }
-                })
+                return message.reply({ embeds: [getJobValueEmbed], allowedMentions: { repliedUser: false } });
             }
             break;
 
@@ -202,38 +195,32 @@ module.exports.execute = async (client, message, args) => {
             if (!args[1])
             return message.reply({ content: "You need to specify a job ID!", allowedMentions: { repliedUser: false } });
 
-            if (getJobsIDs.includes(args[1])) {
-                // Check if the numerical input is a job ID
-                // Check if the user has already a job
-                if (checkJobsStatus.businessID !== 0)
-                return message.reply({ content: "You already have a job!\nYou need to leave it first!", allowedMentions: { repliedUser: false } });
+            const getJobsToJoin = bus.prepare("SELECT id, business, level FROM business WHERE id = ? OR business = ?;").get(args[1], args[1].toLowerCase());
 
-                // Prepare the database to get the job info
-                const getJobbyID = bus.prepare("SELECT * FROM business WHERE id = ?;").get(args[1]);
+            // Check if the job exists in the database
+            if (!getJobsToJoin)
+            return message.reply({ content: "This job doesn't exist!", allowedMentions: { repliedUser: false } });
 
-                // Update the database to add the job to the user
-                inv.prepare(`UPDATE stats SET businessID = ? WHERE id = ?;`).run(getJobbyID.id, message.author.id);
+            // Check if the user has already a job
+            if (checkJobsStatus.businessID !== 0)
+            return message.reply({ content: "You already have a job!\nYou need to leave it first!", allowedMentions: { repliedUser: false } });
 
-                // Send the confirmation message
-                return message.reply({ content: `You have joined the job **${makeName(getJobbyID.business)}**!`, allowedMentions: { repliedUser: false } });
-
-            } else if (getJobsNames.includes(args[1].toLowerCase())) {
-                // Check if the string input is a job name
-                // Check if the user has already a job
-                if (checkJobsStatus.business !== 0)
-                return message.reply({ content: "You already have a job!\nYou need to leave it first!", allowedMentions: { repliedUser: false } });
-                
-                // Prepare the database to get the job info
-                const getJobbyName = bus.prepare("SELECT * FROM business WHERE business = ?;").get(args[1].toLowerCase());
-
-                // Update the database to add the job to the user
-                inv.prepare(`UPDATE stats SET businessID = ? WHERE id = ?;`).run(getJobbyName.id, message.author.id);
-
-                // Send the confirmation message
-                return message.reply({ content: `You have joined the job **${makeName(getJobbyName.business)}**!`, allowedMentions: { repliedUser: false } });
-            } else {
-                message.reply({ content: "This job doesn't exist!", allowedMentions: { repliedUser: false } });
+            // Check if user has enough level to join the job
+            if (checkJobsStatus.level < getJobsToJoin.level) {
+                return message.reply({
+                    content: `You need to be at least level **${getJobsToJoin.level}** to join this job!`,
+                    allowedMentions: { repliedUser: false }
+                });
             }
+
+            // Prepare the database to update the user's job
+            inv.prepare("UPDATE stats SET businessID = ? WHERE id = ?;").run(getJobsToJoin.id, message.author.id);
+
+            // Send the confirmation message
+            message.reply({
+                content: `You have successfully joined the job **${makeName(getJobsToJoin.business)}**!`,
+                allowedMentions: { repliedUser: false }
+            });
             break;
 
         case "leave":
@@ -242,19 +229,21 @@ module.exports.execute = async (client, message, args) => {
             return message.reply({ content: "You don't have a job!", allowedMentions: { repliedUser: false } });
             
             // Prepare the database to get the job info
-            const checkJobsID = inv.prepare("SELECT * FROM stats WHERE id = ?;").get(message.author.id);
-            const getJobbyID = bus.prepare("SELECT * FROM business WHERE id = ?;").get(checkJobsID.businessID.toString());
+            const getJobbyID = bus.prepare("SELECT business FROM business WHERE id = ?;").get(checkJobsStatus.businessID.toString());
 
             // Update the database to remove the job from the user
-            inv.prepare(`UPDATE stats SET business = ?, businessID = ? WHERE id = ?;`).run('none', null, message.author.id);
+            inv.prepare(`UPDATE stats SET businessID = ? WHERE id = ?;`).run(0, message.author.id);
 
             // Send the confirmation message
-            message.reply({ content: `You have left your job **${makeName(getJobbyID.business)}**!`, allowedMentions: { repliedUser: false } });
+            message.reply({
+                content: `You have left your job **${makeName(getJobbyID.business)}**!`,
+                allowedMentions: { repliedUser: false }
+            });
             break;
         
         default:
             message.reply({
-                content: "You need to specify a subcommand!\nUse `/help jobs` to list all the jobs available",
+                content: "You need to specify a valid subcommand!\nUse `/help jobs` to list all the jobs available",
                 allowedMentions: { repliedUser: false }
             });
             break;

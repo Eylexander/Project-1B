@@ -22,6 +22,7 @@ module.exports = async (client) => {
     
     const file = (moment().format('YY-MM-DD HH') + ('h') + moment().format('mm'));
     const folder = './logs/' + (moment().format('YYYY-MM-DD'));
+    
     if (!fs.existsSync(folder)) { fs.mkdirSync(folder) };
 
     // Creating the writer

@@ -1,6 +1,7 @@
 const moment = require('moment');
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
+// Create the json script for the help command
 module.exports.help = {
     name : "userinfo",
     description: 'Get someone\'s informations!',
@@ -9,13 +10,15 @@ module.exports.help = {
     parameters: '<usertag>'
 };
 
+// Create the json script for the slash command
 module.exports.execute = async (client, message, args) => {
-// Defining all variables
-        
+
+    // Defining all variables    
     // const filteredRoles = message.member.roles.cache.filter(role => role.id != message.guild.id);
     // const listedRoles = filteredRoles.sort((a, b) => b.position - a.position).map(role => role.toString()); 
     // const listedRoles = message.member.roles.cache.sort((a, b) => b.position - a.position).map(role => role.toString());
     
+    // Create the embed
     const getPersonalEmbed = new EmbedBuilder()
         .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL({ dynamic : true })})
         .setTitle(message.author.username + '\'s Informations')
@@ -31,11 +34,17 @@ module.exports.execute = async (client, message, args) => {
         .setTimestamp()
         .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
     
+    // Check the inputs
     switch (args[0]) {
         case undefined:
         case null:
-            message.channel.send({ embeds: [getPersonalEmbed] });
+            // If no input, send the embed
+            message.reply({
+                embeds: [getPersonalEmbed],
+                allowMention: { repliedUser: false }
+            })
             break;
+
         default:
             if (message.mentions.users.first()) {
                 const getMentionTag = message.mentions.users.first();
@@ -55,13 +64,17 @@ module.exports.execute = async (client, message, args) => {
                     .setTimestamp()
                     .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
 
-                message.channel.send({ embeds: [getMentionEmbed] });
+                    message.reply({
+                        embeds: [getMentionEmbed],
+                        allowMention: { repliedUser: false }
+                    })
 
-            } else { message.channel.send({ embeds: [getPersonalEmbed] }) }
+            } else { message.reply({ embeds: [getPersonalEmbed], allowMention: { repliedUser: false } }) }
             break;
     }
 };
 
+// Create the json script for the slash command
 module.exports.data = new SlashCommandBuilder()
     .setName(module.exports.help.name)
     .setDescription(module.exports.help.description)
@@ -72,8 +85,12 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(false))
     .setDMPermission(false)
 
+// Create the json script for the slash command
 module.exports.run = async (client, interaction) => {
+
+    // Defining all variables
     if (!interaction.options.getUser('user')) {
+        // Create the embed
         const getPersonalEmbed = new EmbedBuilder()
             .setAuthor({ name: interaction.member.user.tag, iconURL: interaction.user.displayAvatarURL({ dynamic : true })})
             .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
@@ -89,10 +106,14 @@ module.exports.run = async (client, interaction) => {
             .setTimestamp()
             .setFooter({ text :`Requested by ${interaction.member?.user.username ?? interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true })})
 
+        // Send the embed
         interaction.reply({ embeds: [getPersonalEmbed] });
+
     } else {
+        // Get the user
         const getMentionTag = interaction.options.getUser('user');
         
+        // Create the embed
         const getMentionEmbed = new EmbedBuilder()
             .setAuthor({ name: interaction.member.user.tag, iconURL: interaction.user.displayAvatarURL({ dynamic : true })})
             .setTitle(getMentionTag.username + '\'s Informations')
@@ -108,6 +129,7 @@ module.exports.run = async (client, interaction) => {
             .setTimestamp()
             .setFooter({ text :`Requested by ${interaction.member?.user.username ?? interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true })})
 
+        // Send the embed
         interaction.reply({ embeds: [getMentionEmbed] });
     }
 };

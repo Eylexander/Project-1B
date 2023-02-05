@@ -1,3 +1,11 @@
+// Create the database Folder if not exist
+const fs = require('fs');
+if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
+
+// Organize the Economy System
+if (!fs.existsSync('./database/economy')) { fs.mkdirSync('./database/economy') };
+
+// Initialize the database
 const db = require('better-sqlite3');
 const stats = new db('./database/economy/stats.sqlite');
 const bus = new db('./database/economy/business.sqlite');

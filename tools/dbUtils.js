@@ -2,14 +2,17 @@
 const fs = require('fs');
 if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
 
-// Organize the Economy System
+// Organize the database in folders
 if (!fs.existsSync('./database/economy')) { fs.mkdirSync('./database/economy') };
+if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools') };
 
 // Define the database
 const db = require("better-sqlite3");
-const sent = new db('./database/infos.sqlite');
-const tool = new db('./database/devtool.sqlite');
-const ban = new db('./database/blockedusers.sqlite');
+
+// Define the database for the devtools
+const sent = new db('./database/devtools/infos.sqlite');
+const tool = new db('./database/devtools/devtool.sqlite');
+const ban = new db('./database/devtools/blockedusers.sqlite');
 
 // Define the database for the economy system
 const inv = new db('./database/economy/stats.sqlite');
@@ -56,7 +59,7 @@ exports.initDatabases = function () {
     // Define the infos.sqlite database for the suggestion system
     const suggestion = sent.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'infos';").get();
     if (!suggestion['count(*)']) {
-        sent.prepare("CREATE TABLE infos (id TEXT PRIMARY KEY, user TEXT, name INTEGER, suggestions INTEGER);").run();
+        sent.prepare("CREATE TABLE infos (id TEXT, user TEXT, name INTEGER, suggestions INTEGER);").run();
         sent.pragma("asynchronous = 1");
         sent.pragma("journal_mode = wal");
     }

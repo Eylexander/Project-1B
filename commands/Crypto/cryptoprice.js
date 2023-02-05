@@ -2,6 +2,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const axios = require('axios');
 const {prefix} = require('../../settings.json');
 
+// Create the json script for the help command
 module.exports.help = {
     name : "cryptoprice",
     description : "Check the cryptocurrency market",
@@ -10,25 +11,37 @@ module.exports.help = {
     parameters : '<crypto> <currency>'
 }
 
+// Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
+
+    // Check if the user provided the crypto and the currency
     switch (args[0]) {
         case undefined:
         case null:
+            // If not, send an error message
             message.reply({
                 content: `You must provide the crypto and the currency you want to compare:\n${prefix}${module.exports.help.name} ${module.exports.help.usage}`,
                 allowedMentions: { repliedUser: false }
             });
             break;
         case args[0]:
+            // If yes, continue the code
+            // Get the crypto and the currency to lowercase
             const coin = args[0].toLowerCase(); // Get rid off the grammar
             const vsCurrency = args[1] === undefined ? 'usd' : args[1].toLowerCase();
 
+            // Get the crypto price from coingecko API
             const { data } = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${vsCurrency}`); // Get crypto price from coingecko API
             
-            if (!data[coin][vsCurrency]) throw Error(); // Check if data exists
+            // Check if data exists
+            if (!data[coin][vsCurrency]) throw Error();
+
+            // Capitalize the first letter of the crypto and the currency
             const crypto = coin.charAt(0).toUpperCase() + coin.slice(1);
+            // Capitalize the currency
             const currency = vsCurrency.toUpperCase();
 
+            // Create the embed
             const getDataEmbed = new EmbedBuilder()
                 .setColor(Math.floor(Math.random() * 16777215) + 1)
                 .setTitle("CoinGecko API")
@@ -41,17 +54,20 @@ module.exports.execute = async (client, message, args) => {
                 .setTimestamp()
                 .setFooter({text: `Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic : true })});
 
+            // Send the embed
             message.reply({embeds: [getDataEmbed], allowedMentions: { repliedUser: false }});
             break;
+
         default:
+            // If not, send an error message
             message.reply({content: `Please check your inputs.\n${prefix}${module.exports.help.name} ${module.exports.help.usage}`, allowedMentions: { repliedUser: false }});
             break;
+
     }
 };
 
+// Create the json script for the slash command
 module.exports.data = new SlashCommandBuilder()
-    // .setName('cryptoprice')
-    // .setDescription('Check the cryptocurrency market')
     .setName(module.exports.help.name)
     .setDescription(module.exports.help.description)
     .addStringOption(option =>
@@ -66,16 +82,24 @@ module.exports.data = new SlashCommandBuilder()
             .setRequired(false))
     .setDMPermission(true);
 
+// Create a the run script for the slash command
 module.exports.run = async (client, interaction) => {
-    const coin = interaction.options.getString('crypto').toLowerCase(); // Get rid off the grammar
+    // Get the crypto and the currency to lowercase
+    const coin = interaction.options.getString('crypto').toLowerCase();
     const vsCurrency = interaction.options?.getString('currency') ?? 'usd';
 
+    // Get the crypto price from coingecko API
     const { data } = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${vsCurrency.toLowerCase()}`); // Get crypto price from coingecko API
     
-    if (!data[coin][vsCurrency]) throw Error(); // Check if data exists
+    // Check if data exists
+    if (!data[coin][vsCurrency]) throw Error();
+
+    // Capitalize the first letter of the crypto and the currency
     const crypto = coin.charAt(0).toUpperCase() + coin.slice(1);
+    // Capitalize the currency
     const currency = vsCurrency.toUpperCase();
 
+    // Create the embed
     const getDataEmbed = new EmbedBuilder()
         .setColor(Math.floor(Math.random() * 16777215) + 1)
         .setTitle("CoinGecko API")
@@ -88,5 +112,6 @@ module.exports.run = async (client, interaction) => {
         .setTimestamp()
         .setFooter({text: `Requested by ${interaction.member?.user.username ?? interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic : true })});
 
+    // Send the embed
     interaction.reply({embeds: [getDataEmbed], allowedMentions: { repliedUser: false }});
 };

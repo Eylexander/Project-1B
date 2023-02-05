@@ -1,6 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 var os = require('os');
-const { version } = require('../../package.json');
+const { version, dependencies } = require('../../package.json');
 const { admin } = require('../../settings.json');
 
 const moment = require('moment');
@@ -15,6 +15,10 @@ module.exports.help = {
 };
 
 module.exports.execute = async (client, message, args) => {
+
+    // Creation of a function to capitalize the first letter of a string
+    const makeName = (name) => name.toLowerCase().charAt(0).toUpperCase() + name.toLowerCase().slice(1);
+
     // Calculate precise RAM
     const totalram = ((os.totalmem() / 10**6 + " ").split('.')[0]);
     const freeram = ((os.freemem() / 10**6 + " ").split('.')[0]);
@@ -33,7 +37,6 @@ module.exports.execute = async (client, message, args) => {
     let seconds = Math.floor(totalSeconds % 60);
 
     // Random variables
-    const location = message.guild.region;
     // const adminusers = message.guild.members.cache.filter(m => m.hasPermission('ADMINISTRATOR')).map(m=>m.user.tag).join('\n')
     // const admins = message.guild.members.filter(member => member.hasPermission("ADMINISTRATOR"));
 
@@ -47,13 +50,12 @@ module.exports.execute = async (client, message, args) => {
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
-                    { name: 'Owner', value: `${message.guild.owner === null ? 'No Owner Located' : message.guild.owner.user.tag + ' (' + message.guild.owner.id + ')'}`, inline: false},
+                    { name: 'Owner', value: `${message.guild.owner === undefined ? 'No Owner Located' : message.guild.owner.user.tag + ' (' + message.guild.owner.id + ')'}`, inline: false},
                     { name: 'Created at', value: message.guild.createdAt.toLocaleString(), inline: true},
-                    { name: 'Location', value: `${location.charAt(0).toUpperCase() + location.slice(1)}`, inline: true},
                     { name: 'Member Count', value: `${message.guild.memberCount}`, inline: true},
-                    { name: 'AFK Channel', value: `${message.guild.afkChannelID === null ? 'No AFK Channel' : client.channels.get(message.guild.afkChannelID).name} ${message.guild.afkChannelID === null ? '' : message.guild.afkChannelID}`, inline: true},
+                    // { name: 'AFK Channel', value: `${message.guild.afkChannelID === null ? 'No AFK Channel' : client.channels.get(message.guild.afkChannelID).name} ${message.guild.afkChannelID === null ? '' : message.guild.afkChannelID}`, inline: true},
                     { name: 'AFK Timeout', value: `${message.guild.afkTimeout / 60} minutes`, inline: true},
-                    { name: 'Admins', value: adminusers, inline: true},
+                    // { name: 'Admins', value: adminusers, inline: true},
                 )
                 .setImage(message.guild.iconURL())
                 .setTimestamp()
@@ -69,11 +71,11 @@ module.exports.execute = async (client, message, args) => {
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
-                    { name: 'Version', value: version, inline: true},
-                    { name: 'Librairie', value: `Discord.js 12.5.0`, inline: true},
-                    { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + '))}`, inline: true},
-                    { name: 'Servers', value: client.guilds.cache.size, inline: true},
-                    { name: 'Channels', value: client.channels.cache.size, inline: true},
+                    { name: 'Version', value: version.toString(), inline: true},
+                    { name: 'Librairie', value:`Discord.js ${dependencies["discord.js"].split('^')[1]}`, inline: true},
+                    { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + ')).toString()}`, inline: true},
+                    { name: 'Servers', value: client.guilds.cache.size.toString(), inline: true},
+                    { name: 'Channels', value: client.channels.cache.size.toString(), inline: true},
                     { name: 'Uptime (s)', value: `${days}d${hours}h${minutes}m${seconds}s`, inline: true},
                 )
                 .setTimestamp()
@@ -87,11 +89,11 @@ module.exports.execute = async (client, message, args) => {
                         .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                         .addFields(
-                            { name: 'Version', value: version, inline: true},
-                            { name: 'Librairie', value: `Discord.js 12.5.0`, inline: true},
-                            { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + '))}`, inline: true},
-                            { name: 'Servers', value: client.guilds.cache.size, inline: true},
-                            { name: 'Channels', value: client.channels.cache.size, inline: true},
+                            { name: 'Version', value: version.toString(), inline: true},
+                            { name: 'Librairie', value:`Discord.js ${dependencies["discord.js"].split('^')[1]}`, inline: true},
+                            { name: 'Members', value: `${eval(client.guilds.cache.map(g => g.memberCount).join(' + ')).toString()}`, inline: true},
+                            { name: 'Servers', value: client.guilds.cache.size.toString(), inline: true},
+                            { name: 'Channels', value: client.channels.cache.size.toString(), inline: true},
                             { name: 'Uptime (s)', value: `${days}d${hours}h${minutes}m${seconds}s`, inline: true},
                         )
                         .setTimestamp()
@@ -112,7 +114,7 @@ module.exports.execute = async (client, message, args) => {
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
-                    { name: 'CPU', value: `Percentage of CPU Usage: ${usedcpu}%`, inline: true },
+                    { name: 'CPU', value: `Percentage of CPU Usage: ${process.cpuUsage().heapUsed}%`, inline: true },
                     { name: 'Memory (RAM)', value: `Total Memory: ${totalram}MB\nUsed Memory: ${usedram}MB\nFree Memory: ${freeram}MB\nPercentage of Free Memory: ${prctfreeram}%`, inline: false},
                     { name: 'Bot Usage', value: `${((process.memoryUsage.rss() / 10**6 + " ").split('.')[0])}MB`, inline: true},
                     { name: 'Hostname', value: `${os.hostname}`, inline: true},
@@ -130,9 +132,9 @@ module.exports.execute = async (client, message, args) => {
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail('https://cdn.discordapp.com/avatars/344526513577918477/0ebbf91a6b9d8326fa2f7f4eb6a93e70.webp')
                 .addFields(
-                    { name: 'Github', value: 'https://github.com/Eylexander#readme', inline: true},
-                    { name: 'Website', value: 'https://eylexander.xyz/', inline: true},
-                    { name: 'Contact', value: `https://discord.com/users/${admin}`, inline: true},
+                    { name: 'Github', value: 'https://github.com/Eylexander#readme', inline: false},
+                    { name: 'Website', value: 'https://eylexander.xyz/', inline: false},
+                    { name: 'Contact', value: `https://discord.com/users/${admin}`, inline: false},
                 )
                 .setTimestamp()
                 .setFooter({text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic : true })});

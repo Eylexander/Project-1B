@@ -7,7 +7,8 @@ const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] 
 
 const db = require("better-sqlite3");
 if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
-const ban = new db('./database/blockedusers.sqlite');
+if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools') };
+const ban = new db('./database/devtools/blockedusers.sqlite');
 
 // Creating the writer
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
@@ -21,7 +22,7 @@ module.exports = (client, message) => {
 
     stream.write(`### [${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] User ${message.author.username} (${message.author.id}) posted:
 ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"}\r\n`);
-    stream.write(`\r\n\`\`\`\r\n${message.content}\r\n\`\`\`\r\n`);
+    stream.write(`\r\n\`\`\`\r\n${message.attachments.size > 0 ? `Attachment of type : ${message.attachments.toJSON()[0].contentType}` : message.content}\r\n\`\`\`\r\n`);
 
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
@@ -48,8 +49,9 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
     };
     
     // Basic message listener for Console
-    log(`${message.author.tag} : "${message.content}" on [${message.guild === null ? "DM" : "#"+message.channel.name + " : " + message.guild.name}]`);
+    log(`${message.author.tag} : ${message.attachments.size > 0 ? `Attachment of type : ${message.attachments.toJSON()[0].contentType}` : '"' + message.content + '"'} on [${message.guild === null ? "DM" : "#"+message.channel.name + " : " + message.guild.name}]`);
 
+    // Interact with user if chat input is command
     if (message.content.startsWith(prefix)) {
         if(ban.prepare(`SELECT id FROM ban WHERE id = ?;`).get(message.author.id)) return message.author.send("You are banned from using this bot.");
         const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -59,7 +61,7 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
         || client.commands.find(cmdObj => cmdObj.help.aliases && cmdObj.help.aliases.includes(cmd));
 
         // If the command has not been found, return.
-        if (command == null) return console.log(`Command ${cmd} not found`);
+        if (command == null) return;
 
         try {
             command.execute(client, message, args);

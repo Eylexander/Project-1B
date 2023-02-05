@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { admin } = require('../../settings.json');
 const db = require("better-sqlite3");
-const ban = new db('./database/blockedusers.sqlite');
+const ban = new db('./database/devtools/blockedusers.sqlite');
 
+// Create the json script for the help command
 module.exports.help = {
     name : "botban",
     description: 'Permaban users from using the bot',
@@ -11,176 +12,186 @@ module.exports.help = {
     parameters: '<tag>'
 };
 
+// Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-    const getBannedUserById = ban.prepare("SELECT * FROM ban WHERE id = ?;");
+
+    // Get the user ID of specific banned user
+    const getBannedUserById = ban.prepare("SELECT id FROM ban WHERE id = ?;");
+    // Get the user ID and username of every banned user
     const getListBanned = ban.prepare("SELECT id, user FROM ban;").all();
 
-    if (!message.author.id === admin) return;
+    // Check if the user is the bot owner
+    if (message.author.id !== admin) return;
 
+    // Check the inputs of the user
     switch (args[0]) {
+        // If the user want to list all banned users
         case 'list':
         case 'count':
+            // Check if there is no banned users
             if (getListBanned.length == 0) {
-                message.channel.send("There is no banned users.")
+                // Send a message to the channel
+                message.reply({
+                    content: "There is no banned users.",
+                    allowedMentions: { repliedUser: false }
+                })
+
             } else {
+                // Create a new embed
+                const getBannedListEmbed = new EmbedBuilder()
+                    .setTitle("Banned users")
+                    .setColor(Math.floor(Math.random() * 16777215) + 1)
+                    .setDescription(getListBanned.length == '1' ? `There is ${getListBanned.length} banned user.` : `There are ${getListBanned.length} banned users.`)
+                    .addFields()
+                    .setTimestamp()
+                    .setFooter({text: `Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic : true })});
+
+                // Add the banned users to the embed
                 for (const data of getListBanned) {
-                    message.channel.send(`Banned user: ${data.user} (${data.id})`)
+                    // Add the user to the embed
+                    getBannedListEmbed.addFields({
+                        name: `Banned user: ${data.user} (${data.id.toString()})`,
+                        value: "⠀"
+                    })
                 }
-                message.channel.send(`There are ${getListBanned.length} users banned.`)
+                
+                // Send the embed to the channel
+                message.reply({
+                    embeds: [getBannedListEmbed],
+                    allowedMentions: { repliedUser: false }
+                })
             }
             break;
+            
         case 'add':
         case 'ban':
+            // Check if the user didn't specify a user to ban
             if (!args[1]) {
-                message.channel.send("Please specify a user to ban.")
-            } else {
-                if (message.mentions.users.first()) {
-                    const getMentionTag = message.mentions.users.first()
+                // Send a message to the channel
+                message.reply({
+                    content: "Please specify a user to ban.",
+                    allowedMentions: { repliedUser: false }
+                })
+            }
+            else if (message.mentions.users.first() === `<@${admin}>`) {
+                // Check if the user is trying to ban the bot owner
+                message.reply({
+                    content: "You can't ban the bot owner.",
+                    allowedMentions: { repliedUser: false }
+                })
+            }
+            else if (message.mentions.users.first()) {
 
-                    if (!getBannedUserById.get(getMentionTag.id)) {
-                        ban.prepare(`INSERT INTO ban (id, user) VALUES (${getMentionTag.id}, '${getMentionTag.username}');`).run();
-                        return message.channel.send(`Banned user ${getMentionTag.username} (${getMentionTag.id})`)
-                    } else {
-                        return message.channel.send(`User ${getMentionTag.username} (${getMentionTag.id}) is already banned.`)
-                    }
+                // Get the user object of the mentioned user
+                const getMentionTag = message.mentions.users.first()
+
+                // Check if the user is already banned
+                if (!getBannedUserById.get(getMentionTag.id)) {
+                    // Ban the user
+                    ban.prepare(`INSERT INTO ban (id, user) VALUES (${getMentionTag.id}, '${getMentionTag.username}');`).run();
+                    // Send a message to the channel
+                    message.reply({
+                        content: `Banned user ${getMentionTag.username} (${getMentionTag.id})`,
+                        allowedMentions: { repliedUser: false }
+                    })
                 } else {
-                    if (args[1].match(/^([0-9]*$)/)) {
-                        const getMentionId = args[1].match(/([0-9]*)/)
-                        const getUserObjectId = getBannedUserById.get(getMentionId[1]);
-
-                        if (!getBannedUserById.get(getUserObjectId.id)) {
-                            ban.prepare(`INSERT INTO ban (id, user) VALUES (${getUserObjectId.id}, '${getUserObjectId.user}');`).run();
-                            return message.channel.send(`Banned user ${getUserObjectId.id} (${getUserObjectId.user})`)
-                        } else {
-                            return message.channel.send(`User ${getUserObjectId.user} (${getUserObjectId.id}) is already banned.`)
-                        }
-                    }
+                    // Send a message to the channel
+                    message.reply({
+                        content: `User ${getMentionTag.username} (${getMentionTag.id}) is already banned.`,
+                        allowedMentions: { repliedUser: false }
+                    })
                 }
             }
+            break;
+
         case 'remove':
         case 'unban':
+            // Check if the user didn't specify a user to unban
             if (!args[1]) {
-                message.channel.send("Please specify a user to unban.")
+                // Send a message to the channel
+                message.reply({
+                    content: "Please specify a user to unban.",
+                    allowedMentions: { repliedUser: false }
+                })
+                
             } else {
+                // Check the type of the user
                 if (message.mentions.users.first()) {
+                    // Get the user object of the mentioned user
                     const getMentionTag = message.mentions.users.first();
 
+                    // Check if the user is banned
                     if (getBannedUserById.get(getMentionTag.id)) {
+                        // Unban the user
                         ban.prepare(`DELETE FROM ban WHERE id = ${getMentionTag.id}`).run();
-                        return message.channel.send(`Unbanned user ${getMentionTag.username} (${getMentionTag.id})`)
+                        // Send a message to the channel
+                        return message.reply({
+                            content: `Unbanned user ${getMentionTag.username} (${getMentionTag.id})`,
+                            allowedMentions: { repliedUser: false }
+                        })
+
                     } else {
-                        return message.channel.send(`User ${getMentionTag.username} (${getMentionTag.id}) is not banned.`)
+                        // Send a message to the channel if the user is not banned
+                        return message.reply({
+                            content: `User ${getMentionTag.username} (${getMentionTag.id}) is not banned.`,
+                            allowedMentions: { repliedUser: false }
+                        })
                     }
+
                 } else {
+                    // Check if the user is trying to unban a user by ID
                     if (args[1].match(/^([0-9]*$)/)) {
-                        const getMentionId = args[1].match(/([0-9]*)/)
+                        // Const the user ID
+                        const getMentionId = args[1].match(/([0-9]*)/);
+                        // Get the user object of the banned user
                         const getUserObjectId = getBannedUserById.get(getMentionId[1]);
 
+                        // Check if the user is not banned
                         if (!getUserObjectId)
-                        return message.channel.send(`User ID (${getMentionId[1]}) is not banned.`)
+                        return message.reply({
+                            content: `User ${getUserObjectId.user} (${getUserObjectId.id}) is not banned.`,
+                            allowedMentions: { repliedUser: false }
+                        })
 
+                        // Unban the user
                         ban.prepare(`DELETE FROM ban WHERE id = ${getUserObjectId.id}`).run();
-                        return message.channel.send(`Unbanned user ${getUserObjectId.id} (${getUserObjectId.user})`)
+                        // Send a message to the channel
+                        message.reply({
+                            content: `Unbanned user ${getUserObjectId.user} (${getUserObjectId.id})`,
+                            allowedMentions: { repliedUser: false }
+                        })
                     }
                 }
             }
-        default:
-            message.channel.send("You must provide someone's ID or try a few parameters.")
-            message.channel.send("Usage: botban [add/remove/list] [user]")
             break;
-    }
-};
 
-module.exports.data = new SlashCommandBuilder()
-    .setName(module.exports.help.name)
-    .setDescription(module.exports.help.description)
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('list')
-            .setDescription('List all banned users'))
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('add')
-            .setDescription('Ban a user')
-            .addUserOption(option =>
-                option
-                    .setName('user')
-                    .setDescription('The user to ban')
-                    .setRequired(true)))
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('remove')
-            .setDescription('Unban a user')
-            .addUserOption(option =>
-                option
-                    .setName('user')
-                    .setDescription('The user to unban')
-                    .setRequired(true))
-            .addStringOption(option =>
-                option
-                    .setName('id')
-                    .setDescription('The user ID to unban')))
-    .setDMPermission(true)
+        case 'clear':
+        case 'reset':
+        case 'drop':
 
-module.exports.run = async (client, interaction) => {
-    const getBannedUserById = ban.prepare("SELECT * FROM ban WHERE id = ?;");
-    const getListBanned = ban.prepare("SELECT id, user FROM ban;").all();
-
-    if (!interaction.user.id === admin) return;
-
-    switch (interaction.options.getSubcommand()) {
-        case 'list':
+            // Check if there is no banned users
             if (getListBanned.length == 0) {
-                interaction.reply("There is no banned users.")
+                // Send a message to the channel
+                message.reply({
+                    content: "There is no banned users.",
+                    allowedMentions: { repliedUser: false }
+                })
             } else {
-                for (const data of getListBanned) {
-                    interaction.channel.send(`Banned user: ${data.user} (${data.id})`)
-                }
-                interaction.reply(`There are ${getListBanned.length} users banned.`)
+                // Drop the table
+                ban.prepare(`DELETE FROM ban`).run();
+                // Send a message to the channel
+                message.reply({
+                    content: "Cleared the banned users list.",
+                    allowedMentions: { repliedUser: false }
+                })
             }
             break;
-        case 'add':
-            if (!interaction.options.getUser('user')) {
-                interaction.reply({ content: "Please specify a user to ban.", ephemeral: true })
-            } else {
-                const getMentionTag = interaction.options.getUser('user')
 
-                if (!getBannedUserById.get(getMentionTag.id)) {
-                    ban.prepare(`INSERT INTO ban (id, user) VALUES (${getMentionTag.id}, '${getMentionTag.username}');`).run();
-                    return interaction.reply(`Banned user ${getMentionTag.username} (${getMentionTag.id})`)
-                } else {
-                    return interaction.reply(`User ${getMentionTag.username} (${getMentionTag.id}) is already banned.`)
-                }
-            }
-        case 'remove':
-            if (!interaction.options.getUser('user') && !interaction.options.getString('id')) {
-                interaction.reply({ content: "Please specify a user to unban.", ephemeral: true })
-            } else {
-                if (interaction.options.getUser('user')) {
-                    const getMentionTag = interaction.options.getUser('user');
-
-                    if (getBannedUserById.get(getMentionTag.id)) {
-                        ban.prepare(`DELETE FROM ban WHERE id = ${getMentionTag.id}`).run();
-                        return interaction.reply(`Unbanned user ${getMentionTag.username} (${getMentionTag.id})`)
-                    } else {
-                        return interaction.reply(`User ${getMentionTag.username} (${getMentionTag.id}) is not banned.`)
-                    }
-                } else {
-                    if (interaction.options.getString('id').match(/^([0-9]*$)/)) {
-                        const getMentionId = interaction.options.getString('id').match(/([0-9]*)/)
-                        const getUserObjectId = getBannedUserById.get(getMentionId[1]);
-
-                        if (!getUserObjectId)
-                        return interaction.reply(`User ID (${getMentionId[1]}) is not banned.`)
-
-                        ban.prepare(`DELETE FROM ban WHERE id = ${getUserObjectId.id}`).run();
-                        return interaction.reply(`Unbanned user ${getUserObjectId.id} (${getUserObjectId.user})`)
-                    }
-                }
-            }
         default:
-            interaction.reply("You must provide someone's ID or try a few parameters.")
-            interaction.reply("Usage: botban [add/remove/list] [user]")
+            message.reply({
+                content: "Please specify a valid subcommand. \nUse `/help ban` for more information.",
+                allowedMentions: { repliedUser: false }
+            })
             break;
     }
 };

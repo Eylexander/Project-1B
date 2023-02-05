@@ -21,9 +21,9 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
     
     // Creation of a function to capitalize the first letter of a string
-    const makeName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+    const makeName = (name) => name.toLowerCase().charAt(0).toUpperCase() + name.toLowerCase().slice(1);
     // Get a list of all the categories
-    const getCategories = fs.readdirSync('./commands').map(dir => dir.toLowerCase());
+    const getCategories = fs.readdirSync('./commands').map(dir => dir);
 
     // Create the basic embed
     const createBasicHelper = new EmbedBuilder()
@@ -37,6 +37,9 @@ module.exports.execute = async (client, message, args) => {
 
     // Add all the categories to the embed
     for (const dir of getCategories) {
+        // Ignore the hidden folders
+        if (dir === 'DevTools') continue;
+
         // Get a list of all the commands in the category
         const getCategoryCommands = fs.readdirSync(`./commands/${dir}`).map(cmd => cmd.replace('.js', '')).join(', ');
 
@@ -46,17 +49,28 @@ module.exports.execute = async (client, message, args) => {
 
     if (!args[0]) {
 
+        console.log(client.commands)
+
         // Return the embed if no argument is provided
-        return message.channel.send({ embeds: [createBasicHelper] })
+        return message.reply({
+            embeds: [createBasicHelper],
+            allowedMentions: { repliedUser: false }
+        })
 
     } else {
 
+        // Get the argument and make it lowercase
+        const searchfield = args[0].toLowerCase()
         // Get a list of all the command categories
         const categories = fs.readdirSync('./commands').map(dir => dir.toLowerCase())
         // Get a list of all the commands from the client collection
-        const commandNames = client.commands.map(cmd => cmd.help.name)
-        // Get the argument and make it lowercase
-        const searchfield = args[0].toLowerCase()
+        const commandNames = client.commands.map(cmd => cmd.help.name);
+        
+        // Create a function to get every command with there aliases
+        const getGlobalCommandAliases = client.commands.reduce((acc, cmd) => {
+            acc[cmd.help.name] = cmd.help.aliases;
+            return acc;
+        }, {});
 
         // Check if the argument is a command or a category
         if (commandNames.includes(searchfield)) {
@@ -65,7 +79,7 @@ module.exports.execute = async (client, message, args) => {
             // Get the aliases of the command
             const getCommandAliases = getCommand.help.aliases.map(alias => alias).join(', ');
             // Get the dm permission of the command
-            const getCommandDMPermission = getCommand.data.dm_permission.toString();
+            const getCommandDMPermission = getCommand.data?.dm_permission.toString() ?? 'None';
 
             // Create the embed
             const getCommandEmbed = new EmbedBuilder()
@@ -228,6 +242,9 @@ module.exports.run = async (client, interaction) => {
 
         // Add all the categories to the embed
         for (const dir of categories) {
+            // Ignore the hidden folders
+            if (dir === 'DevTools') continue;
+
             // Get a list of all the commands in the category
             const getCategoryCommands = fs.readdirSync(`./commands/${dir}`).map(cmd => cmd.replace('.js', '')).join(', ');
             // Add the category to the embed

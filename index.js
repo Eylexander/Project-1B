@@ -17,10 +17,11 @@ const client = new Client({
 });
 client.commands = new Collection();
 
+// Create better console logs
 console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
-// Mana regeneration
+// Economy Handler
 require('./tools/economyHandler.js').onLoad();
 
 // Reading all Event Files
@@ -45,10 +46,11 @@ for (const folder of commandFolders) {
     }
 }
 
-// InteractionCreate Event Temporary
+// InteractionCreate Event Handler
 const { onInteraction } = require('./tools/InteractionCreate.js');
 client.on(Events.InteractionCreate, async interaction => {
 	onInteraction(client, interaction);
 });
 
+// Login the bot
 client.login(token);

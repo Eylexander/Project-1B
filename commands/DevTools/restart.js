@@ -1,8 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
 const { admin, token } = require('../../settings.json')
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
+// Create the json script for the help command
 module.exports.help = {
     name : "restart",
     description: 'Restart command but does not apply changes.',
@@ -11,39 +11,35 @@ module.exports.help = {
     parameters: 'none'
 };
 
+// Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-    if (!message.author.id === admin) return;
+
+    // Check if the user is the admin
+    if (message.author.id !== admin) return;
+
+    // Restart the bot
     try {
         log('Restarting ...');
+
+        // Delete the original message
         setTimeout(() => {message.delete()}, 1000)
+
+        // Send a message to the channel
         message.channel.send('Restarting...')    
             .then(async message => {
+                // First, destroy the client
                 await client.destroy()
+                // Then, login again
                 client.login(token)
+
+                // Edit the message to say that the restart worked
                 await message.edit('Restart worked')
+                // Delete the message after 2 seconds
                 setTimeout(() => {message.delete()}, 2000)
             });
-    } catch(error) {
-        log(error)
-    }
-};
 
-module.exports.data = new SlashCommandBuilder()
-    .setName(module.exports.help.name)
-    .setDescription(module.exports.help.description)
-    .setDMPermission(true);
-
-module.exports.run = async (client, interaction) => {
-    if (!(interaction.member?.user.id ?? interaction.user.id) === admin) return;
-    try {
-        log('Restarting ...');
-        interaction.reply('Restarting...')
-        setTimeout(() => {client.destroy()}, 1000)
-        setTimeout(() => {client.login(token)}, 2000)
-        setTimeout(() => {interaction.editReply('Restart worked')}, 3000)
-        setTimeout(() => {interaction.deleteReply()}, 5000)
-        
     } catch(error) {
+        // If an error occurs, log it
         log(error)
     }
 };

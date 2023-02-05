@@ -15,6 +15,10 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
+
+    // Creation of a function to capitalize the first letter of a string
+    const makeName = (name) => name.toLowerCase().charAt(0).toUpperCase() + name.toLowerCase().slice(1);
+
     // Get user stats function
     const getStats = inv.prepare("SELECT * FROM stats WHERE id = ?");
     // Set user stats function
@@ -22,9 +26,7 @@ module.exports.execute = async (client, message, args) => {
         "INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, businessID, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @businessID, @level, @xp);"
     );
     // Get business function
-    const getBusiness = bus.prepare("SELECT * FROM business WHERE id = ?");
-    // Creation of a function to capitalize the first letter of a string
-    const makeName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+    const getBusiness = bus.prepare("SELECT id, business FROM business WHERE id = ?");
 
     // Get author user stats
     let playerStats = getStats.get(message.author.id);
@@ -68,17 +70,17 @@ module.exports.execute = async (client, message, args) => {
             return message.reply({ content: 'You can\'t change the username of a user!', allowedMentions: { repliedUser: false } });
 
             // Get user object if it is an ID or a tag
-            let getUser;
+            let getUserToEdit;
             if (message.mentions.users.first()) {
-                getUser = message.mentions.users.first().id;
+                getUserToEdit = message.mentions.users.first().id;
             } else {
                 if (args[1].match(/([0-9]*)/)) {
-                    getUser = args[1].match(/([0-9]*)/)[0];
+                    getUserToEdit = args[1].match(/([0-9]*)/)[0];
                 }
             }
 
             // Get User object in database
-            const getPlayerStats = getStats.get(getUser);
+            const getPlayerStats = getStats.get(getUserToEdit);
 
             // Return if user doesn't have a profile
             if (!getPlayerStats)
@@ -146,17 +148,49 @@ module.exports.execute = async (client, message, args) => {
             }
 
             break;
+        case 'drop':
+        case 'delete':
+        case 'remove':
+            // Check if user is admin
+            if (message.author.id !== admin) return;
+
+            // Check if user has specified a user id
+            if (args.length <= 1)
+            return message.reply({ content: 'You need to specify a user id!', allowedMentions: { repliedUser: false } });
+
+            // Get user object if it is an ID or a tag
+            let getUserToDrop;
+            if (message.mentions.users.first()) {
+                getUserToDrop = message.mentions.users.first().id;
+            } else {
+                if (args[1].match(/([0-9]*)/)) {
+                    getUserToDrop = args[1].match(/([0-9]*)/)[0];
+                }
+            }
+
+            // Get User object in database
+            const getPlayerStatsToDrop = getStats.get(getUserToDrop);
+
+            // Return if user doesn't have a profile
+            if (!getPlayerStatsToDrop)
+            return message.reply({ content: 'This user doesn\'t have a profile!', allowedMentions: { repliedUser: false } });
+
+            // Drop the user
+            inv.prepare("DELETE FROM stats WHERE user = ?").run(getPlayerStatsToDrop.user);
+
+            // Reply to the user
+            message.reply({
+                content: `You've dropped ${getPlayerStatsToDrop.user.split('#')[0]}'s invetory from the database!`,
+                allowedMentions: { repliedUser: false }
+            });
+            break;
+
         case undefined:
         case null:
             // Get business object from player's business ID
             let getJobObject = getBusiness.get(playerStats.businessID.toString());
             if (playerStats.businessID == 0) {
-                getJobObject = {
-                    business: 'None',
-                    money: 0,
-                    maxmana: 0,
-                    mana: 0
-                }
+                getJobObject = { business: 'None' }
             }
 
             // Construct the embed to show the user's inventory
@@ -175,7 +209,10 @@ module.exports.execute = async (client, message, args) => {
                 .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
 
             // Send the embed
-            message.reply({ embeds: [getPlayerInventory], allowedMentions: { repliedUser: false }})
+            message.reply({
+                embeds: [getPlayerInventory],
+                allowedMentions: { repliedUser: false }
+            })
             break;
 
         default:
@@ -184,20 +221,19 @@ module.exports.execute = async (client, message, args) => {
                 // Get the user's tag object from the mention
                 const getMentionTag = message.mentions.users.first();
                 // Get the user's stats from the database
-                const getStranger = getStats.get(getMentionTag.id)
+                const getStrangerbyTag = getStats.get(getMentionTag.id)
 
                 // Check if the user is a player or not
-                if (!getStranger) return message.channel.send('This user is not a player!')
+                if (!getStrangerbyTag)
+                return message.reply({
+                    content: 'This user doesn\'t have a profile!',
+                    allowedMentions: { repliedUser: false }
+                });
 
                 // Get business object from guy's business ID
-                let getJobObject = getBusiness.get(playerStats.businessID.toString());
-                if (playerStats.businessID == 0) {
-                    getJobObject = {
-                        business: 'None',
-                        money: 0,
-                        maxmana: 0,
-                        mana: 0
-                    }
+                let getJobObjectForTag = getBusiness.get(getStrangerbyTag.businessID.toString());
+                if (getStrangerbyTag.businessID == 0) {
+                    getJobObjectForTag = { business: 'None' }
                 }
 
                 // Construct the embed to show the user's inventory
@@ -206,17 +242,20 @@ module.exports.execute = async (client, message, args) => {
                     .setTitle(getMentionTag.username + '\'s Inventory')
                     .setThumbnail(getMentionTag.displayAvatarURL({ dynamic : true }))
                     .addFields(
-                        { name: "Money", value: `${getStranger.money} $`, inline: true },
-                        { name: 'Energy', value: `${getStranger.mana} mana / 150`, inline: true},
-                        { name: 'Business', value: `${makeName(getJobObject.business)}`, inline: false},
-                        { name: 'Level', value: `${getStranger.level}`, inline: true},
-                        { name: 'XP', value: `${getStranger.xp}`, inline: true}
+                        { name: "Money", value: `${getStrangerbyTag.money} $`, inline: true },
+                        { name: 'Energy', value: `${getStrangerbyTag.mana} mana / 150`, inline: true},
+                        { name: 'Business', value: `${makeName(getJobObjectForTag.business)}`, inline: false},
+                        { name: 'Level', value: `${getStrangerbyTag.level}`, inline: true},
+                        { name: 'XP', value: `${getStrangerbyTag.xp}`, inline: true}
                     )
                     .setTimestamp()
                     .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
                 
                 // Send the embed
-                return message.reply({ embeds: [getUserTagEmbed], allowedMentions: { repliedUser: false }})
+                return message.reply({
+                    embeds: [getUserTagEmbed],
+                    allowedMentions: { repliedUser: false }
+                })
                     
             } else {
                 // Get the user's stats from the database
@@ -230,7 +269,10 @@ module.exports.execute = async (client, message, args) => {
                     if (!getStrangerbyId) return message.channel.send('This user is not a player!')
 
                     // Get business object from player's business ID
-                    const getJobObject = getBusiness.get(getStrangerbyId.businessID);
+                    let getJobObjectForID = getBusiness.get(getStrangerbyId.businessID.toString());
+                    if (getStrangerbyId.businessID == 0) {
+                        getJobObjectForID = { business: 'None' }
+                    }
 
                     // Construct the embed to show the user's inventory
                     const getUserIdEmbed = new EmbedBuilder()
@@ -240,7 +282,7 @@ module.exports.execute = async (client, message, args) => {
                         .addFields(
                             { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
                             { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true},
-                            { name: 'Business', value: `${makeName(getJobObject.businessID)}`, inline: false},
+                            { name: 'Business', value: `${makeName(getJobObjectForID.business)}`, inline: false},
                             { name: 'Level', value: `${getStrangerbyId.level}`, inline: true},
                             { name: 'XP', value: `${getStrangerbyId.xp}`, inline: true}
                         )
@@ -248,7 +290,10 @@ module.exports.execute = async (client, message, args) => {
                         .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
                         
                     // Send the embed
-                    return message.reply({ embeds: [getUserIdEmbed], allowedMentions: { repliedUser: false }})
+                    return message.reply({
+                        embeds: [getUserIdEmbed],
+                        allowedMentions: { repliedUser: false }
+                    })
                 }
             }
             break;

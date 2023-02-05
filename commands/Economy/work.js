@@ -13,6 +13,7 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
+
     // Get author user stats
     let stats = inv.prepare("SELECT * FROM stats WHERE id = ?;").get(message.author.id);
     // Set author user stats with inputs
@@ -161,16 +162,13 @@ module.exports.run = async (client, interaction) => {
         }
     }
 
-    // Create a function to work and get money
+    // Create a function to work with a certain amount of mana
     function work(nbMana) {
-        // Create a variable to store the database
-        inv === new db('./database/stats.sqlite');
-        // Create a variable to store the level value
-        const getLevelData = inv.prepare("SELECT level FROM stats WHERE id = ?;").get(interaction.member?.user.id ?? interaction.user.id).level;
         // Create a variable to store the work value
-        workValue = Math.ceil(Math.random()*(15*getLevelData-2*getLevelData)+3*getLevelData * nbMana)
-        // Set stats to database
-        inv.prepare("INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, businessID, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @businessID, @level, @xp);").run({
+        workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
+        // Create a variable to store the xp value
+        const getXp = Math.floor(workValue/4);
+        stats = {
             id : interaction.member?.user.id ?? interaction.user.id,
             user : interaction.member?.user.tag ?? interaction.user.tag,
             money : stats.money + workValue,
@@ -178,13 +176,15 @@ module.exports.run = async (client, interaction) => {
             maxmana : stats.maxmana,
             businessID : stats.businessID,
             level : stats.level,
-            xp : Math.floor(stats.xp + workValue/4),
-        })
+            xp : stats.xp + getXp,
+        };
+        setStats.run(stats);
 
-        // Check if the user has leveled up
-        levelup()
+        // Call the levelup function
+        levelup();
 
-        interaction.reply(`You have used ${nbMana} mana to work and made ${workValue}$`)
+        // Send a message to the channel with the work value
+        interaction.reply(`You have used ${nbMana} mana to work and made ${workValue}$ and gained ${getXp} xp!`);
     }
 
     // Check the user mana and if he has enough mana, work

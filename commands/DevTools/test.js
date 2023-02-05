@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-
+// Create the json script for the help command
 module.exports.help = {
     name: "test",
     description: 'Test random stuff command',
@@ -8,22 +7,11 @@ module.exports.help = {
     parameters: 'none'
 };
 
+// Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-    message.reply({
+    return message.reply({
         content: 'Pong!',
         allowedMentions: { repliedUser: false }
-    })
-};
-
-module.exports.data = new SlashCommandBuilder()
-    .setName(module.exports.help.name)
-    .setDescription(module.exports.help.description)
-    .setDMPermission(true)
-
-module.exports.run = async (client, interaction) => {
-    interaction.reply({
-        content: 'Pong!',
-        ephemeral: true
     })
 };
 
