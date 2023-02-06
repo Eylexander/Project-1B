@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { admin } = require('../../settings.json');
 const db = require("better-sqlite3");
-const ban = new db('./database/devtools/blockedusers.sqlite');
+const ban = new db('./database/devtools/bannedusers.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -16,9 +16,9 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
 
     // Get the user ID of specific banned user
-    const getBannedUserById = ban.prepare("SELECT id FROM ban WHERE id = ?;");
+    const getBannedUserById = ban.prepare("SELECT id FROM bannedusers WHERE id = ?;");
     // Get the user ID and username of every banned user
-    const getListBanned = ban.prepare("SELECT id, user FROM ban;").all();
+    const getListBanned = ban.prepare("SELECT id, user FROM bannedusers;").all();
 
     // Check if the user is the bot owner
     if (message.author.id !== admin) return;

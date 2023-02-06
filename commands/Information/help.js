@@ -1,3 +1,4 @@
+const { KeyObject } = require('crypto');
 const { Client, Collection, GatewayIntentBits, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
 const client = new Client({ intents: [
@@ -70,10 +71,18 @@ module.exports.execute = async (client, message, args) => {
             return acc;
         }, {});
 
+        let commandNameAlias = null;
+        for (const alias in getGlobalCommandAliases) {
+            if (getGlobalCommandAliases[alias].includes(args[0])) {
+                commandNameAlias = alias;
+                break;
+            }
+        }
+
         // Check if the argument is a command or a category
-        if (commandNames.includes(searchfield)) {
+        if (commandNames.includes(searchfield) || commandNameAlias !== null) {
             // Get the command from the client collection
-            const getCommand = client.commands.get(searchfield);
+            const getCommand = client.commands?.get(commandNameAlias) ?? client.commands.get(searchfield);
             // Get the aliases of the command
             const getCommandAliases = getCommand.help.aliases.map(alias => alias).join(', ');
             // Get the dm permission of the command
@@ -82,7 +91,7 @@ module.exports.execute = async (client, message, args) => {
             // Create the embed
             const getCommandEmbed = new EmbedBuilder()
                 .setColor(Math.floor(Math.random() * 16777214) + 1)
-                .setTitle(makeName(searchfield) + " Help")
+                .setTitle(makeName(getCommand.help.name) + " Help")
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
                     { name: 'Name', value: getCommand.help.name, inline: true },
@@ -158,11 +167,25 @@ module.exports.run = async (client, interaction) => {
         // Get the argument and make it lowercase
         const searchfield = interaction.options.getString('searchfield').toLowerCase()
 
+        // Create a function to get every command with there aliases
+        const getGlobalCommandAliases = client.commands.reduce((acc, cmd) => {
+            acc[cmd.help.name] = cmd.help.aliases;
+            return acc;
+        }, {});
+
+        let commandNameAlias = null;
+        for (const alias in getGlobalCommandAliases) {
+            if (getGlobalCommandAliases[alias].includes(args[0])) {
+                commandNameAlias = alias;
+                break;
+            }
+        }
+
         // Check if the argument is a command
-        if (commandNames.includes(searchfield)) {
+        if (commandNames.includes(searchfield) || commandNameAlias !== null) {
 
             // Get the command from the client collection
-            const getCommand = client.commands.get(searchfield);
+            const getCommand = client.commands?.get(commandNameAlias) ?? client.commands.get(searchfield);
             // Get the aliases of the command
             const getCommandAliases = getCommand.help.aliases.map(alias => alias).join(', ');
             // Get the dm permission of the command
@@ -171,7 +194,7 @@ module.exports.run = async (client, interaction) => {
             // Create the embed
             const getCommandEmbed = new EmbedBuilder()
                 .setColor(Math.floor(Math.random() * 16777214) + 1)
-                .setTitle(makeName(searchfield) + " Help")
+                .setTitle(makeName(getCommand.help.name) + " Help")
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
                     { name: 'Name', value: getCommand.help.name, inline: true },

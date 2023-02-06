@@ -6,9 +6,9 @@ const inv = new db('./database/economy/stats.sqlite');
 module.exports.help = {
     name : "work",
     description: 'Make some Money!',
-    aliases : ['tryhard','work'],
-    usage : '[amount of mana]',
-    parameters: '<amount>'
+    aliases : ['tryhard'],
+    usage : '[amount of mana | all]',
+    parameters: '<amount | all>'
 };
 
 // Create a the run script for the command

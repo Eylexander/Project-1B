@@ -2,6 +2,12 @@ const fs = require('node:fs');
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
+// Reading the database files for the ban system
+const db = require("better-sqlite3");
+if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
+if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools') };
+const ban = new db('./database/devtools/bannedusers.sqlite');
+
 // Creating the writer
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
 if (!fs.existsSync('./logs/errors')) { fs.mkdirSync('./logs/errors') };
@@ -25,6 +31,13 @@ ${interaction.guild === null ? `in DM (${interaction.user.id})` : "on [#" + inte
 	}
 
 	try {
+		// Check if the user is banned
+		const getBanned = ban.prepare("SELECT * FROM bannedusers WHERE id = ?").get(interaction.member?.user.id ?? interaction.user.id);
+		if (getBanned) {
+			interaction.reply({ content: `You are banned from using this bot. Reason: ${getBanned.reason}`, ephemeral: true });
+			return;
+		}
+
 		command.run(client, interaction);
 	}
 	catch (error) {

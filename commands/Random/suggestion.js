@@ -3,7 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 // Initiate the database
 const db = require("better-sqlite3");
-const sent = new db('./database/devtools/infos.sqlite');
+const sent = new db('./database/devtools/suggestions.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -18,13 +18,13 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
 
     // Check the user's suggestion in the database
-    const getUserSuggestionbyId = sent.prepare("SELECT * FROM infos WHERE id = ?;");
+    const getUserSuggestionbyId = sent.prepare("SELECT * FROM suggestions WHERE id = ?;");
     // Create the function to add a suggestion
     const addSuggestion = sent.prepare(
-        "INSERT INTO infos (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);"
+        "INSERT INTO suggestions (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);"
     );
     // Create the function to get all the suggestions
-    const getSuggestionsAll = sent.prepare("SELECT * FROM infos;").all();
+    const getSuggestionsAll = sent.prepare("SELECT * FROM suggestions;").all();
 
     // Checks the inputs
     switch (args[0]) {
@@ -68,7 +68,7 @@ module.exports.execute = async (client, message, args) => {
                     // Check if the user has a suggestion
                     if (getUserSuggestionbyId.get(message.author.id)) {
                         // Delete the suggestion
-                        sent.prepare(`DELETE FROM infos WHERE id = ${message.author.id};`).run();
+                        sent.prepare(`DELETE FROM suggestions WHERE id = ${message.author.id};`).run();
 
                         // Send a confirmation message
                         message.reply({
@@ -95,7 +95,7 @@ module.exports.execute = async (client, message, args) => {
                         // Check if the user has a suggestion
                         if (getUserSuggestionbyId.get(getMentionTag.id)) {
                             // Delete the suggestion
-                            sent.prepare(`DELETE FROM infos WHERE id = ${getMentionTag.id};`).run();
+                            sent.prepare(`DELETE FROM suggestions WHERE id = ${getMentionTag.id};`).run();
 
                             // Send a confirmation message
                             message.reply({
@@ -118,7 +118,7 @@ module.exports.execute = async (client, message, args) => {
                             })
 
                             // Delete the suggestion
-                            sent.prepare(`DELETE FROM infos WHERE id = ${getUserObjectId.id};`).run();
+                            sent.prepare(`DELETE FROM suggestions WHERE id = ${getUserObjectId.id};`).run();
 
                             // Send a confirmation message
                             message.reply({
@@ -157,7 +157,7 @@ module.exports.execute = async (client, message, args) => {
 
                     // Add the fields to the embed
                     // Group the suggestions by user
-                    const getEachUser = sent.prepare("SELECT DISTINCT user, id FROM infos;").all();
+                    const getEachUser = sent.prepare("SELECT DISTINCT user, id FROM suggestions;").all();
                     
                     // Group suggestions by user
                     // Completly stolen from internet
@@ -310,7 +310,7 @@ module.exports.execute = async (client, message, args) => {
             })
 
             // Drop the table
-            sent.prepare("DELETE FROM infos;").run();
+            sent.prepare("DELETE FROM suggestions;").run();
 
             // Send the message
             message.reply({
@@ -354,11 +354,11 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = async (client, interaction) => {
 
     // Get user's suggestions by id
-    const getUserSuggestionbyId = sent.prepare("SELECT * FROM infos WHERE id = ?;");
+    const getUserSuggestionbyId = sent.prepare("SELECT * FROM suggestions WHERE id = ?;");
     // Create the function to add a suggestion
-    const addSuggestion = sent.prepare("INSERT INTO infos (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);");
+    const addSuggestion = sent.prepare("INSERT INTO suggestions (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);");
     // Create the function to get all suggestions
-    const getSuggestionsAll = sent.prepare("SELECT * FROM infos;").all();
+    const getSuggestionsAll = sent.prepare("SELECT * FROM suggestions;").all();
 
     // Check inputs
     switch (interaction.options.getSubcommand()) {

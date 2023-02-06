@@ -11,6 +11,7 @@ stream.write('--- \r\n\r\n');
 
 module.exports = (client, error) => {
     log(chalk.red(`Error: ${error}`));
+    console.error(error)
 
     stream.write(`### [${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}]\r\n`);
     stream.write(`\r\n\`\`\`\r\n${error}\r\n\`\`\`\r\n\r\n`);

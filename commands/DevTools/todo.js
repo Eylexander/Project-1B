@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { admin } = require('../../settings.json')
 const db = require('better-sqlite3')
-const dev = new db('./database/devtools/devtool.sqlite')
+const todo = new db('./database/devtools/todolist.sqlite')
 
 // Create the json script for the help command
 module.exports.help = {
@@ -19,9 +19,9 @@ module.exports.execute = async (client, message, args) => {
     if (message.author.id !== admin) return;
 
     // Get the id of the todo list from an id
-    const getTodobyId = dev.prepare("SELECT id FROM tool WHERE id = ?;");
+    const getTodobyId = todo.prepare("SELECT id FROM todolist WHERE id = ?;");
     // Get all the todo list to count them
-    const count = dev.prepare("SELECT id FROM tool").all();
+    const count = todo.prepare("SELECT id FROM todolist").all();
 
     // Check the inputs
     switch (args[0]) {
@@ -35,8 +35,8 @@ module.exports.execute = async (client, message, args) => {
             })
 
             // Add the task to the todo list
-            dev.prepare(
-                `INSERT INTO tool (todo) VALUES ('${args.slice(1).join(' ')}');`
+            todo.prepare(
+                `INSERT INTO todolist (todo) VALUES ('${args.slice(1).join(' ')}');`
             ).run();
 
             // Send a message to confirm the task was added
@@ -58,7 +58,7 @@ module.exports.execute = async (client, message, args) => {
             // Check if the task exist
             if (getTodobyId.get(args[1])) {
                 // If the task exist, remove it
-                dev.prepare(`DELETE FROM tool WHERE id = ${args[1]};`).run()
+                todo.prepare(`DELETE FROM todolist WHERE id = ${args[1]};`).run()
 
                 // Send a message to confirm the task was removed
                 message.reply({

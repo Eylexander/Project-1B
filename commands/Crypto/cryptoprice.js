@@ -1,6 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const axios = require('axios');
-const {prefix} = require('../../settings.json');
+const { prefix } = require('../../settings.json');
 
 // Create the json script for the help command
 module.exports.help = {

@@ -10,9 +10,10 @@ if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools')
 const db = require("better-sqlite3");
 
 // Define the database for the devtools
-const sent = new db('./database/devtools/infos.sqlite');
-const tool = new db('./database/devtools/devtool.sqlite');
-const ban = new db('./database/devtools/blockedusers.sqlite');
+const sug = new db('./database/devtools/suggestions.sqlite');
+const todo = new db('./database/devtools/todolist.sqlite');
+const ban = new db('./database/devtools/bannedusers.sqlite');
+const ser = new db('./database/devtools/server.sqlite');
 
 // Define the database for the economy system
 const inv = new db('./database/economy/stats.sqlite');
@@ -21,7 +22,7 @@ const ite = new db('./database/economy/items.sqlite');
 const usit = new db('./database/economy/useritems.sqlite');
 
 exports.initDatabases = function () {
-    // Define the stats.sqlite database for the economy system
+    // Define the business.sqlite database for the economy system
     const business = bus.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'business';").get();
     if (!business['count(*)']) {
         bus.prepare("CREATE TABLE business (id TEXT PRIMARY KEY, business TEXT, salary INTEGER, level INTEGER, description TEXT, image TEXT);").run();
@@ -55,32 +56,44 @@ exports.initDatabases = function () {
         usit.pragma("asynchronous = 1");
         usit.pragma("journal_mode = wal");
     }
+
     
+
     // Define the infos.sqlite database for the suggestion system
-    const suggestion = sent.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'infos';").get();
-    if (!suggestion['count(*)']) {
-        sent.prepare("CREATE TABLE infos (id TEXT, user TEXT, name INTEGER, suggestions INTEGER);").run();
-        sent.pragma("asynchronous = 1");
-        sent.pragma("journal_mode = wal");
+    const suggestions = sug.prepare("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'suggestions';").get();
+    if (!suggestions['count(*)']) {
+        sug.prepare("CREATE TABLE suggestions (id TEXT, user TEXT, name INTEGER, suggestions INTEGER);").run();
+        sug.pragma("asynchronous = 1");
+        sug.pragma("journal_mode = wal");
     }
 
     // Define the devtool.sqlite database for the todo list
-    const dev = tool.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'tool';").get();
-    if (!dev['count(*)']) {
-        tool.prepare("CREATE TABLE tool (id INTEGER PRIMARY KEY AUTOINCREMENT, todo TEXT);").run();
+    const todolist = todo.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'todolist';").get();
+    if (!todolist['count(*)']) {
+        todo.prepare("CREATE TABLE todolist (id INTEGER PRIMARY KEY AUTOINCREMENT, todo TEXT);").run();
         // Ensure that the "id" row is always unique and indexed.
-        tool.prepare("CREATE INDEX idx_devtool_id ON tool (id);").run();
-        tool.pragma("asynchronous = 1");
-        tool.pragma("journal_mode = wal");
+        todo.prepare("CREATE INDEX idx_devtool_id ON todolist (id);").run();
+        todo.pragma("asynchronous = 1");
+        todo.pragma("journal_mode = wal");
     }
 
     // Define the blockedusers.sqlite database for banned users
-    const blocked = ban.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'ban';").get();
-    if (!blocked['count(*)']) {
-        ban.prepare("CREATE TABLE ban (id TEXT PRIMARY KEY, user TEXT);").run();
+    const bannedusers = ban.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'bannedusers';").get();
+    if (!bannedusers['count(*)']) {
+        ban.prepare("CREATE TABLE bannedusers (id TEXT PRIMARY KEY, user TEXT, reason TEXT);").run();
         // Ensure that the "id" row is always unique and indexed.
-        ban.prepare("CREATE UNIQUE INDEX idx_blocked_id ON ban (id);").run();
+        ban.prepare("CREATE UNIQUE INDEX idx_blocked_id ON bannedusers (id);").run();
         ban.pragma("asynchronous = 1");
         ban.pragma("journal_mode = wal");
+    }
+
+    // Define the server.sqlite database for the server settings
+    const server = ser.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'server';").get();
+    if (!server['count(*)']) {
+        ser.prepare("CREATE TABLE server (id TEXT PRIMARY KEY, server TEXT, prefix TEXT, language TEXT);").run();
+        // Ensure that the "id" row is always unique and indexed.
+        ser.prepare("CREATE UNIQUE INDEX idx_server_id ON server (id);").run();
+        ser.pragma("asynchronous = 1");
+        ser.pragma("journal_mode = wal");
     }
 };

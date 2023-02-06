@@ -8,7 +8,7 @@ const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] 
 const db = require("better-sqlite3");
 if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
 if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools') };
-const ban = new db('./database/devtools/blockedusers.sqlite');
+const ban = new db('./database/devtools/bannedusers.sqlite');
 
 // Creating the writer
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
@@ -53,7 +53,9 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
 
     // Interact with user if chat input is command
     if (message.content.startsWith(prefix)) {
-        if(ban.prepare(`SELECT id FROM ban WHERE id = ?;`).get(message.author.id)) return message.author.send("You are banned from using this bot.");
+        const getBanned = ban.prepare(`SELECT * FROM bannedusers WHERE id = ?;`).get(message.author.id);
+        if (getBanned) return message.author.send("You are banned from using this bot. \nReason : \`${getBanned.reason}\`\nIf you think this is a mistake, please contact the bot owner.");
+
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const cmd = args.shift().toLowerCase();
 
