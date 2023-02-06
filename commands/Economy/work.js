@@ -40,12 +40,12 @@ module.exports.execute = async (client, message, args) => {
         // Let the user know that he has created his profile
         message.channel.send(`You've just created your own profile!`)
         // Return a response with work
-        work(1)
+        return work(1);
     }
 
     // Create a function to level up if the user has enough xp
     function levelup() {
-        const levelup = stats.level**2*100
+        const levelup = stats.level**3*50 + 100
         if (stats.xp >= levelup) {
             stats = {
                 id : message.author.id,
@@ -68,7 +68,8 @@ module.exports.execute = async (client, message, args) => {
         // Create a variable to store the work value
         workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
         // Create a variable to store the xp value
-        const getXp = Math.floor(workValue/4);
+        const getXp = Math.floor(workValue/4 * stats.level);
+
         stats = {
             id : message.author.id,
             user : message.author.tag,
@@ -141,12 +142,13 @@ module.exports.run = async (client, interaction) => {
         // Let the user know that he has created his profile
         message.channel.send(`You've just created your own profile!`)
         // Return a response with work
-        work(1)
+        return work(1);
     }
 
     // Create a function to level up
     function levelup() {
-        if (stats.xp >= stats.level**2*100) {
+        const levelup = stats.level**3*50 + 100
+        if (stats.xp >= levelup) {
             setStats.run({
                 id : interaction.member?.user.id ?? interaction.user.id,
                 user : interaction.member?.user.tag ?? interaction.user.tag,
@@ -155,7 +157,7 @@ module.exports.run = async (client, interaction) => {
                 maxmana : stats.maxmana + 50,
                 businessID : stats.businessID,
                 level : stats.level + 1,
-                xp : stats.xp - stats.level**2*100,
+                xp : stats.xp - levelup,
             })
 
             interaction.channel.send(`You've just leveled up to level ${stats.level + 1}!`);
@@ -167,7 +169,8 @@ module.exports.run = async (client, interaction) => {
         // Create a variable to store the work value
         workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
         // Create a variable to store the xp value
-        const getXp = Math.floor(workValue/4);
+        const getXp = Math.floor(workValue/4 * stats.level);
+
         stats = {
             id : interaction.member?.user.id ?? interaction.user.id,
             user : interaction.member?.user.tag ?? interaction.user.tag,
