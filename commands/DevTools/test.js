@@ -13,6 +13,14 @@ module.exports.execute = async (client, message, args) => {
         content: 'Pong!',
         allowedMentions: { repliedUser: false }
     })
+
+    // let moy = 0;
+    // for (let i = 0; i < 100; i++) {
+    //     let workValue = Math.ceil(Math.random()*(10*args[0] - 4*args[0]) + 4*args[0] * args[1]);
+
+    //     moy += workValue;
+    // }
+    // message.channel.send((moy/100).toString());
 };
 
 // module.exports.execute = async (client, message, args) => {

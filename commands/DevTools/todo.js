@@ -23,19 +23,17 @@ module.exports.execute = async (client, message, args) => {
     // Get all the todo list to count them
     const count = dev.prepare("SELECT id FROM tool").all();
 
-    // Check if the user didn't provide any arguments
-    if (!args[1] && ['list', 'show'].includes(args[0])) {
-        return message.reply({
-            content: 'You need to provide a task to add to the todo list.',
-            allowedMentions: { repliedUser: false }
-        })
-    }
-
     // Check the inputs
     switch (args[0]) {
         case 'plus':
         case 'add':
         case 'create':
+            // Check input length
+            if (args.length < 2) return message.reply({
+                content: 'You need to specify the task you want to add. :thumbsdown:',
+                allowedMentions: { repliedUser: false }
+            })
+
             // Add the task to the todo list
             dev.prepare(
                 `INSERT INTO tool (todo) VALUES ('${args.slice(1).join(' ')}');`
@@ -51,6 +49,12 @@ module.exports.execute = async (client, message, args) => {
         case 'del':
         case 'remove':
         case 'delete':
+            // Check input length
+            if (args.length < 2) return message.reply({
+                content: 'You need to specify the id of the task you want to remove. :thumbsdown:',
+                allowedMentions: { repliedUser: false }
+            })
+
             // Check if the task exist
             if (getTodobyId.get(args[1])) {
                 // If the task exist, remove it
@@ -93,7 +97,7 @@ module.exports.execute = async (client, message, args) => {
 
         default:
             message.reply({
-                content: 'You need to provide a valid argument. :thumbsdown:',
+                content: 'You need to provide a valid argument. :thumbsdown: \nValid arguments are : `plus`, `del`, `list`',
                 allowedMentions: { repliedUser: false }
             });
             break;

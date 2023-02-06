@@ -39,13 +39,11 @@ module.exports.execute = async (client, message, args) => {
 
         // Let the user know that he has created his profile
         message.channel.send(`You've just created your own profile!`)
-        // Return a response with work
-        return work(1);
     }
 
     // Create a function to level up if the user has enough xp
     function levelup() {
-        const levelup = stats.level**3*50 + 100
+        const levelup = stats.level**3*50 + 250;
         if (stats.xp >= levelup) {
             stats = {
                 id : message.author.id,
@@ -68,7 +66,7 @@ module.exports.execute = async (client, message, args) => {
         // Create a variable to store the work value
         workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
         // Create a variable to store the xp value
-        const getXp = Math.floor(workValue/4 * stats.level);
+        const getXp = Math.floor(stats.level * workValue/ (Math.ceil(Math.random() * (5-1)+1 )));
 
         stats = {
             id : message.author.id,
@@ -141,13 +139,11 @@ module.exports.run = async (client, interaction) => {
 
         // Let the user know that he has created his profile
         message.channel.send(`You've just created your own profile!`)
-        // Return a response with work
-        return work(1);
     }
 
     // Create a function to level up
     function levelup() {
-        const levelup = stats.level**3*50 + 100
+        const levelup = stats.level**3*50 + 250;
         if (stats.xp >= levelup) {
             setStats.run({
                 id : interaction.member?.user.id ?? interaction.user.id,
@@ -167,9 +163,9 @@ module.exports.run = async (client, interaction) => {
     // Create a function to work with a certain amount of mana
     function work(nbMana) {
         // Create a variable to store the work value
-        workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
+        let workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
         // Create a variable to store the xp value
-        const getXp = Math.floor(workValue/4 * stats.level);
+        let getXp = Math.floor(stats.level * workValue/ (Math.ceil(Math.random() * (25-5)+25 )));
 
         stats = {
             id : interaction.member?.user.id ?? interaction.user.id,

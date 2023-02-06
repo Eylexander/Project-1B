@@ -8,7 +8,7 @@ const bus = new db('./database/economy/business.sqlite');
 module.exports.help = {
     name: "inventory",
     description: 'See your Inventory!',
-    aliases: ['me','balance','inv','money'],
+    aliases: ['me','balance','inv','profile','p','stats'],
     usage: '< none | player >',
     parameters: '<tag>'
 };

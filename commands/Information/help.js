@@ -49,8 +49,6 @@ module.exports.execute = async (client, message, args) => {
 
     if (!args[0]) {
 
-        console.log(client.commands)
-
         // Return the embed if no argument is provided
         return message.reply({
             embeds: [createBasicHelper],
