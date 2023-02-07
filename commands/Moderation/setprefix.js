@@ -13,7 +13,6 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-    // message.reply("This command is not ready yet !");
 
     // Check if the user has the permission to use this command
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {

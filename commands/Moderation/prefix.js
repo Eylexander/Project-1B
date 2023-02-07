@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 const db = require("better-sqlite3");
 const ser = new db('./database/devtools/server.sqlite');
 
@@ -14,20 +14,30 @@ module.exports.help = {
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
 
+    // Check if there is a parameter and user has permission
+    if (['drop', 'delete', 'remove'].includes(args[0]) && message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        ser.prepare("DELETE FROM server WHERE id = ?;").run(message.guild.id);
+        return message.reply({
+            content: "The prefix has been reset to `+`",
+            allowedMentions: { repliedUser: false }
+        });
+    }
+
     // Get server settings
     let settings = ser.prepare("SELECT * FROM server WHERE id = ?;").get(message.guild.id);
     
     if (!settings) {
-        return message.reply({
+        message.reply({
             content: "My prefix is `+`",
             allowedMentions: { repliedUser: false }
         })
     } else {
-        return message.reply({
+        message.reply({
             content: `My prefix is \`${settings.prefix}\``,
             allowedMentions: { repliedUser: false }
         })
     }
+
 };
 
 // Create the json script for the slash command

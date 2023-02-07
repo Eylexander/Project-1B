@@ -1,5 +1,6 @@
 const { prefix, admin, devserver } = require('../settings.json');
 const { badwords, randomwords, suicide } = require('../tools/word_libraries.json');
+const { PermissionsBitField } = require("discord.js")
 const fs = require('fs');
 
 const moment = require('moment');
@@ -44,35 +45,66 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
     
     // Basic command line -> Testing if bot can response
     if (message.content.toLowerCase() === 'hey' & message.author == admin && message.guild.id == devserver) {
-        message.reply({ content: "I do work for now!", allowedMentions: { repliedUser: false }})
+        return message.reply({ content: "I do work for now!", allowedMentions: { repliedUser: false }})
     };
 
-    // Trying making client tag support
-    // if (message.content.startsWith(client.user.tag)) {
-
-    //     console.log('oui')
-
-    //     const args = message.content.slice(client.user.tag.length).trim().split(/ +/);
-    //     const command = args.shift().toLowerCase();
-
-    //     if (command === 'setprefix' && args[0]) {
-    //         message.channel.send('oui')
-    //     }
-
-    //     return;
-    // }
-
-    // get the prefix
+    // Get the prefix
     const getPrefix = ser.prepare("SELECT * FROM server WHERE id = ?;").get(message.guild.id);
 
-    // Usefull command line -> Bot replies its own prefix
-    if (message.mentions.users.first() === client.user) {
-        message.reply({
-            content: `My prefix is \`\`${getPrefix?.prefix ?? prefix}\`\``,
-            allowedMentions: { repliedUser: false }
-        })
-    };
-    
+    // Trying making client tag support
+    if (message.content.startsWith("<@" + client.user.id + ">")) {
+
+        // Create args for client mention
+        const args = message.content.slice(client.user.id.length+3).trim().split(/ +/);
+
+        if (args[0] === 'setprefix') {
+            if (args[1] && message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+                // Create a function to set the prefix
+                ser.prepare(
+                    "INSERT OR REPLACE INTO server (id, server, prefix, language) VALUES (@id, @server, @prefix, @language);"
+                ).run({
+                    id: message.guild.id,
+                    server: message.guild.name,
+                    prefix: args[1],
+                    language: "en"
+                });
+            
+                // Send a message to the user
+                message.reply({
+                    content: `The prefix has been set to \`${args[1]}\``,
+                    allowedMentions: { repliedUser: false }
+                });
+            }
+        } else if (args[0] === 'prefix') {
+            if (args[1] === 'drop' && message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+                ser.prepare(
+                    "INSERT OR REPLACE INTO server (id, server, prefix, language) VALUES (@id, @server, @prefix, @language);"
+                ).run({
+                    id: message.guild.id,
+                    server: message.guild.name,
+                    prefix: prefix,
+                    language: "en"
+                });
+                return message.reply({
+                    content: `The prefix has been dropped to \`${prefix}\``,
+                    allowedMentions: { repliedUser: false }
+                });
+            } else {
+                // Send prefix message to user
+                message.reply({
+                    content: `My prefix is \`\`${getPrefix?.prefix ?? prefix}\`\``,
+                    allowedMentions: { repliedUser: false }
+                })
+            }
+        } else {
+            // Send prefix message to user
+            message.reply({
+                content: `My prefix is \`\`${getPrefix?.prefix ?? prefix}\`\``,
+                allowedMentions: { repliedUser: false }
+            })
+        }
+    }
+
     // Basic message listener for Console
     log(`${message.author.tag} : ${message.attachments.size > 0 ? `Attachment of type : ${message.attachments.toJSON()[0].contentType}` : '"' + message.content + '"'} on [${message.guild === null ? "DM" : "#"+message.channel.name + " : " + message.guild.name}]`);
 
@@ -93,8 +125,12 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
         try {
             command.execute(client, message, args);
         } catch (error) {
+            log(error)
             console.error(error);
-            message.reply('Once again , a stupid error!')
+            // Send error message to admin user
+            message.admin.send(
+                `An error occured while executing the command \`${command.help.name}\` : \n\`\`\`${error}\`\`\``
+            )
         }
     }
 };
