@@ -20,6 +20,8 @@ module.exports.execute = async (client, message, args) => {
     const setStats = inv.prepare(
         "INSERT OR REPLACE INTO stats (id, user, money, mana, maxmana, businessID, level, xp) VALUES (@id, @user, @money, @mana, @maxmana, @businessID, @level, @xp);"
     );
+    // Set the level up xp
+    const levelupstep = stats.level**3*50 + 250;
 
     // If user doesn't have a profile, create one
     if (!stats) {
@@ -43,8 +45,7 @@ module.exports.execute = async (client, message, args) => {
 
     // Create a function to level up if the user has enough xp
     function levelup() {
-        const levelup = stats.level**3*50 + 250;
-        if (stats.xp >= levelup) {
+        if (stats.xp >= levelupstep) {
             stats = {
                 id : message.author.id,
                 user : message.author.tag,
@@ -53,7 +54,7 @@ module.exports.execute = async (client, message, args) => {
                 maxmana : stats.maxmana + 50,
                 businessID : stats.businessID,
                 level : stats.level + 1,
-                xp : stats.xp - levelup,
+                xp : stats.xp - levelupstep,
             }
             setStats.run(stats)
 
@@ -67,6 +68,11 @@ module.exports.execute = async (client, message, args) => {
         workValue = Math.ceil(Math.random()*(10*stats.level - 4*stats.level) + 4*stats.level * nbMana);
         // Create a variable to store the xp value
         const getXp = Math.floor(stats.level * workValue/ (Math.ceil(Math.random() * (5-1)+1 )));
+
+        // Consider the levelup function
+        // if (stats.xp + getXp >= levelupstep * 2) {
+        //     levelup()
+        // }
 
         stats = {
             id : message.author.id,

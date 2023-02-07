@@ -57,7 +57,6 @@ module.exports.execute = async (client, message, args) => {
         })
 
     } else {
-
         // Get the argument and make it lowercase
         const searchfield = args[0].toLowerCase()
         // Get a list of all the command categories
@@ -73,7 +72,7 @@ module.exports.execute = async (client, message, args) => {
 
         let commandNameAlias = null;
         for (const alias in getGlobalCommandAliases) {
-            if (getGlobalCommandAliases[alias].includes(args[0])) {
+            if (getGlobalCommandAliases[alias].includes(searchfield)) {
                 commandNameAlias = alias;
                 break;
             }
@@ -81,6 +80,7 @@ module.exports.execute = async (client, message, args) => {
 
         // Check if the argument is a command or a category
         if (commandNames.includes(searchfield) || commandNameAlias !== null) {
+
             // Get the command from the client collection
             const getCommand = client.commands?.get(commandNameAlias) ?? client.commands.get(searchfield);
             // Get the aliases of the command
@@ -163,7 +163,7 @@ module.exports.run = async (client, interaction) => {
         // Get a list of all the command categories
         const categories = fs.readdirSync('./commands').map(dir => dir.toLowerCase())
         // Get a list of all the commands from the client collection
-        const commandNames = client.commands.map(cmd => cmd.help.name)
+        const commandNames = client.commands.map(cmd => cmd.help.name);
         // Get the argument and make it lowercase
         const searchfield = interaction.options.getString('searchfield').toLowerCase()
 
@@ -175,7 +175,7 @@ module.exports.run = async (client, interaction) => {
 
         let commandNameAlias = null;
         for (const alias in getGlobalCommandAliases) {
-            if (getGlobalCommandAliases[alias].includes(args[0])) {
+            if (getGlobalCommandAliases[alias].includes(searchfield)) {
                 commandNameAlias = alias;
                 break;
             }

@@ -14,7 +14,7 @@ module.exports.execute = async (client, message, args) => {
 
     // Check if the user has the permission to execute the command (manage_messages)
     // If not, send a message and delete it after 2.5 seconds
-    if (!message.member.permissions.has(PermissionsBitField.Flags.MANAGE_MESSAGES))
+    if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages))
     return message.reply({
         content: "You need `manage_messages` permission to execute this command.",
         allowedMentions: { repliedUser: false }

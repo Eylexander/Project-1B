@@ -243,7 +243,7 @@ module.exports.execute = async (client, message, args) => {
                     .setThumbnail(getMentionTag.displayAvatarURL({ dynamic : true }))
                     .addFields(
                         { name: "Money", value: `${getStrangerbyTag.money} $`, inline: true },
-                        { name: 'Energy', value: `${getStrangerbyTag.mana} mana / 150`, inline: true},
+                        { name: 'Energy', value: `${getStrangerbyTag.mana} mana / ${getStrangerbyTag.maxmana}`, inline: true},
                         { name: 'Business', value: `${makeName(getJobObjectForTag.business)}`, inline: false},
                         { name: 'Level', value: `${getStrangerbyTag.level}`, inline: true},
                         { name: 'XP', value: `${getStrangerbyTag.xp}`, inline: true}
@@ -281,7 +281,7 @@ module.exports.execute = async (client, message, args) => {
                         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                         .addFields(
                             { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
-                            { name: 'Energy', value: `${getStrangerbyId.mana} mana / 150`, inline: true},
+                            { name: 'Energy', value: `${getStrangerbyId.mana} mana / ${getStrangerbyId.maxmana}`, inline: true},
                             { name: 'Business', value: `${makeName(getJobObjectForID.business)}`, inline: false},
                             { name: 'Level', value: `${getStrangerbyId.level}`, inline: true},
                             { name: 'XP', value: `${getStrangerbyId.xp}`, inline: true}

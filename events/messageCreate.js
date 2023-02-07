@@ -5,10 +5,14 @@ const fs = require('fs');
 const moment = require('moment');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
+// Read the bans
 const db = require("better-sqlite3");
 if (!fs.existsSync('./database')) { fs.mkdirSync('./database') };
 if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools') };
 const ban = new db('./database/devtools/bannedusers.sqlite');
+
+// Read the server settings
+const ser = new db('./database/devtools/server.sqlite');
 
 // Creating the writer
 if (!fs.existsSync('./logs')) { fs.mkdirSync('./logs') };
@@ -42,21 +46,42 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
     if (message.content.toLowerCase() === 'hey' & message.author == admin && message.guild.id == devserver) {
         message.reply({ content: "I do work for now!", allowedMentions: { repliedUser: false }})
     };
-    
+
+    // Trying making client tag support
+    // if (message.content.startsWith(client.user.tag)) {
+
+    //     console.log('oui')
+
+    //     const args = message.content.slice(client.user.tag.length).trim().split(/ +/);
+    //     const command = args.shift().toLowerCase();
+
+    //     if (command === 'setprefix' && args[0]) {
+    //         message.channel.send('oui')
+    //     }
+
+    //     return;
+    // }
+
+    // get the prefix
+    const getPrefix = ser.prepare("SELECT * FROM server WHERE id = ?;").get(message.guild.id);
+
     // Usefull command line -> Bot replies its own prefix
-    if (message.mentions.users.first() === `<@${client.user.id}>`) {
-        message.reply({ content: `My prefix is \`\`${prefix}\`\``, allowedMentions: { repliedUser: false }})
+    if (message.mentions.users.first() === client.user) {
+        message.reply({
+            content: `My prefix is \`\`${getPrefix?.prefix ?? prefix}\`\``,
+            allowedMentions: { repliedUser: false }
+        })
     };
     
     // Basic message listener for Console
     log(`${message.author.tag} : ${message.attachments.size > 0 ? `Attachment of type : ${message.attachments.toJSON()[0].contentType}` : '"' + message.content + '"'} on [${message.guild === null ? "DM" : "#"+message.channel.name + " : " + message.guild.name}]`);
 
     // Interact with user if chat input is command
-    if (message.content.startsWith(prefix)) {
+    if (message.content.startsWith(getPrefix?.prefix ?? prefix)) {
         const getBanned = ban.prepare(`SELECT * FROM bannedusers WHERE id = ?;`).get(message.author.id);
         if (getBanned) return message.author.send("You are banned from using this bot. \nReason : \`${getBanned.reason}\`\nIf you think this is a mistake, please contact the bot owner.");
 
-        const args = message.content.slice(prefix.length).trim().split(/ +/);
+        const args = message.content.slice(getPrefix?.prefix.length ?? prefix.length).trim().split(/ +/);
         const cmd = args.shift().toLowerCase();
 
         const command = client.commands.get(cmd)
