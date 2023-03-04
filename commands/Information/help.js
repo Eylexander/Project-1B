@@ -111,7 +111,7 @@ module.exports.execute = async (client, message, args) => {
         } else if (categories.includes(searchfield)) {
 
             // Get a list of all the commands in the category
-            const getCategoryCommands = fs.readdirSync(`./commands/${searchfield}`).map(cmd => cmd.replace('.js', ''));
+            const getCategoryCommands = fs.readdirSync(`./commands/${makeName(searchfield)}`).map(cmd => cmd.replace('.js', ''));
 
             // Create the embed
             const createCategoryEmbed = new EmbedBuilder()
@@ -214,7 +214,7 @@ module.exports.run = async (client, interaction) => {
         } else if (categories.includes(searchfield)) {
 
             // Get a list of all the commands in the category
-            const getCategoryCommands = fs.readdirSync(`./commands/${searchfield}`).map(cmd => cmd.replace('.js', ''));
+            const getCategoryCommands = fs.readdirSync(`./commands/${makeName(searchfield)}`).map(cmd => cmd.replace('.js', ''));
 
             // Create the embed
             const createCategoryEmbed = new EmbedBuilder()
