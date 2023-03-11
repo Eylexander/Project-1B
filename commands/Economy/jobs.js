@@ -185,6 +185,8 @@ module.exports.execute = async (client, message, args) => {
                     .setTimestamp()
                     .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 
+                if (getJobbyValue.image) getJobValueEmbed.setImage(getJobbyValue.image.toString());
+
                 // Send the embed
                 return message.reply({ embeds: [getJobValueEmbed], allowedMentions: { repliedUser: false } });
             }
