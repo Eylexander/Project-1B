@@ -22,7 +22,7 @@ module.exports.execute = async (client, message, args) => {
     
     // Get the meme from the API
     const request = args[0] === undefined ? '' :
-                ['image', 'video'].includes(args[0].toLowerCase()) ? args[0].toLowerCase() :
+                ['image', 'video'].includes(args[0].toLowerCase()) ? "?get=" + args[0].toLowerCase() :
                 '';
 
     const { data } = await axios.get('https://memes.eylexander.xyz/api/v1/' + request);
