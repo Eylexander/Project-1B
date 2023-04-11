@@ -9,17 +9,18 @@ if (!fs.existsSync('./database/devtools')) { fs.mkdirSync('./database/devtools')
 // Define the database
 const db = require("better-sqlite3");
 
-// Define the database for the devtools
-const sug = new db('./database/devtools/suggestions.sqlite');
-const todo = new db('./database/devtools/todolist.sqlite');
-const ban = new db('./database/devtools/bannedusers.sqlite');
-const ser = new db('./database/devtools/server.sqlite');
-
 // Define the database for the economy system
 const inv = new db('./database/economy/stats.sqlite');
 const bus = new db('./database/economy/business.sqlite');
 const ite = new db('./database/economy/items.sqlite');
 const usit = new db('./database/economy/useritems.sqlite');
+
+// Define the database for the devtools
+const sug = new db('./database/devtools/suggestions.sqlite');
+const todo = new db('./database/devtools/todolist.sqlite');
+const ban = new db('./database/devtools/bannedusers.sqlite');
+const ser = new db('./database/devtools/server.sqlite');
+const log = new db('./database/devtools/logs.sqlite');
 
 exports.initDatabases = function () {
     // Define the business.sqlite database for the economy system
@@ -95,5 +96,33 @@ exports.initDatabases = function () {
         ser.prepare("CREATE UNIQUE INDEX idx_server_id ON server (id);").run();
         ser.pragma("asynchronous = 1");
         ser.pragma("journal_mode = wal");
+    }
+
+    // Define the logs.sqlite database for the logs
+    const logs = log.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'logs';").get();
+    if (!logs['count(*)']) {
+        log.prepare(`CREATE TABLE logs (
+            year INTEGER,
+            month INTEGER,
+            day INTEGER,
+            hour INTEGER,
+            minute INTEGER,
+            second INTEGER,
+            millisecond INTEGER,
+            messageid TEXT,
+            channelid TEXT,
+            guildid TEXT,
+            authorid TEXT,
+            authorname TEXT,
+            content TEXT,
+            hasattachments INTEGER,
+            attachmenturl TEXT,
+            attachmenttype TEXT,
+            PRIMARY KEY (year, month, day, hour, minute, second, millisecond, messageid)
+        );`).run();
+        // Ensure that the "id" row is always unique and indexed.
+        log.prepare("CREATE UNIQUE INDEX idx_logs_id ON logs (year, month, day, hour, minute, second, millisecond, messageid);").run();
+        log.pragma("asynchronous = 1");
+        log.pragma("journal_mode = wal");
     }
 };

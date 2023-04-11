@@ -21,13 +21,53 @@ if (!fs.existsSync('./logs/errors')) { fs.mkdirSync('./logs/errors') };
 const file = (moment().format('YY-MM-DD HH') + ('h') + moment().format('mm'));
 const folder = './logs/' + (moment().format('YYYY-MM-DD'));
 var stream = fs.createWriteStream(`${folder}/${file}.md`, {'flags': 'a'});
+const logger = new db('./database/devtools/logs.sqlite');
 
 module.exports = (client, message) => {
     if (message.author.bot) return;
 
+    // Log in MD file
     stream.write(`### [${moment().format('YYYY-MM-DD HH:mm:ss.SSS')}] User ${message.author.username} (${message.author.id}) posted:
 ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.channel.name + " ("+message.channel.id+") : " + message.guild.name + " ("+message.guild.id+")]"}\r\n`);
     stream.write(`\r\n\`\`\`\r\n${message.attachments.size > 0 ? `Attachment of type : ${message.attachments.toJSON()[0].contentType}` : message.content}\r\n\`\`\`\r\n`);
+
+    // Log in DB
+    logger.prepare(`
+        INSERT OR REPLACE INTO logs VALUES (
+            @year,
+            @month,
+            @day,
+            @hour,
+            @minute,
+            @second,
+            @millisecond,
+            @messageid,
+            @channelid,
+            @guildid,
+            @authorid,
+            @authorname,
+            @content,
+            @hasattachments,
+            @attachmenturl,
+            @attachmenttype);
+        `).run({
+            year: moment(message.createdTimestamp).format('YYYY'),
+            month: moment(message.createdTimestamp).format('MM'),
+            day: moment(message.createdTimestamp).format('DD'),
+            hour: moment(message.createdTimestamp).format('HH'),
+            minute: moment(message.createdTimestamp).format('mm'),
+            second: moment(message.createdTimestamp).format('ss'),
+            millisecond: moment(message.createdTimestamp).format('SSS'),
+            messageid: message.id,
+            channelid: message.channel.id,
+            guildid: message.guild === null ? null : message.guild.id,
+            authorid: message.author.id,
+            authorname: message.author.username,
+            content: message.content,
+            hasattachments: message.attachments.size > 0 ? 1 : 0,
+            attachmenturl: message.attachments.size > 0 ? message.attachments.toJSON()[0].url : null,
+            attachmenttype: message.attachments.size > 0 ? message.attachments.toJSON()[0].contentType : null
+        });
 
     // Bot auto-response to specific Words
     for (const trigger of badwords) {
@@ -42,9 +82,8 @@ ${message.guild === null ? `in DM (${message.author.id})` : "on [#" + message.ch
             break;
         }
     }
-    
     // Basic command line -> Testing if bot can response
-    if (message.content.toLowerCase() === 'hey' & message.author == admin && message.guild.id == devserver) {
+    if (message.content.toLowerCase() === 'hey' && message.author.id === admin && message.guild.id === devserver) {
         return message.reply({ content: "I do work for now!", allowedMentions: { repliedUser: false }})
     };
 

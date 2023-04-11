@@ -17,25 +17,31 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-    
-        // Get the meme from the API
-        const { data } = await axios.get('https://api.eylexander.xyz/');
-    
-        // Create the embed
-        const makeEmbed = new EmbedBuilder()
-            .setColor(Math.floor(Math.random() * 16777214) + 1)
-            .setTitle(data.name.toString())
-            .setURL(data.url)
-            .setDescription('If the image is not loading, click the title to open the image in a new tab.')
-            .setImage(data.url.toString())
-            .setTimestamp()
-            .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
 
-        // Send the embed
-        return message.reply({
-            embeds: [makeEmbed],
-            allowedMentions: { repliedUser: false }
-        })
+    // 
+    
+    // Get the meme from the API
+    const request = args[0] === undefined ? '' :
+                ['image', 'video'].includes(args[0].toLowerCase()) ? args[0].toLowerCase() :
+                '';
+
+    const { data } = await axios.get('https://memes.eylexander.xyz/api/v1/' + request);
+
+    // Create the embed
+    const makeEmbed = new EmbedBuilder()
+        .setColor(Math.floor(Math.random() * 16777214) + 1)
+        .setTitle(data.name.toString())
+        .setURL(data.url)
+        .setDescription('If the image is not loading, click the title to open the image in a new tab.')
+        .setImage(data.url.toString())
+        .setTimestamp()
+        .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
+
+    // Send the embed
+    return message.reply({
+        embeds: [makeEmbed],
+        allowedMentions: { repliedUser: false }
+    })
 };
 
 // Create the json script for the slash command
@@ -48,7 +54,7 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = async (client, interaction) => {
         
         // Get the meme from the API
-        const { data } = await axios.get('https://api.eylexander.xyz/');
+        const { data } = await axios.get('https://memes.eylexander.xyz/api/v1/');
         
         // Create the embed
         const makeEmbed = new EmbedBuilder()
