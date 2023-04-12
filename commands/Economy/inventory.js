@@ -62,12 +62,10 @@ module.exports.execute = async (client, message, args) => {
             // Check if user has specified a user id, a old value to change and the newer one
             if (args.length <= 3)
             return message.reply({ content: 'You need to specify a user id, a old value to change and the newer one!', allowedMentions: { repliedUser: false } });
-            // Return if user wants to change the id
-            if (args[2] === 'id')
-            return message.reply({ content: 'You can\'t change the id of a user!', allowedMentions: { repliedUser: false } });
-            // Return if user wants to change the username
-            if (args[2] === 'user')
-            return message.reply({ content: 'You can\'t change the username of a user!', allowedMentions: { repliedUser: false } });
+
+            // Return if the user wants to change the id or username
+            if (['id','user'].includes(args[2]))
+            return message.reply({ content: 'You can\'t change the id or username of a user!', allowedMentions: { repliedUser: false } });
 
             // Get user object if it is an ID or a tag
             let getUserToEdit;
@@ -86,68 +84,26 @@ module.exports.execute = async (client, message, args) => {
             if (!getPlayerStats)
             return message.reply({ content: 'This user doesn\'t have a profile!', allowedMentions: { repliedUser: false } });
 
-            // Switch case to change the value
-            switch(args[2]) {
-                case 'money':
-                    if (!Number(args[3]))
-                    return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
+            // Condition case to change the value
+            if (['money','mana','maxmana','businessID','level','xp'].includes(args[2])) {
 
-                    inv.prepare("UPDATE stats SET money = ? WHERE user = ?").run(args[3], getPlayerStats.user);
+                if (!Number(args[3]))
+                return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
 
-                    message.reply({ content: `You've changed the money of ${getPlayerStats.user} to ${args[3]}`, allowedMentions: { repliedUser: false } });
-                    break;
+                inv.prepare(`UPDATE stats SET ${args[2]} = ${args[3]} WHERE user = '${getPlayerStats.user}'`).run();
 
-                case 'mana':
-                    if (!Number(args[3]))
-                    return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
-
-                    inv.prepare("UPDATE stats SET mana = ? WHERE user = ?").run(args[3], getPlayerStats.user);
-
-                    message.reply({ content: `You've changed the mana of ${getPlayerStats.user} to ${args[3]} mana`, allowedMentions: { repliedUser: false } });
-                    break;
-
-                case 'maxmana':
-                    if (!Number(args[3]))
-                    return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
-
-                    inv.prepare("UPDATE stats SET maxmana = ? WHERE user = ?").run(args[3], getPlayerStats.user);
-
-                    message.reply({ content: `You've changed the max mana of ${getPlayerStats.user} to ${args[3]} max mana`, allowedMentions: { repliedUser: false } });
-                    break;
-
-                case 'businessID':
-                    if (!Number(args[3]))
-                    return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
-
-                    inv.prepare("UPDATE stats SET businessID = ? WHERE user = ?").run(args[3], getPlayerStats.user);
-
-                    message.reply({ content: `You've changed the business ID of ${getPlayerStats.user} to ${args[3]}`, allowedMentions: { repliedUser: false } });
-                    break;
-
-                case 'level':
-                    if (!Number(args[3]))
-                    return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
-
-                    inv.prepare("UPDATE stats SET level = ? WHERE user = ?").run(args[3], getPlayerStats.user);
-
-                    message.reply({ content: `You've changed the level of ${getPlayerStats.user} to ${args[3]}`, allowedMentions: { repliedUser: false } });
-                    break;
-
-                case 'xp':
-                    if (!Number(args[3]))
-                    return message.reply({ content: 'You need to specify a number!', allowedMentions: { repliedUser: false } });
-
-                    inv.prepare("UPDATE stats SET xp = ? WHERE user = ?").run(args[3], getPlayerStats.user);
-
-                    message.reply({ content: `You've changed the xp of ${getPlayerStats.user} to ${args[3]}`, allowedMentions: { repliedUser: false } });
-                    break;
-
-                default:
-                    message.reply({ content: 'You need to specify a valid option!', allowedMentions: { repliedUser: false } });
-                    break;
+                message.reply({
+                    content: `You've changed the ${args[2]} of ${getPlayerStats.user} to ${args[3]}`,
+                    allowedMentions: { repliedUser: false }
+                });
+            } else {
+                message.reply({
+                    content: 'You need to specify a valid value to change!',
+                    allowedMentions: { repliedUser: false }
+                });
             }
-
             break;
+            
         case 'drop':
         case 'delete':
         case 'remove':

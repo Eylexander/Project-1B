@@ -14,6 +14,7 @@ const inv = new db('./database/economy/stats.sqlite');
 const bus = new db('./database/economy/business.sqlite');
 const ite = new db('./database/economy/items.sqlite');
 const usit = new db('./database/economy/useritems.sqlite');
+const tre = new db('./database/economy/treasure.sqlite');
 
 // Define the database for the devtools
 const sug = new db('./database/devtools/suggestions.sqlite');
@@ -56,6 +57,16 @@ exports.initDatabases = function () {
         usit.prepare("CREATE TABLE useritems (id TEXT PRIMARY KEY, user TEXT, itemid INTEGER, amount INTEGER);").run();
         usit.pragma("asynchronous = 1");
         usit.pragma("journal_mode = wal");
+    }
+
+    // Define the treasure.sqlite database for the treasure system
+    const treasure = tre.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'treasure';").get();
+    if (!treasure['count(*)']) {
+        tre.prepare("CREATE TABLE treasure (id TEXT PRIMARY KEY, timestamp INTEGER, collectedby TEXT);").run();	
+        // Ensure that the "id" row is always unique and indexed.
+        tre.prepare("CREATE UNIQUE INDEX idx_treasure_id ON treasure (id);").run();
+        tre.pragma("asynchronous = 1");
+        tre.pragma("journal_mode = wal");
     }
 
     
