@@ -136,7 +136,7 @@ module.exports.execute = async (client, message, args) => {
 
             // Reply to the user
             message.reply({
-                content: `You've dropped ${getPlayerStatsToDrop.user.split('#')[0]}'s invetory from the database!`,
+                content: `You've dropped ${getPlayerStatsToDrop.user.split('#')[0]}'s inventory from the database!`,
                 allowedMentions: { repliedUser: false }
             });
             break;
@@ -172,86 +172,52 @@ module.exports.execute = async (client, message, args) => {
             break;
 
         default:
-            // Check if the user is a player or not from ID or mention
+            // Get the user ID from the mention or the ID
+            let getMentionObject;
             if (message.mentions.users.first()) {
-                // Get the user's tag object from the mention
-                const getMentionTag = message.mentions.users.first();
-                // Get the user's stats from the database
-                const getStrangerbyTag = getStats.get(getMentionTag.id)
-
-                // Check if the user is a player or not
-                if (!getStrangerbyTag)
-                return message.reply({
-                    content: 'This user doesn\'t have a profile!',
-                    allowedMentions: { repliedUser: false }
-                });
-
-                // Get business object from guy's business ID
-                let getJobObjectForTag = getBusiness.get(getStrangerbyTag.businessID.toString());
-                if (getStrangerbyTag.businessID == 0) {
-                    getJobObjectForTag = { business: 'None' }
-                }
-
-                // Construct the embed to show the user's inventory
-                const getUserTagEmbed = new EmbedBuilder()
-                    .setColor(Math.floor(Math.random() * 16777214) + 1)
-                    .setTitle(getMentionTag.username + '\'s Inventory')
-                    .setThumbnail(getMentionTag.displayAvatarURL({ dynamic : true }))
-                    .addFields(
-                        { name: "Money", value: `${getStrangerbyTag.money} $`, inline: true },
-                        { name: 'Energy', value: `${getStrangerbyTag.mana} mana / ${getStrangerbyTag.maxmana}`, inline: true},
-                        { name: 'Business', value: `${makeName(getJobObjectForTag.business)}`, inline: false},
-                        { name: 'Level', value: `${getStrangerbyTag.level}`, inline: true},
-                        { name: 'XP', value: `${getStrangerbyTag.xp}`, inline: true}
-                    )
-                    .setTimestamp()
-                    .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
-                
-                // Send the embed
-                return message.reply({
-                    embeds: [getUserTagEmbed],
-                    allowedMentions: { repliedUser: false }
-                })
-                    
+                getMentionObject = message.mentions.users.first();
             } else {
-                // Get the user's stats from the database
                 if (args[0].match(/([0-9]*)/)) {
-                    // Get the user's ID from the mention
-                    const getMentionId = args[0].match(/([0-9]*)/);
-                    // Get the user's stats from the database
-                    const getStrangerbyId = getStats.get(getMentionId[1]);
-
-                    // Check if the user is a player or not
-                    if (!getStrangerbyId) return message.channel.send('This user is not a player!')
-
-                    // Get business object from player's business ID
-                    let getJobObjectForID = getBusiness.get(getStrangerbyId.businessID.toString());
-                    if (getStrangerbyId.businessID == 0) {
-                        getJobObjectForID = { business: 'None' }
-                    }
-
-                    // Construct the embed to show the user's inventory
-                    const getUserIdEmbed = new EmbedBuilder()
-                        .setColor(Math.floor(Math.random() * 16777214) + 1)
-                        .setTitle(getStrangerbyId.user.split('#')[0] + '\'s Inventory')
-                        .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
-                        .addFields(
-                            { name: "Money", value: `${getStrangerbyId.money} $`, inline: true },
-                            { name: 'Energy', value: `${getStrangerbyId.mana} mana / ${getStrangerbyId.maxmana}`, inline: true},
-                            { name: 'Business', value: `${makeName(getJobObjectForID.business)}`, inline: false},
-                            { name: 'Level', value: `${getStrangerbyId.level}`, inline: true},
-                            { name: 'XP', value: `${getStrangerbyId.xp}`, inline: true}
-                        )
-                        .setTimestamp()
-                        .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
-                        
-                    // Send the embed
-                    return message.reply({
-                        embeds: [getUserIdEmbed],
-                        allowedMentions: { repliedUser: false }
-                    })
+                    getMentionObject = args[0].match(/([0-9]*)/);
                 }
             }
+
+            // Get the user object from the mention or the ID
+            const getUserObject = getStats.get(getMentionObject?.id ?? getMentionObject[1]);
+
+            // Check if the user is a player or not
+            if (!getUserObject)
+            return message.reply({
+                content: 'This user doesn\'t have a profile!',
+                allowedMentions: { repliedUser: false }
+            });
+
+            // Get the business info from the player's ID
+            let getJobFromUser = getBusiness.get(getUserObject.businessID.toString());
+            if (getUserObject.businessID == 0) {
+                getJobFromUser = { business: 'None' }
+            }
+
+            // Construct the embed to show the user's inventory
+            const getUserInventory = new EmbedBuilder()
+                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setTitle(getUserObject.user.split('#')[0] + '\'s Inventory')
+                .setThumbnail(getMentionObject?.displayAvatarURL({ dynamic : true }) ?? client.user.displayAvatarURL({ dynamic : true }))
+                .addFields(
+                    { name: "Money", value: `${getUserObject.money} $`, inline: true },
+                    { name: 'Energy', value: `${getUserObject.mana} mana / ${getUserObject.maxmana}`, inline: true},
+                    { name: 'Business', value: `${makeName(getJobFromUser.business)}`, inline: false},
+                    { name: 'Level', value: `${getUserObject.level}`, inline: true},
+                    { name: 'XP', value: `${getUserObject.xp}`, inline: true}
+                )
+                .setTimestamp()
+                .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
+
+            // Send the embed
+            message.reply({
+                embeds: [getUserInventory],
+                allowedMentions: { repliedUser: false }
+            })
             break;
     }
 };
