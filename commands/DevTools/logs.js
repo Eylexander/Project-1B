@@ -9,7 +9,7 @@ module.exports.help = {
     description: 'Get data from your query',
     aliases : ['log'],
     usage : '<query>',
-    parameters : 'none'
+    parameters : 'file extension, query',
 };
 
 // Create a the run script for the command
@@ -27,7 +27,7 @@ module.exports.execute = async (client, message, args) => {
         const data = logger.prepare(query).all();
 
         // Get the extension of the file from a valid list
-        const extension = ['csv', 'txt', 'html'].includes(args[0]) ? args[0] : 'html';
+        const extension = ['csv', 'txt', 'html', 'message'].includes(args[0]) ? args[0] : 'html';
 
         // Format file name for the attachment with date and time
         const fileName = `logs-${moment().format('MM-DD-YYYY-HH-mm-ss')}.${extension}}`;
@@ -44,6 +44,14 @@ module.exports.execute = async (client, message, args) => {
             case 'html':
                 // Send the data to the channel in a HTML table format (in a file)
                 message.channel.send({ files: [{ attachment: Buffer.from(`<table><tr>${Object.keys(data[0]).map(x => `<th>${x}</th>`).join('')}</tr>${data.map(x => `<tr>${Object.values(x).map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`), name: fileName }] });
+                break;
+            case 'message':
+                try {
+                    // Send the data into a simple message (max 2000 characters)
+                    message.channel.send(data.map(x => Object.values(x).join(',')).join('\n').slice(0, 2000));
+                } catch (error) {
+                    return;
+                }
                 break;
         }
     } catch(error) {
