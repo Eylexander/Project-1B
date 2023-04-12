@@ -46,11 +46,15 @@ module.exports.execute = async (client, message, args) => {
                 message.channel.send({ files: [{ attachment: Buffer.from(`<table><tr>${Object.keys(data[0]).map(x => `<th>${x}</th>`).join('')}</tr>${data.map(x => `<tr>${Object.values(x).map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`), name: fileName }] });
                 break;
             case 'message':
-                try {
-                    // Send the data into a simple message (max 2000 characters)
-                    message.channel.send(data.map(x => Object.values(x).join(',')).join('\n').slice(0, 2000));
-                } catch (error) {
-                    return;
+                // Format the data into a simple message (max 2000 characters)
+                const messageDataFormat = data.map(x => Object.values(x).join(',')).join('\n');
+                // Check if the message is not empty
+                if (messageDataFormat.length > 0) {
+                    // Send the data to the channel in a message
+                    message.channel.send(messageDataFormat);
+                } else {
+                    // Send a message to the channel if no data is found in a code block
+                    message.channel.send(`\`\`\`\nEmpty response\`\`\``);
                 }
                 break;
         }
