@@ -1,7 +1,8 @@
 const db = require('better-sqlite3');
 const moment = require('moment');
-const logger = new db('./database/devtools/logs.sqlite');
+const logsDB = new db('./database/devtools/logs.sqlite');
 const { admin, devserver } = require('../../settings.json');
+const { logToDB } = require('../../tools/Loader');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -18,16 +19,25 @@ module.exports.execute = async (client, message, args) => {
     // Check if the user is the admin
     if (message.author.id !== admin || message.guild.id !== devserver) return;
 
+    let typeOfFiles = ['csv', 'txt', 'html', 'message'];
+
+    if (args.length < 2) {
+        return message.reply({
+            content: 'Please provide a a type of file and a query to send. See teh list of file types here: ' + typeOfFiles.join(', '),
+            allowedMentions: { repliedUser: false }
+        });
+    }
+
     try {
 
         // Get the query after the extension
         const query = args.slice(1).join(' ');
 
         // Get the data from the database
-        const data = logger.prepare(query).all();
+        const data = logsDB.prepare(query).all();
 
         // Get the extension of the file from a valid list
-        const extension = ['csv', 'txt', 'html', 'message'].includes(args[0]) ? args[0] : 'html';
+        const extension = typeOfFiles.includes(args[0]) ? args[0] : 'html';
 
         // Format file name for the attachment with date and time
         const fileName = `logs-${moment().format('MM-DD-YYYY-HH-mm-ss')}.${extension}}`;
@@ -60,6 +70,7 @@ module.exports.execute = async (client, message, args) => {
         }
     } catch(error) {
         // If an error occurs, log it
-        console.log(error)
+        console.error(error);
+        logToDB(error);
     }
 };

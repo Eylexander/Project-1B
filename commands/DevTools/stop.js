@@ -1,7 +1,6 @@
 const { admin } = require('../../settings.json');
 const chalk = require('chalk');
-const moment = require('moment');
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+const { logToConsole, logToDB } = require('../../tools/Loader.js');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -20,7 +19,7 @@ module.exports.execute = async (client, message, args) => {
 
     // Stop the bot
     try {
-        log(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgRed(`OFF`) + (`.`));
+        logToConsole(chalk.white.bold(`${client.user.tag}`) + (` is `) + chalk.black.bgRed(`OFF`) + (`.`));
         
         // Delete the original message
         setTimeout(() => {message.delete()}, 1000)
@@ -35,8 +34,9 @@ module.exports.execute = async (client, message, args) => {
         // Destroy the client after 3 seconds
         setTimeout(() => { client.destroy() }, 3000);
 
-    } catch (err) {
+    } catch (error) {
         // If an error occurs, log it
-        log(err)
+        console.error(error);
+        logToDB(error);
     }
 };

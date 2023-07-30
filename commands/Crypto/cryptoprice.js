@@ -1,6 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const axios = require('axios');
 const { prefix } = require('../../settings.json');
+const { randomColor, makeName } = require('../../tools/Loader.js');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -36,19 +37,14 @@ module.exports.execute = async (client, message, args) => {
             // Check if data exists
             if (!data[coin][vsCurrency]) throw Error();
 
-            // Capitalize the first letter of the crypto and the currency
-            const crypto = coin.charAt(0).toUpperCase() + coin.slice(1);
-            // Capitalize the currency
-            const currency = vsCurrency.toUpperCase();
-
             // Create the embed
             const getDataEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777215) + 1)
+                .setColor(randomColor())
                 .setTitle("CoinGecko API")
                 .setURL(`https://www.coingecko.com/en/coins/${coin}`)
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
-                    {name: `${crypto} in ${currency}`, value:`${data[coin][vsCurrency]}`, inline: true}
+                    {name: `${makeName(coin)} in ${vsCurrency.toUpperCase()}`, value:`${data[coin][vsCurrency]}`, inline: true}
                 )
                 .setImage('https://static.coingecko.com/s/coingecko-logo-d13d6bcceddbb003f146b33c2f7e8193d72b93bb343d38e392897c3df3e78bdd.png')
                 .setTimestamp()
@@ -62,7 +58,6 @@ module.exports.execute = async (client, message, args) => {
             // If not, send an error message
             message.reply({content: `Please check your inputs.\n${prefix}${module.exports.help.name} ${module.exports.help.usage}`, allowedMentions: { repliedUser: false }});
             break;
-
     }
 };
 
@@ -94,19 +89,14 @@ module.exports.run = async (client, interaction) => {
     // Check if data exists
     if (!data[coin][vsCurrency]) throw Error();
 
-    // Capitalize the first letter of the crypto and the currency
-    const crypto = coin.charAt(0).toUpperCase() + coin.slice(1);
-    // Capitalize the currency
-    const currency = vsCurrency.toUpperCase();
-
     // Create the embed
     const getDataEmbed = new EmbedBuilder()
-        .setColor(Math.floor(Math.random() * 16777215) + 1)
+        .setColor(randomColor())
         .setTitle("CoinGecko API")
         .setURL(`https://www.coingecko.com/en/coins/${coin}`)
         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
         .addFields(
-            {name: `${crypto} in ${currency}`, value:`${data[coin][vsCurrency]}`, inline: true}
+            {name: `${makeName(coin)} in ${vsCurrency.toUpperCase()}`, value:`${data[coin][vsCurrency]}`, inline: true}
         )
         .setImage('https://static.coingecko.com/s/coingecko-logo-d13d6bcceddbb003f146b33c2f7e8193d72b93bb343d38e392897c3df3e78bdd.png')
         .setTimestamp()

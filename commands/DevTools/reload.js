@@ -16,7 +16,7 @@ module.exports.execute = async (client, message, args) => {
     if (message.author.id !== admin) return;
 
     // Check if the user provided a command name to reload
-    if (!args || args.length <= 1)
+    if (args.length <= 1)
     return message.reply({
         content: "Must provide a command name to reload with exact category name.",
         allowedMentions: { repliedUser: false }
@@ -26,9 +26,8 @@ module.exports.execute = async (client, message, args) => {
     const commandName = args[0].toLowerCase();
 
     // Check if the command exists and is valid
-    if (!client.commands.has(commandName)) {
-      return message.reply("That command does not exist");
-    }
+    if (!client.commands.has(commandName))
+    return message.reply("That command does not exist");
 
     // the path is relative to the *current folder*, so just ./filename.js
     delete require.cache[require.resolve(`../../commands/${args[1]}/${commandName}.js`)];

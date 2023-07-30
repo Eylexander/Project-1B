@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { admin } = require('../../settings.json');
 const db = require("better-sqlite3");
-const ban = new db('./database/devtools/bannedusers.sqlite');
+const bansDB = new db('./database/devtools/banList.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -15,13 +15,15 @@ module.exports.help = {
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
 
-    // Get the user ID of specific banned user
-    const getBannedUserById = ban.prepare("SELECT id FROM bannedusers WHERE id = ?;");
-    // Get the user ID and username of every banned user
-    const getListBanned = ban.prepare("SELECT id, user FROM bannedusers;").all();
-
     // Check if the user is the bot owner
     if (message.author.id !== admin) return;
+
+    // Get the user ID of specific banned user
+    const getBannedUserById = bansDB.prepare("SELECT id FROM banlist WHERE id = ?;");
+    // Get the user ID and username of every banned user
+    const getListBanned = bansDB.prepare("SELECT id, user FROM banlist;").all();
+    // Delete the user from the banlist
+    const deleteBannedUser = bansDB.prepare("DELETE FROM banlist WHERE id = ?;");
 
     // Check the inputs of the user
     switch (args[0]) {
@@ -88,7 +90,7 @@ module.exports.execute = async (client, message, args) => {
                 // Check if the user is already banned
                 if (!getBannedUserById.get(getMentionTag.id)) {
                     // Ban the user
-                    ban.prepare(`INSERT INTO ban (id, user) VALUES (${getMentionTag.id}, '${getMentionTag.username}');`).run();
+                    bansDB.prepare(`INSERT INTO banlist (id, user) VALUES (${getMentionTag.id}, '${getMentionTag.username}');`).run();
                     // Send a message to the channel
                     message.reply({
                         content: `Banned user ${getMentionTag.username} (${getMentionTag.id})`,
@@ -123,7 +125,7 @@ module.exports.execute = async (client, message, args) => {
                     // Check if the user is banned
                     if (getBannedUserById.get(getMentionTag.id)) {
                         // Unban the user
-                        ban.prepare(`DELETE FROM ban WHERE id = ${getMentionTag.id}`).run();
+                        deleteBannedUser.run(getMentionTag.id);
                         // Send a message to the channel
                         return message.reply({
                             content: `Unbanned user ${getMentionTag.username} (${getMentionTag.id})`,
@@ -154,7 +156,7 @@ module.exports.execute = async (client, message, args) => {
                         })
 
                         // Unban the user
-                        ban.prepare(`DELETE FROM ban WHERE id = ${getUserObjectId.id}`).run();
+                        deleteBannedUser.run(getUserObjectId.id);
                         // Send a message to the channel
                         message.reply({
                             content: `Unbanned user ${getUserObjectId.user} (${getUserObjectId.id})`,
@@ -178,7 +180,7 @@ module.exports.execute = async (client, message, args) => {
                 })
             } else {
                 // Drop the table
-                ban.prepare(`DELETE FROM ban`).run();
+                bansDB.prepare(`DELETE FROM ban`).run();
                 // Send a message to the channel
                 message.reply({
                     content: "Cleared the banned users list.",

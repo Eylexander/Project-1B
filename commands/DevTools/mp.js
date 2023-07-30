@@ -12,15 +12,19 @@ module.exports.help = {
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
     // Check if the author is the admin
-    if (!message.author.id === admin) return;
+    if (message.author.id !== admin) return;
 
     // Check if the author has tagged someone
     switch (args[0]) {
         case undefined:
         case null:
             // If not, send a message
-            message.reply({content: 'You have to tag or Id someone !', allowedMentions: { repliedUser: false }});
+            message.reply({
+                content: 'You have to tag or Id someone !',
+                allowedMentions: { repliedUser: false }
+            });
             break;
+
         default:
             // If yes, send a message to the tagged user and verify if there is some text
             if (message.mentions.users.first() && args.length > 1) {

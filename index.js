@@ -4,7 +4,15 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { token } = require('./settings.json');
 
-const { Client, GatewayIntentBits, Collection, Events } = require('discord.js');
+const Loader = require('./tools/Loader.js');
+
+const {
+	Client,
+	GatewayIntentBits,
+	Collection,
+	Events
+} = require('discord.js');
+
 const client = new Client({
 	partials: ["CHANNEL"],
 	intents: [
@@ -15,14 +23,11 @@ const client = new Client({
 		GatewayIntentBits.GuildMembers,
 	],
 });
+
 client.commands = new Collection();
 
-// Create better console logs
-console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`))
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
-
-// Economy Handler
-require('./tools/economyHandler.js').onLoad();
+// Initialize databases
+Loader.initDatabases();
 
 // Reading all Event Files
 const eventsPath = path.join(__dirname, 'events');
@@ -32,25 +37,30 @@ for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
 	let eventName = file.split(".")[0];
-	client.on(eventName, event.bind(null, client));
+	// client.on(Events[eventName], event.bind(null, client));
+	if (event.once) {
+		client.once(Events[eventName], (...args) => event.execute(...args));
+	} else {
+		client.on(Events[eventName], (...args) => event.execute(client, ...args));
+	}
 }
+
+// InteractionCreate Event Handler
+client.on(Events.InteractionCreate, async interaction => {
+	Loader.onInteraction(client, interaction);
+});
 
 // Reading all Command Folders
 const commandFolders = fs.readdirSync('./commands');
 for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
-    log(`Loading Commands from Folder: ${folder}`)
+    Loader.logToConsole(`Loading Commands from Folder: ${folder}`)
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
         client.commands.set(path.parse(file).name, command);
     }
 }
 
-// InteractionCreate Event Handler
-const { onInteraction } = require('./tools/InteractionCreate.js');
-client.on(Events.InteractionCreate, async interaction => {
-	onInteraction(client, interaction);
-});
-
 // Login the bot
+console.log(chalk.grey(`Time Format : MM-DD HH:mm:ss.SSS`));
 client.login(token);

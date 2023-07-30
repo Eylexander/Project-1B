@@ -17,8 +17,6 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-
-    // 
     
     // Get the meme from the API
     const request = args[0] === undefined ? '' :

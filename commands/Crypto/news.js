@@ -1,6 +1,7 @@
+const axios = require('axios');
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { newsapi } = require('../../settings.json');
-const axios = require('axios');
+const { randomColor } = require('../../tools/Loader.js');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -33,7 +34,7 @@ module.exports.execute = async (client, message, args) => {
     const getNewsEmbed = new EmbedBuilder()
         .setTitle(title)
         .setURL(url)
-        .setColor(Math.floor(Math.random() * 16777215) + 1)
+        .setColor(randomColor())
         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
         .addFields(
             {name: `Article:`, value: `${description}`, inline: false},
@@ -79,7 +80,7 @@ module.exports.run = async (client, interaction) => {
     const getNewsEmbed = new EmbedBuilder()
         .setTitle(title)
         .setURL(url)
-        .setColor(Math.floor(Math.random() * 16777215) + 1)
+        .setColor(randomColor())
         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
         .addFields(
             {name: `Article:`, value: `${description}`, inline: false},

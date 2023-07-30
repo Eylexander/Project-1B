@@ -1,6 +1,5 @@
 const { admin } = require('../../settings.json');
-const moment = require('moment');
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+const { logToConsole, logToDB } = require('../../tools/Loader.js');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -19,7 +18,7 @@ module.exports.execute = async (client, message, args) => {
 
     // Disconnect from the console
     try {
-        log('Disconnecting from console ...');
+        logToConsole('Disconnecting from console ...');
         // Delete the original message
         setTimeout(() => {message.delete()}, 1000);
         // Send a confirmation message
@@ -37,6 +36,7 @@ module.exports.execute = async (client, message, args) => {
 
     } catch(error) {
         // If an error occurs, log it
-        log(error)
+        logToConsole(error);
+        logToDB(error);
     }
 };

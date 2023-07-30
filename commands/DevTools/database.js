@@ -1,8 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const fs = require("fs")
 const { admin } = require('../../settings.json')
-const moment = require('moment');
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+const { logToConsole, makeName } = require('../../tools/Loader.js');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -15,9 +14,6 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
-
-    // Creation of a function to capitalize the first letter of a string
-    const makeName = (name) => name.toLowerCase().charAt(0).toUpperCase() + name.toLowerCase().slice(1);
 
     // Check if the user is the admin
     if (message.author.id !== admin) return;
@@ -45,13 +41,13 @@ module.exports.execute = async (client, message, args) => {
                     try {
                         fs.unlinkSync(`./database/${args[1]}.sqlite`)
                     } catch (err) {
-                        log(err)
+                        logToConsole(err)
                         message.channel.send('I can\'t delete that!')
                     }
                 } else if(err.code === 'ENOENT') {
                     message.channel.send('Database not existing!')
                 } else {
-                    log('Some other error: ', err.code);
+                    logToConsole('Some other error: ', err.code);
                     message.channel.send('I failed somewhere')
                 }
             });

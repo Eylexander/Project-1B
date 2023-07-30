@@ -21,7 +21,7 @@ module.exports.execute = async (client, message, args) => {
     });
 
     // Check if the user is an admin or has the admin permission
-    if (message.author.id == admin || message.member.permissions.has('ADMINISTRATOR')) {
+    if (message.author.id == admin || message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
         
         // Delete the original message
         setTimeout(() => {message.delete()}, 200);
