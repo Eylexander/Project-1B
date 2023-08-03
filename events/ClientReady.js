@@ -18,6 +18,7 @@ module.exports = {
 
         // Initialize mutliple systems
         Loader.logReadyToMD(ssize, usize);
-        Loader.economyHandler;
+        Loader.economyHandler();
+        Loader.setIntervalonUpdateWords();
     }
 };

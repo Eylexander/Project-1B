@@ -3,7 +3,8 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 // Initiate the database
 const db = require("better-sqlite3");
-const sent = new db('./database/devtools/suggestions.sqlite');
+const { randomColor } = require('../../tools/Loader');
+const suggestionsDB = new db('./database/devtools/suggestions.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -18,20 +19,22 @@ module.exports.help = {
 module.exports.execute = async (client, message, args) => {
 
     // Check the user's suggestion in the database
-    const getUserSuggestionbyId = sent.prepare("SELECT * FROM suggestions WHERE id = ?;");
+    const userSuggestion = suggestionsDB.prepare("SELECT * FROM suggestions WHERE id = ?;");
     // Create the function to add a suggestion
-    const addSuggestion = sent.prepare(
+    const addSuggestion = suggestionsDB.prepare(
         "INSERT INTO suggestions (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);"
     );
     // Create the function to get all the suggestions
-    const getSuggestionsAll = sent.prepare("SELECT * FROM suggestions;").all();
+    const allSuggestionsList = suggestionsDB.prepare("SELECT * FROM suggestions;").all();
+
+    // Define var names
+    let authorUserMention, authorUserObject, authorSuggestionsLength;
 
     // Checks the inputs
     switch (args[0]) {
         case 'add':
         case 'new':
         case 'create':
-
             // Check if the user has entered enough arguments
             if (args.length < 3)
             return message.reply({
@@ -57,7 +60,6 @@ module.exports.execute = async (client, message, args) => {
         case 'remove':
         case 'del':
         case 'rem':
-
             // Check if the user is the admin of the bot
             if (message.author.id !== admin) return;
 
@@ -66,13 +68,15 @@ module.exports.execute = async (client, message, args) => {
                 case undefined:
                 case null:
                     // Check if the user has a suggestion
-                    if (getUserSuggestionbyId.get(message.author.id)) {
+                    if (userSuggestion.get(message.author.id)) {
                         // Delete the suggestion
-                        sent.prepare(`DELETE FROM suggestions WHERE id = ${message.author.id};`).run();
+                        suggestionsDB
+                            .prepare(`DELETE FROM suggestions WHERE id = ?;`)
+                            .run(message.author.id);
 
                         // Send a confirmation message
                         message.reply({
-                            content: "Your suggestion has been deleted !",
+                            content: "Your suggestion(s) has been deleted !",
                             allowedMentions: { repliedUser: false }
                         })
                     }
@@ -82,24 +86,27 @@ module.exports.execute = async (client, message, args) => {
                     // Check if the user has entered a mention
                     if (message.mentions.users.first()) {
                         // Get the mention tag
-                        const getMentionTag = message.mentions.users.first();
+                        authorUserMention = message.mentions.users.first();
                         // Get the user object
-                        const getUserObjectTag = getUserSuggestionbyId.get(getMentionTag.id);
+                        authorUserObject = userSuggestion.get(authorUserMention.id);
 
                         // Check if the user has a suggestion
-                        if (!getUserObjectTag) return message.reply({
+                        if (!authorUserObject)
+                        return message.reply({
                             content: "This user never sent any suggestions!",
                             allowedMentions: { repliedUser: false }
                         })
 
                         // Check if the user has a suggestion
-                        if (getUserSuggestionbyId.get(getMentionTag.id)) {
+                        if (userSuggestion.get(authorUserObject.id)) {
                             // Delete the suggestion
-                            sent.prepare(`DELETE FROM suggestions WHERE id = ${getMentionTag.id};`).run();
+                            suggestionsDB
+                                .prepare(`DELETE FROM suggestions WHERE id = ?;`)
+                                .run(authorUserMention.id);
 
                             // Send a confirmation message
                             message.reply({
-                                content: `${getMentionTag.username}'s suggestion has been deleted !`,
+                                content: `${authorUserMention.username}'s suggestion(s) has been deleted !`,
                                 allowedMentions: { repliedUser: false }
                             })
                         }
@@ -107,22 +114,25 @@ module.exports.execute = async (client, message, args) => {
                         // Check if the user has entered an id
                         if (args[1].match(/([0-9]*)/)) {
                             // Get the id
-                            const getMentionId = args[1].match(/([0-9]*)/);
+                            authorUserMention = args[1].match(/([0-9]*)/);
                             // Get the user object
-                            const getUserObjectId = getUserSuggestionbyId.get(getMentionId[1]);
+                            authorUserObject = userSuggestion.get(authorUserMention[1]);
 
                             // Check if the user has a suggestion
-                            if (!getUserObjectId) return message.reply({
+                            if (!authorUserObject)
+                            return message.reply({
                                 content: "This user never sent any suggestions!",
                                 allowedMentions: { repliedUser: false }
                             })
 
                             // Delete the suggestion
-                            sent.prepare(`DELETE FROM suggestions WHERE id = ${getUserObjectId.id};`).run();
+                            suggestionsDB
+                                .prepare(`DELETE FROM suggestions WHERE id = ?;`)
+                                .run(authorUserObject.id);
 
                             // Send a confirmation message
                             message.reply({
-                                content: `${getUserObjectId.user}'s suggestion has been deleted !`,
+                                content: `${authorUserObject.user}'s suggestion has been deleted !`,
                                 allowedMentions: { repliedUser: false }
                             })
                         }
@@ -144,12 +154,12 @@ module.exports.execute = async (client, message, args) => {
                     // Create the embed
                     const getEveryoneEmbed = new EmbedBuilder()
                         .setTitle('Suggestions')
-                        .setColor(Math.floor(Math.random() * 16777214) + 1)
+                        .setColor(randomColor())
                         .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
                         .setDescription(
-                            getSuggestionsAll.length < 2
-                            ? `Found **${getSuggestionsAll.length}** suggestion :`
-                            : `Found **${getSuggestionsAll.length}** suggestions :`
+                            allSuggestionsList.length < 2
+                            ? `Found **${allSuggestionsList.length}** suggestion :`
+                            : `Found **${allSuggestionsList.length}** suggestions :`
                         )
                         .addFields()
                         .setTimestamp()
@@ -157,11 +167,11 @@ module.exports.execute = async (client, message, args) => {
 
                     // Add the fields to the embed
                     // Group the suggestions by user
-                    const getEachUser = sent.prepare("SELECT DISTINCT user, id FROM suggestions;").all();
+                    const getEachUser = suggestionsDB.prepare("SELECT DISTINCT user, id FROM suggestions;").all();
                     
                     // Group suggestions by user
                     // Completly stolen from internet
-                    const groupedSuggestions = getSuggestionsAll.reduce((acc, data) => {
+                    const groupedSuggestions = allSuggestionsList.reduce((acc, data) => {
                         const user = getEachUser.find(user => user.id === data.id);
                         if (!user) return acc;
 
@@ -194,19 +204,19 @@ module.exports.execute = async (client, message, args) => {
                     // Check if the user has a suggestion
                     const getIndividualEmbed = new EmbedBuilder()
                         .setTitle('Your suggestions')
-                        .setColor(Math.floor(Math.random() * 16777214) + 1)
+                        .setColor(randomColor())
                         .setThumbnail(message.author.displayAvatarURL({ dynamic : true }))
                         .setDescription(
-                            getUserSuggestionbyId.all(message.author.id).length < 2
-                            ? `You have **${getUserSuggestionbyId.all(message.author.id).length}** suggestion :`
-                            : `You have **${getUserSuggestionbyId.all(message.author.id).length}** suggestions :`
+                            userSuggestion.all(message.author.id).length < 2
+                            ? `You have **${userSuggestion.all(message.author.id).length}** suggestion :`
+                            : `You have **${userSuggestion.all(message.author.id).length}** suggestions :`
                         )
                         .addFields()
                         .setTimestamp()
                         .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
 
                     // Add the fields to the embed
-                    for (const data of getUserSuggestionbyId.all(message.author.id)) {
+                    for (const data of userSuggestion.all(message.author.id)) {
                         getIndividualEmbed.addFields({name: `${data.name}`, value:`${data.suggestions}`, inline: false})
                     }
 
@@ -224,32 +234,35 @@ module.exports.execute = async (client, message, args) => {
                     // Check if the user has entered a mention
                     if (message.mentions.users.first()) {
                         // Get the mention tag
-                        const getMentionTag = message.mentions.users.first();
-                        const getUserObjectTag = getUserSuggestionbyId.get(getMentionTag.id);
+                        authorUserMention = message.mentions.users.first();
+                        authorUserObject = userSuggestion.get(authorUserMention.id);
 
                         // Check if the user has a suggestion
-                        if (!getUserObjectTag) return message.reply({
+                        if (!authorUserObject)
+                        return message.reply({
                             content: "This user never sent any suggestions!",
                             allowedMentions: { repliedUser: false }
                         })
 
+                        // Calculate author suggestions length
+                        authorSuggestionsLength = userSuggestion.all(authorUserMention.id).length;
+
                         // Create the embed
                         const getUserTagEmbed = new EmbedBuilder()
-                            .setTitle(`${getMentionTag.username}'s suggestions`)
-                            .setColor(Math.floor(Math.random() * 16777214) + 1)
-                            .setThumbnail(getMentionTag.author.displayAvatarURL({ dynamic : true }))
-                            .setDescription(`User ${getMentionTag.username} (${getMentionTag.id}) has ${getUserSuggestionbyId.all(getMentionTag.id).length} suggestion(s) :`)
+                            .setTitle(`${authorUserMention.username}'s suggestions`)
+                            .setColor(randomColor())
+                            .setThumbnail(authorUserMention.author.displayAvatarURL({ dynamic : true }))
                             .setDescription(
-                                getUserSuggestionbyId.all(getMentionTag.id).length < 2
-                                ? `User ${getMentionTag.username} (${getMentionTag.id}) has ${getUserSuggestionbyId.all(getMentionTag.id).length} suggestion :`
-                                : `User ${getMentionTag.username} (${getMentionTag.id}) has ${getUserSuggestionbyId.all(getMentionTag.id).length} suggestions :`
+                                authorSuggestionsLength < 2
+                                ? `User ${authorUserMention.username} (${authorUserMention.id}) has ${authorSuggestionsLength} suggestion :`
+                                : `User ${authorUserMention.username} (${authorUserMention.id}) has ${authorSuggestionsLength} suggestions :`
                             )
                             .addFields()
                             .setTimestamp()
                             .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })})
                     
                         // Add the fields to the embed
-                        for (const data of getUserSuggestionbyId.all(getMentionTag.id)) {
+                        for (const data of userSuggestion.all(authorUserMention.id)) {
                             getUserTagEmbed.addFields({name: `${data.name}`, value:`${data.suggestions}`, inline: false})
                         }
 
@@ -262,28 +275,34 @@ module.exports.execute = async (client, message, args) => {
                     } else {
                         if (args[1].match(/([0-9]*)/)) {
                             // Get the id
-                            const getMentionId = args[1].match(/([0-9]*)/)
-                            const getUserObjectId = getUserSuggestionbyId.get(getMentionId[1])
+                            authorUserMention = args[1].match(/([0-9]*)/);
+                            authorUserObject = userSuggestion.get(authorUserMention[1]);
                             
                             // Check if the user has a suggestion
-                            if (!getUserObjectId)
+                            if (!authorUserObject)
                             return message.reply({
                                 content: "This user never sent any suggestions!",
                                 allowedMentions: { repliedUser: false }
                             })
 
+                            authorSuggestionsLength = userSuggestion.all(authorUserObject.id).length;
+
                             // Create the embed
                             const getUserIdEmbed = new EmbedBuilder()
-                                .setTitle(`${getUserObjectId.username}'s suggestions`)
-                                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                                .setTitle(`${authorUserObject.username}'s suggestions`)
+                                .setColor(randomColor())
                                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true })
-                                .setDescription(`User ${getUserObjectId.user} (${getUserObjectId.id}) has ${getUserSuggestionbyId.all(getUserObjectId.id).length} suggestion(s) :`)
+                                .setDescription(
+                                    authorSuggestionsLength < 2
+                                    ? `User ${authorUserObject.user} (${authorUserObject.id}) has ${authorSuggestionsLength} suggestion :`
+                                    : `User ${authorUserObject.user} (${authorUserObject.id}) has ${authorSuggestionsLength} suggestions :`
+                                )
                                 .addFields()
                                 .setTimestamp()
                                 .setFooter({ text :`Requested by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true })}));
 
                             // Add the fields to the embed
-                            for (const data of getUserSuggestionbyId.all(getUserObjectId.id)) {
+                            for (const data of userSuggestion.all(authorUserObject.id)) {
                                 getUserIdEmbed.addFields({name: `${data.name}`, value:`${data.suggestions}`, inline: false})
                             }
 
@@ -299,18 +318,20 @@ module.exports.execute = async (client, message, args) => {
             break;
 
         case 'drop':
-
             // Check if the user is the admin of the bot
             if (message.author.id !== admin) return;
 
             // Check if there is any suggestions
-            if (!getSuggestionsAll) return message.reply({
-                content: "There is no suggestions!",
+            if (!allSuggestionsList)
+            return message.reply({
+                content: "There are no suggestions!",
                 allowedMentions: { repliedUser: false }
             })
 
             // Drop the table
-            sent.prepare("DELETE FROM suggestions;").run();
+            suggestionsDB
+                .prepare("DELETE FROM suggestions;")
+                .run();
 
             // Send the message
             message.reply({
@@ -354,11 +375,11 @@ module.exports.data = new SlashCommandBuilder()
 module.exports.run = async (client, interaction) => {
 
     // Get user's suggestions by id
-    const getUserSuggestionbyId = sent.prepare("SELECT * FROM suggestions WHERE id = ?;");
+    const userSuggestion = suggestionsDB.prepare("SELECT * FROM suggestions WHERE id = ?;");
     // Create the function to add a suggestion
-    const addSuggestion = sent.prepare("INSERT INTO suggestions (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);");
-    // Create the function to get all suggestions
-    const getSuggestionsAll = sent.prepare("SELECT * FROM suggestions;").all();
+    const addSuggestion = suggestionsDB.prepare("INSERT INTO suggestions (id, user, name, suggestions) VALUES (@id, @user, @name, @suggestions);");
+
+    let authorSuggestionsLength;
 
     // Check inputs
     switch (interaction.options.getSubcommand()) {
@@ -376,18 +397,24 @@ module.exports.run = async (client, interaction) => {
             break;
 
         case 'list':
+            authorSuggestionsLength = userSuggestion.all(interaction.member?.user.id ?? interaction.user.id).length;
+
             // Create the embed
             const getIndividualEmbed = new EmbedBuilder()
                 .setTitle('Your suggestions')
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setColor(randomColor())
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
-                .setDescription(`You have ${getUserSuggestionbyId.all(interaction.member?.user.id ?? interaction.user.id).length} suggestion(s) :`)
+                .setDescription(
+                    authorSuggestionsLength < 2
+                    ? `You have **${authorSuggestionsLength}** suggestion :`
+                    : `You have **${authorSuggestionsLength}** suggestions :`
+                )
                 .addFields()
                 .setTimestamp()
                 .setFooter({ text :`Requested by ${interaction.member?.user.username ?? interaction.user.username}`, iconURL: interaction.member.displayAvatarURL({ dynamic: true })})
 
             // Add the fields to the embed
-            for (const data of getUserSuggestionbyId.all(interaction.member?.user.id ?? interaction.user.id)) {
+            for (const data of userSuggestion.all(interaction.member?.user.id ?? interaction.user.id)) {
                 getIndividualEmbed.addFields({name: `${data.name}`, value:`${data.suggestions}`, inline: false})
             }
 

@@ -1,8 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { ricks } = require('../../tools/word_libraries.json')
-
-// Construct the rickroll gif array
-const rickrollGifs = ricks[Math.floor(Math.random() * ricks.length)];
+const { randomColor } = require('../../tools/Loader.js');
+const db = require('better-sqlite3');
+const wordsDB = new db('./database/devtools/words.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -15,6 +14,12 @@ module.exports.help = {
 
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
+
+    // Get the rickroll list at every iteration of the command (in case of a new word added)
+    const rickrollList = wordsDB.prepare("SELECT word FROM words WHERE type = 'rickroll';").all().map((w) => w.word);
+
+    // Construct the rickroll gif array
+    const rickrollGifs = rickrollList[Math.floor(Math.random() * rickrollList.length)];
 
     // Check if the user has entered a user to rickroll
     if (!message.mentions.users.first()) {
@@ -34,7 +39,7 @@ module.exports.execute = async (client, message, args) => {
 
         // Create the embed
         const RickrollEmbed = new EmbedBuilder()
-            .setColor(Math.floor(Math.random() * 16777214) + 1)
+            .setColor(randomColor())
             .setDescription(`**${message.author.username}** rickrolled **${userMention.username}** !`)
             .setImage(rickrollGifs)
             .setTimestamp()
@@ -61,12 +66,18 @@ module.exports.data = new SlashCommandBuilder()
 
 // Create a the run script for the slash command
 module.exports.run = async (client, interaction) => {
+    // Get the rickroll list at every iteration of the command (in case of a new word added)
+    const rickrollList = wordsDB.prepare("SELECT word FROM words WHERE type = 'rickroll';").all().map((w) => w.word);
+
+    // Construct the rickroll gif array
+    const rickrollGifs = rickrollList[Math.floor(Math.random() * rickrollList.length)];
+
     // Get the user mention
     const userMention = interaction.options.getUser('user');
 
     // Create the embed
     const RickrollEmbed = new EmbedBuilder()
-        .setColor(Math.floor(Math.random() * 16777214) + 1)
+        .setColor(randomColor())
         .setDescription(`**${interaction.member.user.username}** rickrolled **${userMention.username}** !`)
         .setImage(rickrollGifs)
         .setTimestamp()

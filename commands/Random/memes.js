@@ -1,10 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 const moment = require('moment');
-const chalk = require('chalk');
-
-// Create better console logs
-const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
+const { randomColor } = require('../../tools/Loader');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -27,7 +24,7 @@ module.exports.execute = async (client, message, args) => {
 
     // Create the embed
     const makeEmbed = new EmbedBuilder()
-        .setColor(Math.floor(Math.random() * 16777214) + 1)
+        .setColor(randomColor())
         .setTitle(data.name.toString())
         .setURL(data.url)
         .setDescription('If the image is not loading, click the title to open the image in a new tab.')

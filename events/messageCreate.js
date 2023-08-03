@@ -4,7 +4,7 @@ const {
     devserver
 } = require('../settings.json');
 
-const { PermissionsBitField } = require("discord.js");
+const { PermissionsBitField, blockQuote } = require("discord.js");
 const db = require("better-sqlite3");
 const Loader = require('../tools/Loader.js');
 
@@ -12,11 +12,6 @@ const Loader = require('../tools/Loader.js');
 const logsDB = new db('./database/devtools/logs.sqlite');
 const bansDB = new db('./database/devtools/banList.sqlite');
 const serverListDB = new db('./database/devtools/serverList.sqlite');
-const wordsDB = new db('./database/devtools/words.sqlite');
-
-// Separate Words Categories
-const badwordsList = wordsDB.prepare("SELECT * FROM words WHERE type = 'badword';").all();
-const suicideTriggerList = wordsDB.prepare("SELECT * FROM words WHERE type = 'suicide';").all();
 
 // DB Functions
 const setServerInfos = serverListDB.prepare("INSERT OR REPLACE INTO serverlist (id, server, prefix, language) VALUES (@id, @server, @prefix, @language);");
@@ -53,6 +48,10 @@ module.exports = {
                 attachmenttype: message.attachments.size > 0 ? message.attachments.toJSON()[0].contentType : null
             });
 
+        // Separate Words Categories
+        const badwordsList = Loader.getUpdatedWordsDB('badword');
+        const suicideTriggerList = Loader.getUpdatedWordsDB('suicide');
+
         // Bot auto-response to specific Words
         for (const triggerWord of badwordsList) {
             if (message.content.toLowerCase().includes(triggerWord)) {
@@ -61,14 +60,16 @@ module.exports = {
             }
         };
 
+        blockSuicideText = `
+If anyone is contemplating suicide, please do not do it.
+It is not worth it, call this number instead from SOS Amitié: __**09 72 39 40 50**__.
+Or if you are not in France you can call the international line here: __**01 40 44 46 45**__
+or find your local line here: http://www.suicide.org/international-suicide-hotlines.html
+        `
+
         for (const triggerWord of suicideTriggerList) {
             if (message.content.toLowerCase().includes(triggerWord)) {
-                message.channel.send(`
-                    If anyone is contemplating suicide, please do not do it.\n
-                    It is not worth it, call this number instead from SOS Amitié: **09 72 39 40 50**.\n
-                    Or if you are not in France you can call the international line here: **01 40 44 46 45**
-                    or find your local line here: http://www.suicide.org/international-suicide-hotlines.html
-                `)
+                message.channel.send(blockSuicideText)
                 break;
             }
         }

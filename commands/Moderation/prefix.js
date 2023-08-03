@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 const db = require("better-sqlite3");
-const ser = new db('./database/devtools/server.sqlite');
+
+const serverListDB = new db('./database/devtools/server.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -14,9 +15,22 @@ module.exports.help = {
 // Create a the run script for the command
 module.exports.execute = async (client, message, args) => {
 
+    // Check if the user has the permission to use this command
+    if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        setTimeout(() => {message.delete()}, 1000);
+        return message.reply({
+            content: "You need to be an administrator to use this command !",
+            allowedMentions: { repliedUser: true }
+        }).then(msg => {
+            setTimeout(() => msg.delete(), 5000);
+        });
+    }
+
     // Check if there is a parameter and user has permission
-    if (['drop', 'delete', 'remove'].includes(args[0]) && message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        ser.prepare("DELETE FROM server WHERE id = ?;").run(message.guild.id);
+    if (['drop', 'delete', 'remove'].includes(args[0])) {
+        serverListDB
+            .prepare("DELETE FROM server WHERE id = ?;")
+            .run(message.guild.id);
         return message.reply({
             content: "The prefix has been reset to `+`",
             allowedMentions: { repliedUser: false }
@@ -24,7 +38,9 @@ module.exports.execute = async (client, message, args) => {
     }
 
     // Get server settings
-    let settings = ser.prepare("SELECT * FROM server WHERE id = ?;").get(message.guild.id);
+    let settings = serverListDB
+                            .prepare("SELECT prefix FROM server WHERE id = ?;")
+                            .get(message.guild.id);
     
     if (!settings) {
         message.reply({

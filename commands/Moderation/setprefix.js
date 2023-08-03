@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionsBitField  } = require('discord.js');
 const db = require("better-sqlite3");
-const ser = new db('./database/devtools/server.sqlite');
+
+const serverListDB = new db('./database/devtools/server.sqlite');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -27,13 +28,14 @@ module.exports.execute = async (client, message, args) => {
 
     // Check if there is a parameter
     if (['drop', 'delete', 'remove'].includes(args[0])) {
-        ser.prepare("DELETE FROM server WHERE id = ?;").run(message.guild.id);
+        serverListDB
+            .prepare("DELETE FROM server WHERE id = ?;")
+            .run(message.guild.id);
         return message.reply({
             content: "The prefix has been reset to `+`",
             allowedMentions: { repliedUser: false }
         });
     }
-    
 
     // Check the input length
     if (args.length < 1) 
@@ -43,14 +45,14 @@ module.exports.execute = async (client, message, args) => {
     });
     
     // Create a function to set the prefix
-    ser.prepare(
-        "INSERT OR REPLACE INTO server (id, server, prefix, language) VALUES (@id, @server, @prefix, @language);"
-    ).run({
-        id: message.guild.id,
-        server: message.guild.name,
-        prefix: args[0],
-        language: "en"
-    });
+    serverListDB
+        .prepare("INSERT OR REPLACE INTO server (id, server, prefix, language) VALUES (@id, @server, @prefix, @language);")
+        .run({
+            id: message.guild.id,
+            server: message.guild.name,
+            prefix: args[0],
+            language: "en"
+        });
 
     // Send a message to the user
     message.reply({

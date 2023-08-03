@@ -2,9 +2,13 @@ const fs = require('fs');
 const moment = require('moment');
 const db = require("better-sqlite3");
 
+const wordsDB = new db('./database/devtools/words.sqlite');
+
 let streamChannel;
 let errorsDB;
 let bansDB;
+let inventoryDB;
+let businessDB;
 
 // Define the constant of embed random color
 const randomColor = () => Math.floor(Math.random() * 16777214) + 1;
@@ -81,8 +85,8 @@ function initDatabases () {
     }
     
     // Define the database for the economy system
-    const inventoryDB = new db(economyPath + '/inventory.sqlite');
-    const businessDB = new db(economyPath + '/business.sqlite');
+    inventoryDB = new db(economyPath + '/inventory.sqlite');
+    businessDB = new db(economyPath + '/business.sqlite');
     const itemsListDB = new db(economyPath + '/items.sqlite');
     const userInventoryItemsDB = new db(economyPath + '/useritems.sqlite');
     const treasureListDB = new db(economyPath + '/treasure.sqlite');
@@ -301,18 +305,18 @@ function logToDB (error) {
 // Create the economy handler
 function economyHandler () {
 
-    let playersList = inventory.prepare("SELECT * FROM inventory;").all();
+    let playersList = inventoryDB.prepare("SELECT * FROM inventory;").all();
 
     // Create the mana regeneration
     setInterval(async () => {
     
         for (const player of playersList) {
-            let getManaAmount = inventory
+            let getManaAmount = inventoryDB
                 .prepare("SELECT mana, maxmana FROM inventory WHERE id = ?;")
                 .get(player.id);
     
             if (getManaAmount.mana < getManaAmount.maxmana) {
-                inventory
+                inventoryDB
                     .prepare("UPDATE inventory SET mana = mana + 1 WHERE id = ?;")
                     .run(player.id);
 
@@ -327,15 +331,41 @@ function economyHandler () {
 
             if (player.businessID === 0) continue;
 
-            let getJobPay = business
+            let getJobPay = businessDB
                 .prepare("SELECT salary FROM business WHERE id = ?;")
                 .get(player.businessID);
 
-            inventory
+            inventoryDB
                 .prepare("UPDATE inventory SET money = money + ? WHERE id = ?;")
                 .run(getJobPay.salary, player.id);
         }
     }, 3*60*60*1000);
+}
+
+let badwordsList, suicideTriggerList;
+
+// Create the words list
+function updateWords () {
+    badwordsList = wordsDB.prepare("SELECT word FROM words WHERE type = 'badword';").all().map((w) => w.word);
+    suicideTriggerList = wordsDB.prepare("SELECT word FROM words WHERE type = 'suicide';").all().map((w) => w.word);
+}
+
+// Create an iteration to update the words list on running time without restarting the bot
+function setIntervalonUpdateWords () {
+    updateWords();
+    const callback = () => updateWords();
+    setInterval(callback, 5 * 60 * 1000);
+}
+
+function getUpdatedWordsDB (asset) {
+    switch (asset) {
+        case 'badword':
+            return badwordsList;
+        case 'suicide':
+            return suicideTriggerList;
+        default:
+            break;
+    }
 }
 
 // Create the interaction handler
@@ -373,6 +403,27 @@ function onInteraction (client, interaction) {
 	logToConsole(`${interaction.member?.user.tag ?? interaction.user.tag} : ${interaction} on [${interaction.guild === null ? "DM" : "#"+interaction.channel.name + " : " + interaction.guild.name}]`);
 };
 
+// Function to use manually to add some presets to wordsDB and avoid crashing the bot on start (list is empty)
+function preloadWordsManualUseOnly() {
+    let addWords = wordsDB.prepare("INSERT INTO words (type, word) VALUES (@type, @word);");
+
+    addWords.run({
+        type: 'badword',
+        word: 'lussy'
+    });
+
+    addWords.run({
+        type: 'suicide',
+        word: 'suicide'
+    })
+
+    addWords.run({
+        type: 'rickroll',
+        word: 'https://eylexander.xyz/RicksRoll/tenor.gif'
+    })
+
+}
+
 module.exports = {
     randomColor,
     logReadyToMD,
@@ -383,5 +434,8 @@ module.exports = {
     logToDB,
     initDatabases,
     economyHandler,
-    onInteraction
+    setIntervalonUpdateWords,
+    getUpdatedWordsDB,
+    onInteraction,
+    preloadWordsManualUseOnly
 }
