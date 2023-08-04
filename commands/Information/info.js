@@ -4,6 +4,7 @@ const { version, dependencies } = require('../../package.json');
 const { admin } = require('../../settings.json');
 
 const moment = require('moment');
+const { randomColor } = require('../../tools/Loader');
 const log = message => {console.log(`[${moment().format('MM-DD HH:mm:ss.SSS')}] ${message}`)};
 
 module.exports.help = {
@@ -46,7 +47,7 @@ module.exports.execute = async (client, message, args) => {
         case 'serveur':
         case 'serv':
             const getServerEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setColor(randomColor())
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
@@ -67,7 +68,7 @@ module.exports.execute = async (client, message, args) => {
         case 'client':
         case 'discordbot':
             const getBotEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setColor(randomColor())
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
@@ -85,7 +86,7 @@ module.exports.execute = async (client, message, args) => {
                 case 'dev':
                 case 'specs':
                     const getBotSpecificitiesEmbed = new EmbedBuilder()
-                        .setColor(Math.floor(Math.random() * 16777214) + 1)
+                        .setColor(randomColor())
                         .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                         .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                         .addFields(
@@ -110,7 +111,7 @@ module.exports.execute = async (client, message, args) => {
         case 'hs':
         case 'heberg':
             const getHostEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setColor(randomColor())
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(
@@ -128,7 +129,7 @@ module.exports.execute = async (client, message, args) => {
         case 'dev':
         case 'eylexander':
             const getOwnerEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setColor(randomColor())
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail('https://cdn.discordapp.com/avatars/344526513577918477/0ebbf91a6b9d8326fa2f7f4eb6a93e70.webp')
                 .addFields(
@@ -143,7 +144,7 @@ module.exports.execute = async (client, message, args) => {
             break;
         default:
             const getGlobalEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
+                .setColor(randomColor())
                 .setAuthor({name: client.user.username, iconURL: client.user.displayAvatarURL({ dynamic : true })})
                 .setThumbnail(client.user.displayAvatarURL({ dynamic : true }))
                 .addFields(

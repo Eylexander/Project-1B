@@ -17,7 +17,10 @@ module.exports.execute = async (client, message, args) => {
         content: 'Pinging Bot ...',
         allowedMentions: { repliedUser: false }
     }).then(msg => {
-        msg.edit(`Pong! Latency is \`${msg.createdTimestamp - message.createdTimestamp}ms\`. Websocket Latency is \`${Math.round(client.ws.ping)}ms\`.`);
+        msg.edit({
+            content: `Pong! Latency is \`${msg.createdTimestamp - message.createdTimestamp}ms\`. Websocket Latency is \`${Math.round(client.ws.ping)}ms\`.`,
+            allowedMentions: { repliedUser: false }
+        });
     });
 };
 

@@ -1,6 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { weathertoken } = require('../../settings.json');
 const axios = require('axios');
+const { makeName, randomColor } = require('../../tools/Loader');
 
 // Create the json script for the help command
 module.exports.help = {
@@ -26,26 +27,24 @@ module.exports.execute = async (client, message, args) => {
             break;
 
         default:
-            // Convert the inputs to lowercase and make the first letter uppercase
-            const getInputs = args[0].toLowerCase();
-            const makeFirstUpperCase = getInputs.charAt(0).toUpperCase() + getInputs.slice(1);
-
             // Get the weather data from the API
-            const { data } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${makeFirstUpperCase}&units=metric&appid=${weathertoken}`)
+            const { data } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${makeName(args[0].toLowerCase())}&units=metric&appid=${weathertoken}`)
 
             // Get the data from the API
             const currentTemp = Math.ceil(data.main.temp)
             const wind = data.wind.speed;
             const icon = data.weather[0].icon
-            const cityName = makeFirstUpperCase
+            const cityName = makeName(args[0].toLowerCase())
             const country = data.sys.country
             const cloudness = data.weather[0].description;
             const { pressure, humidity, temp_max, temp_min  } = data.main;
 
             // Create the embed
             const getWeatherEmbed = new EmbedBuilder()
-                .setColor(Math.floor(Math.random() * 16777214) + 1)
-                .setTitle(`The temperature is ${currentTemp}\u00B0C in ${cityName}, ${country}`)
+                .setColor(randomColor())
+                .setTitle(`${cityName}, ${country}`)
+                .setURL(`https://www.openstreetmap.org/#map=12/${data.coord.lat}/${data.coord.lon}`)
+                .setDescription(`The temperature is ${currentTemp}\u00B0C`)
                 .addFields(
                     { name: `Maximum Temperature:`, value: `${temp_max}\u00B0C`, inline: true },
                     { name: `Minimum Temperature:`, value: `${temp_min}\u00B0C`, inline: true },
@@ -80,26 +79,24 @@ module.exports.data = new SlashCommandBuilder()
 
 // Create a the run script for the slash command
 module.exports.run = async (client, interaction) => {
-    // Convert the inputs to lowercase and make the first letter uppercase
-    const getInputs = interaction.options.getString('city').toLowerCase();
-    const makeFirstUpperCase = getInputs.charAt(0).toUpperCase() + getInputs.slice(1);
-
     // Get the weather data from the API
     try {
-        const { data } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${makeFirstUpperCase}&units=metric&appid=${weathertoken}`)
+        const { data } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${makeName(args[0].toLowerCase())}&units=metric&appid=${weathertoken}`)
 
         const currentTemp = Math.ceil(data.main.temp)
         const wind = data.wind.speed;
         const icon = data.weather[0].icon
-        const cityName = makeFirstUpperCase
+        const cityName = makeName(args[0].toLowerCase())
         const country = data.sys.country
         const cloudness = data.weather[0].description;
         const { pressure, humidity, temp_max, temp_min  } = data.main;
 
         // Create the embed
         const getWeatherEmbed = new EmbedBuilder()
-            .setColor(Math.floor(Math.random() * 16777214) + 1)
-            .setTitle(`The temperature is ${currentTemp}\u00B0C in ${cityName}, ${country}`)
+            .setColor(randomColor())
+            .setTitle(`${cityName}, ${country}`)
+            .setURL(`https://www.openstreetmap.org/#map=12/${data.coord.lat}/${data.coord.lon}`)
+            .setDescription(`The temperature is ${currentTemp}\u00B0C`)
             .addFields(
                 { name: `Maximum Temperature:`, value: `${temp_max}\u00B0C`, inline: true },
                 { name: `Minimum Temperature:`, value: `${temp_min}\u00B0C`, inline: true },
