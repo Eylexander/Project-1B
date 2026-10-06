@@ -1,12 +1,11 @@
 {
-  "prefix" : "+",
   "token": "",
-  "newsapi": "",
+  "admin": "",
+  "devserver": "",
   "weathertoken": "",
-  "admin" : "",
-  "devserver" : "",
-  "bot_info" : {
-    "name" : "Project 1B",
-    "version" : "0.1"
+  "newsapi": "",
+  "deployOnStart": "guild",
+  "bot_info": {
+    "name": "Project 1B"
   }
 }
